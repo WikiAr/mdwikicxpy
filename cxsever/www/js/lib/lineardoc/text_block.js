@@ -11,19 +11,19 @@ class TextBlock {
 	/**
 	 * @constructor
 	 *
-	 * @param {string} textChunks Annotated inline text
-	 * @param {boolean} canSegment This is a block which can be segmented
+	 * @param {string} text_chunks Annotated inline text
+	 * @param {boolean} can_segment This is a block which can be segmented
 	 */
-	constructor(textChunks, canSegment) {
-		this.textChunks = textChunks;
-		this.canSegment = canSegment;
+	constructor(text_chunks, can_segment) {
+		this.text_chunks = text_chunks;
+		this.can_segment = can_segment;
 		this.offsets = [];
 		let cursor = 0;
-		for (let i = 0, len = this.textChunks.length; i < len; i++) {
+		for (let i = 0, len = this.text_chunks.length; i < len; i++) {
 			this.offsets[i] = {
 				start: cursor,
-				length: this.textChunks[i].text.length,
-				tags: this.textChunks[i].tags
+				length: this.text_chunks[i].text.length,
+				tags: this.text_chunks[i].tags
 			};
 			cursor += this.offsets[i].length;
 		}
@@ -40,7 +40,7 @@ class TextBlock {
 		const textBlock = this,
 			commonTags = this.getCommonTags();
 		return this.offsets.filter((offset, i) => {
-			const textChunk = textBlock.textChunks[i];
+			const textChunk = textBlock.text_chunks[i];
 			return textChunk.tags.length > commonTags.length && textChunk.text.length > 0;
 		});
 	}
@@ -55,12 +55,12 @@ class TextBlock {
 	getTextChunkAt(charOffset) {
 		let i, len;
 		// TODO: bisecting instead of linear search
-		for (i = 0, len = this.textChunks.length - 1; i < len; i++) {
+		for (i = 0, len = this.text_chunks.length - 1; i < len; i++) {
 			if (this.offsets[i + 1].start > charOffset) {
 				break;
 			}
 		}
-		return this.textChunks[i];
+		return this.text_chunks[i];
 	}
 
 	/**
@@ -69,12 +69,12 @@ class TextBlock {
 	 * @return {Object[]} List of common SAX tags
 	 */
 	getCommonTags() {
-		if (this.textChunks.length === 0) {
+		if (this.text_chunks.length === 0) {
 			return [];
 		}
-		const commonTags = this.textChunks[0].tags.slice();
-		for (let i = 0, iLen = this.textChunks.length; i < iLen; i++) {
-			const tags = this.textChunks[i].tags;
+		const commonTags = this.text_chunks[0].tags.slice();
+		for (let i = 0, iLen = this.text_chunks.length; i < iLen; i++) {
+			const tags = this.text_chunks[i].tags;
 			if (tags.length < commonTags.length) {
 				commonTags.splice(tags.length);
 			}
@@ -98,15 +98,15 @@ class TextBlock {
 	 * @return {TextBlock} Translated textblock with tags applied
 	 */
 	translateTags(targetText, rangeMappings) {
-		// map of { offset: x, textChunks: [...] }
+		// map of { offset: x, text_chunks: [...] }
 		const emptyTextChunks = {};
 		const emptyTextChunkOffsets = [];
 		// list of { start: x, length: x, textChunk: x }
-		const textChunks = [];
+		const text_chunks = [];
 
 		function pushEmptyTextChunks(offset, chunks) {
 			for (let c = 0, cLen = chunks.length; c < cLen; c++) {
-				textChunks.push({
+				text_chunks.push({
 					start: offset,
 					length: 0,
 					textChunk: chunks[c]
@@ -115,8 +115,8 @@ class TextBlock {
 		}
 
 		// Create map of empty text chunks, by offset
-		for (let i = 0, iLen = this.textChunks.length; i < iLen; i++) {
-			const textChunk = this.textChunks[i];
+		for (let i = 0, iLen = this.text_chunks.length; i < iLen; i++) {
+			const textChunk = this.text_chunks[i];
 			const offset = this.offsets[i].start;
 			if (textChunk.text.length > 0) {
 				continue;
@@ -138,7 +138,7 @@ class TextBlock {
 			const targetRangeEnd = rangeMapping.target.start + rangeMapping.target.length;
 			const sourceTextChunk = this.getTextChunkAt(rangeMapping.source.start);
 			const text = targetText.slice(rangeMapping.target.start, rangeMapping.target.start + rangeMapping.target.length);
-			textChunks.push({
+			text_chunks.push({
 				start: rangeMapping.target.start,
 				length: rangeMapping.target.length,
 				textChunk: new text_chunk(
@@ -167,17 +167,17 @@ class TextBlock {
 			}
 		}
 		// Sort by start position
-		textChunks.sort((textChunk1, textChunk2) => textChunk1.start - textChunk2.start);
+		text_chunks.sort((textChunk1, textChunk2) => textChunk1.start - textChunk2.start);
 		// Fill in any textChunk gaps using text with commonTags
 		let pos = 0;
 		const commonTags = this.getCommonTags();
-		for (let i = 0, iLen = textChunks.length; i < iLen; i++) {
-			const textChunk = textChunks[i];
+		for (let i = 0, iLen = text_chunks.length; i < iLen; i++) {
+			const textChunk = text_chunks[i];
 			if (textChunk.start < pos) {
-				throw new Error('Overlappping chunks at pos=' + pos + ', textChunks=' + i + ' start=' + textChunk.start);
+				throw new Error('Overlappping chunks at pos=' + pos + ', text_chunks=' + i + ' start=' + textChunk.start);
 			} else if (textChunk.start > pos) {
 				// Unmapped chunk: insert plaintext and adjust offset
-				textChunks.splice(i, 0, {
+				text_chunks.splice(i, 0, {
 					start: pos,
 					length: textChunk.start - pos,
 					textChunk: new text_chunk(
@@ -199,7 +199,7 @@ class TextBlock {
 
 		if (tail) {
 			// Append tail as text with commonTags
-			textChunks.push({
+			text_chunks.push({
 				start: pos,
 				length: tail.length,
 				textChunk: new text_chunk(tail, commonTags)
@@ -207,21 +207,21 @@ class TextBlock {
 			pos += tail.length;
 		}
 
-		// Copy any remaining textChunks that have no text
+		// Copy any remaining text_chunks that have no text
 		for (let i = 0, iLen = emptyTextChunkOffsets.length; i < iLen; i++) {
 			const offset = emptyTextChunkOffsets[i];
 			pushEmptyTextChunks(pos, emptyTextChunks[offset]);
 		}
 		if (tailSpace) {
 			// Append tailSpace as text with commonTags
-			textChunks.push({
+			text_chunks.push({
 				start: pos,
 				length: tailSpace.length,
 				textChunk: new text_chunk(tailSpace, commonTags)
 			});
 			pos += tail.length;
 		}
-		return new TextBlock(textChunks.map((x) => x.textChunk));
+		return new TextBlock(text_chunks.map((x) => x.textChunk));
 	}
 
 	/**
@@ -231,8 +231,8 @@ class TextBlock {
 	 */
 	getPlainText() {
 		const text = [];
-		for (let i = 0, len = this.textChunks.length; i < len; i++) {
-			text.push(this.textChunks[i].text);
+		for (let i = 0, len = this.text_chunks.length; i < len; i++) {
+			text.push(this.text_chunks[i].text);
 		}
 		return text.join('');
 	}
@@ -246,8 +246,8 @@ class TextBlock {
 		const html = [];
 		// Start with no tags open
 		let oldTags = [];
-		for (let i = 0, iLen = this.textChunks.length; i < iLen; i++) {
-			const textChunk = this.textChunks[i];
+		for (let i = 0, iLen = this.text_chunks.length; i < iLen; i++) {
+			const textChunk = this.text_chunks[i];
 
 			// Compare tag stacks; render close tags and open tags as necessary
 			// Find the highest offset up to which the tags match on
@@ -294,8 +294,8 @@ class TextBlock {
 	 * @return {Object}
 	 */
 	getRootItem() {
-		for (let i = 0, iLen = this.textChunks.length; i < iLen; i++) {
-			const textChunk = this.textChunks[i];
+		for (let i = 0, iLen = this.text_chunks.length; i < iLen; i++) {
+			const textChunk = this.text_chunks[i];
 
 			if (textChunk.tags.length === 0 && textChunk.text && textChunk.text.match(/[^\s]/)) {
 				// No tags in this textchunk. See if there is non whitespace text
@@ -371,7 +371,7 @@ class TextBlock {
 		// for each chunk, split at any boundaries that occur inside the chunk
 		const groups = get_chunk_boundary_groups(
 			getBoundaries(this.getPlainText()),
-			this.textChunks,
+			this.text_chunks,
 			(textChunk) => textChunk.text.length
 		);
 		let offset = 0;
@@ -413,7 +413,7 @@ class TextBlock {
 	 * @return {TextBlock} Segmented version, with added span tags
 	 */
 	setLinkIds(getNextId) {
-		set_link_ids_in_place(this.textChunks, getNextId);
+		set_link_ids_in_place(this.text_chunks, getNextId);
 		return this;
 	}
 
@@ -434,7 +434,7 @@ class TextBlock {
 		// API mechanism in cxserver, but that works by debouncing the incoming requests with a
 		// timeout. Pausing execution here will cause that debounce handler to be called.
 		// So we avoid that pausing by just using an array of promises.
-		this.textChunks.forEach((chunk) => {
+		this.text_chunks.forEach((chunk) => {
 			const tagPromises = [],
 				tags = chunk.tags;
 			tags.forEach((tag) => {
@@ -487,8 +487,8 @@ class TextBlock {
 	 */
 	dumpXmlArray(pad) {
 		const dump = [];
-		for (let i = 0, len = this.textChunks.length; i < len; i++) {
-			const chunk = this.textChunks[i];
+		for (let i = 0, len = this.text_chunks.length; i < len; i++) {
+			const chunk = this.text_chunks[i];
 			const tagsDump = dump_tags(chunk.tags);
 			const tagsAttr = tagsDump ? ' tags="' + tagsDump + '"' : '';
 			if (chunk.text) {

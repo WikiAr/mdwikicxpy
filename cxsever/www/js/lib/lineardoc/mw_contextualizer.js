@@ -27,8 +27,8 @@ class mw_contextualizer extends Contextualizer {
 	/**
 	 * @inheritdoc
 	 */
-	getChildContext(tag) {
-		const context = this.getContext(),
+	get_child_context(tag) {
+		const context = this.get_context(),
 			type = tag.attributes.typeof || tag.attributes.rel || '';
 
 		if (context === 'removable' || this.isRemovable(tag)) {
@@ -71,8 +71,8 @@ class mw_contextualizer extends Contextualizer {
 	/**
 	 * @inheritdoc
 	 */
-	canSegment() {
-		return this.getContext() === 'contentBranch';
+	can_segment() {
+		return this.get_context() === 'contentBranch';
 	}
 
 	/**

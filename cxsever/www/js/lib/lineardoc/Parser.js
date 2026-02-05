@@ -6,7 +6,7 @@ import sax from 'sax';
 import Builder from './Builder.js';
 import { isTransclusion as _isTransclusion, is_inline_empty_tag, isMath, is_reference, isSegment } from './utils.js';
 
-const blockTags = [
+const BLOCK_TAGS = [
 	'html', 'head', 'body', 'script',
 	// head tags
 	// In HTML5+RDFa, link/meta are actually allowed anywhere in the body, and are to be
@@ -59,15 +59,15 @@ class Parser extends sax.SAXParser {
 		this.allTags = [];
 	}
 
-	onopentag(tag) {
+	on_open_tag(tag) {
 		if (
 			// Check if this tag is a child tag of a removable tag
-			this.contextualizer.getContext() === 'removable' ||
+			this.contextualizer.get_context() === 'removable' ||
 			// Check if the tag is removable. Note that it is not added to contextualizer yet.
 			this.contextualizer.isRemovable(tag)
 		) {
 			this.allTags.push(tag);
-			this.contextualizer.onOpenTag(tag);
+			this.contextualizer.on_open_tag(tag);
 			return;
 		}
 
@@ -85,69 +85,69 @@ class Parser extends sax.SAXParser {
 			this.builder = this.builder.createChildBuilder(tag);
 		} else if (is_inline_empty_tag(tag.name)) {
 			this.builder.addInlineContent(
-				tag, this.contextualizer.canSegment()
+				tag, this.contextualizer.can_segment()
 			);
-		} else if (this.isInlineAnnotationTag(tag.name, _isTransclusion(tag))) {
+		} else if (this.is_inline_annotation_tag(tag.name, _isTransclusion(tag))) {
 			this.builder.pushInlineAnnotationTag(tag);
 		} else {
 			this.builder.pushBlockTag(tag);
 		}
 
 		this.allTags.push(tag);
-		this.contextualizer.onOpenTag(tag);
+		this.contextualizer.on_open_tag(tag);
 	}
 
-	onclosetag(tagName) {
+	on_close_tag(tagName) {
 		const tag = this.allTags.pop(),
-			isAnn = this.isInlineAnnotationTag(tagName, _isTransclusion(tag));
+			is_ann = this.is_inline_annotation_tag(tagName, _isTransclusion(tag));
 
-		if (this.contextualizer.isRemovable(tag) || this.contextualizer.getContext() === 'removable') {
-			this.contextualizer.onCloseTag(tag);
+		if (this.contextualizer.isRemovable(tag) || this.contextualizer.get_context() === 'removable') {
+			this.contextualizer.on_close_tag(tag);
 			return;
 		}
 
-		this.contextualizer.onCloseTag(tag);
+		this.contextualizer.on_close_tag(tag);
 
 		if (is_inline_empty_tag(tagName)) {
 			return;
-		} else if (isAnn && this.builder.inlineAnnotationTags.length > 0) {
+		} else if (is_ann && this.builder.inlineAnnotationTags.length > 0) {
 			this.builder.popInlineAnnotationTag(tagName);
 			if (this.options.isolateSegments && isSegment(tag)) {
-				this.builder.popBlockTag('div');
+				this.builder.pop_block_tag('div');
 			}
-		} else if (isAnn && this.builder.parent !== null) {
+		} else if (is_ann && this.builder.parent !== null) {
 			// In a sub document: should be a span or sup that closes a reference
 			if (tagName !== 'span' && tagName !== 'sup') {
 				throw new Error('Expected close reference - span or sup tags, got "' + tagName + '"');
 			}
 			this.builder.finishTextBlock();
 			this.builder.parent.addInlineContent(
-				this.builder.doc, this.contextualizer.canSegment()
+				this.builder.doc, this.contextualizer.can_segment()
 			);
 			// Finished with child now. Move back to the parent builder
 			this.builder = this.builder.parent;
-		} else if (!isAnn) {
+		} else if (!is_ann) {
 			// Block level tag close
-			if (tagName === 'p' && this.contextualizer.canSegment()) {
+			if (tagName === 'p' && this.contextualizer.can_segment()) {
 				// Add an empty textchunk before the closing block tag to flush segmentation contexts
 				// For example, transclusion based references at the end of paragraphs
-				this.builder.addTextChunk('', this.contextualizer.canSegment());
+				this.builder.addTextChunk('', this.contextualizer.can_segment());
 			}
-			this.builder.popBlockTag(tagName);
+			this.builder.pop_block_tag(tagName);
 		} else {
 			throw new Error('Unexpected close tag: ' + tagName);
 		}
 	}
 
 	ontext(text) {
-		if (this.contextualizer.getContext() === 'removable') {
+		if (this.contextualizer.get_context() === 'removable') {
 			return;
 		}
-		this.builder.addTextChunk(text, this.contextualizer.canSegment());
+		this.builder.addTextChunk(text, this.contextualizer.can_segment());
 	}
 
 	onscript(text) {
-		this.builder.addTextChunk(text, this.contextualizer.canSegment());
+		this.builder.addTextChunk(text, this.contextualizer.can_segment());
 	}
 
 	/**
@@ -157,8 +157,8 @@ class Parser extends sax.SAXParser {
 	 * @param {boolean} isTransclusion If the tag is transclusion
 	 * @return {boolean} Whether the tag is an inline annotation
 	 */
-	isInlineAnnotationTag(tagName, isTransclusion) {
-		const context = this.contextualizer.getContext();
+	is_inline_annotation_tag(tagName, isTransclusion) {
+		const context = this.contextualizer.get_context();
 		// <span> inside a media context acts like a block tag wrapping another block tag <video>
 		// See https://www.mediawiki.org/wiki/Specs/HTML/1.7.0#Audio/Video
 		if (tagName === 'span' && context === 'media') {
@@ -176,7 +176,7 @@ class Parser extends sax.SAXParser {
 			return true;
 		}
 		// All tags that are not block tags are inline annotation tags.
-		return !blockTags.includes(tagName);
+		return !BLOCK_TAGS.includes(tagName);
 	}
 }
 

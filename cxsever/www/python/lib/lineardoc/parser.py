@@ -13,6 +13,8 @@ BLOCK_TAGS = [
     "body",
     "script",
     # head tags
+    # In HTML5+RDFa, link/meta are actually allowed anywhere in the body, and are to be
+    # treated as void flow content (like <br> and <img>).
     "title",
     "style",
     "meta",
@@ -73,6 +75,7 @@ BLOCK_TAGS = [
     "fieldset",
     "details",
     "blockquote",
+    "address",  # added by Giovanni Toffoli
     # other
     "hr",
     "button",

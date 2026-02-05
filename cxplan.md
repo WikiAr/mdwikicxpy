@@ -38,7 +38,7 @@ Parser + mw_contextualizer → Doc → wrapSections() → CXSegmenter → HTML
 - Uses `sax` library (Python equivalent: `xml.sax` or `lxml.etree.iterparse`)
 - Distinguishes block vs inline tags
 - Handles MediaWiki-specific structures (references, math, transclusions)
-- Key methods: `onopentag()`, `onclosetag()`, `ontext()`
+- Key methods: `on_open_tag()`, `on_close_tag()`, `ontext()`
 
 **B. Doc.js** - Linear document representation
 - Stores HTML as linear array of items:

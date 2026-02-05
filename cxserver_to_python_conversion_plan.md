@@ -198,7 +198,7 @@ class Parser:
 
     def parse(self, html_string):
         # Implement streaming parse with event callbacks
-        # Similar to onopentag, onclosetag, ontext
+        # Similar to on_open_tag, on_close_tag, ontext
         pass
 ```
 

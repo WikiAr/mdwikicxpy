@@ -1,5 +1,5 @@
 /**
- * @external TextBlock
+ * @external text_block
  */
 
 import { createHash } from 'crypto';
@@ -12,7 +12,7 @@ import { getProp } from './../util.js';
  * The document is a list of items, where each items is
  * - a block open tag (e.g. <p>); or
  * - a block close tag (e.g. </p>); or
- * - a TextBlock of annotated inline text; or
+ * - a text_block of annotated inline text; or
  * - "block whitespace" (a run of whitespace separating two block boundaries)
  *
  * Some types of HTML structure get normalized away. In particular:
@@ -57,7 +57,7 @@ class Doc {
 	 *
 	 * @method
 	 * @param {string} type Type of item: open|close|blockspace|textblock
-	 * @param {Object|string|TextBlock} item Open/close tag, space or text block
+	 * @param {Object|string|text_block} item Open/close tag, space or text block
 	 * @return {Object}
 	 * @chainable
 	 */
@@ -180,7 +180,7 @@ class Doc {
 				const textBlock = item.item;
 				newDoc.addItem(
 					'textblock',
-					textBlock.canSegment && !transclusionContext ?
+					textBlock.can_segment && !transclusionContext ?
 						textBlock.segment(getBoundaries, getNextId) :
 						textBlock.setLinkIds(getNextId)
 				);
@@ -560,8 +560,8 @@ class Doc {
 				);
 				continue;
 			}
-			for (let j = 0, jLen = textblock.textChunks.length; j < jLen; j++) {
-				const chunk = textblock.textChunks[j];
+			for (let j = 0, jLen = textblock.text_chunks.length; j < jLen; j++) {
+				const chunk = textblock.text_chunks[j];
 
 				if (chunk.tags) {
 					for (let k = 0, kLen = chunk.tags.length; k < kLen; k++) {
@@ -668,8 +668,8 @@ class Doc {
 
 			const textblock = tag;
 			const expandedIds = [];
-			for (let j = 0, len = textblock.textChunks.length; j < len; j++) {
-				const chunk = textblock.textChunks[j];
+			for (let j = 0, len = textblock.text_chunks.length; j < len; j++) {
+				const chunk = textblock.text_chunks[j];
 
 				if (chunk.tags) {
 					for (let k = 0, kLen = chunk.tags.length; k < kLen; k++) {

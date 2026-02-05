@@ -2,7 +2,7 @@
  * @external Doc
  */
 
-const TextChunk = require('./TextChunk');
+const text_chunk = require('./text_chunk');
 const cxutil = require('./util');
 
 /**
@@ -311,18 +311,18 @@ function get_chunk_boundary_groups(boundaries, chunks, getLength) {
  * Add a tag to consecutive text chunks, above common tags but below others
  *
  * @private
- * @param {TextChunk[]} textChunks Consecutive text chunks
+ * @param {text_chunk[]} text_chunks Consecutive text chunks
  * @param {Object} tag Tag to add
- * @return {TextChunk[]} Copy of the text chunks with the tag inserted
+ * @return {text_chunk[]} Copy of the text chunks with the tag inserted
  */
-function add_common_tag(textChunks, tag) {
-	if (textChunks.length === 0) {
+function add_common_tag(text_chunks, tag) {
+	if (text_chunks.length === 0) {
 		return [];
 	}
 	// Find length of common tags
-	const commonTags = textChunks[0].tags.slice();
-	for (let i = 1, iLen = textChunks.length; i < iLen; i++) {
-		const tags = textChunks[i].tags;
+	const commonTags = text_chunks[0].tags.slice();
+	for (let i = 1, iLen = text_chunks.length; i < iLen; i++) {
+		const tags = text_chunks[i].tags;
 		let j, jLen;
 		for (j = 0, jLen = Math.min(commonTags.length, tags.length); j < jLen; j++) {
 			if (commonTags[j] !== tags[j]) {
@@ -337,11 +337,11 @@ function add_common_tag(textChunks, tag) {
 	const commonTagLength = commonTags.length;
 	// Build new chunks with segment span inserted
 	const newTextChunks = [];
-	for (let i = 0, iLen = textChunks.length; i < iLen; i++) {
-		const textChunk = textChunks[i];
+	for (let i = 0, iLen = text_chunks.length; i < iLen; i++) {
+		const textChunk = text_chunks[i];
 		const newTags = textChunk.tags.slice();
 		newTags.splice(commonTagLength, 0, tag);
-		newTextChunks.push(new TextChunk(
+		newTextChunks.push(new text_chunk(
 			textChunk.text,
 			newTags,
 			textChunk.inline_content
@@ -354,12 +354,12 @@ function add_common_tag(textChunks, tag) {
  * Set link IDs in-place on text chunks
  *
  * @private
- * @param {TextChunk[]} textChunks Consecutive text chunks
+ * @param {text_chunk[]} text_chunks Consecutive text chunks
  * @param {Function} getNextId function accepting 'link' and returning next ID
  */
-function set_link_ids_in_place(textChunks, getNextId) {
-	for (let i = 0, iLen = textChunks.length; i < iLen; i++) {
-		const tags = textChunks[i].tags;
+function set_link_ids_in_place(text_chunks, getNextId) {
+	for (let i = 0, iLen = text_chunks.length; i < iLen; i++) {
+		const tags = text_chunks[i].tags;
 		for (let j = 0, jLen = tags.length; j < jLen; j++) {
 			const tag = tags[j];
 			if (
