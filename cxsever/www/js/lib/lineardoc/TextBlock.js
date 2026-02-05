@@ -142,7 +142,7 @@ class TextBlock {
 				start: rangeMapping.target.start,
 				length: rangeMapping.target.length,
 				textChunk: new TextChunk(
-					text, sourceTextChunk.tags, sourceTextChunk.inlineContent
+					text, sourceTextChunk.tags, sourceTextChunk.inline_content
 				)
 			});
 
@@ -270,14 +270,14 @@ class TextBlock {
 
 			// Now add text and inline content
 			html.push(esc(textChunk.text));
-			if (textChunk.inlineContent) {
-				if (textChunk.inlineContent.getHtml) {
+			if (textChunk.inline_content) {
+				if (textChunk.inline_content.getHtml) {
 					// a sub-doc
-					html.push(textChunk.inlineContent.getHtml());
+					html.push(textChunk.inline_content.getHtml());
 				} else {
 					// an empty inline tag
-					html.push(get_open_tag_html(textChunk.inlineContent));
-					html.push(get_close_tag_html(textChunk.inlineContent));
+					html.push(get_open_tag_html(textChunk.inline_content));
+					html.push(get_close_tag_html(textChunk.inline_content));
 				}
 			}
 		}
@@ -307,8 +307,8 @@ class TextBlock {
 					return textChunk.tags[j];
 				}
 			}
-			if (textChunk.inlineContent) {
-				const inlineDoc = textChunk.inlineContent;
+			if (textChunk.inline_content) {
+				const inlineDoc = textChunk.inline_content;
 				// Presence of inlineDoc.getRootItem confirms that inlineDoc is a Doc instance.
 				if (inlineDoc && inlineDoc.getRootItem) {
 					const rootItem = inlineDoc.getRootItem();
@@ -324,7 +324,7 @@ class TextBlock {
 	/**
 	 * Get a tag that can represent this textblock.
 	 * Textblock can have multiple tags. The first tag is returned.
-	 * If there is no tags, but inlineContent present, then that is returned.
+	 * If there is no tags, but inline_content present, then that is returned.
 	 * This is used to extract a unique identifier for the textblock at
 	 * Doc#wrapSections.
 	 *
@@ -390,7 +390,7 @@ class TextBlock {
 					const rightPart = new TextChunk(
 						textChunk.text.slice(relOffset),
 						textChunk.tags.slice(),
-						textChunk.inlineContent
+						textChunk.inline_content
 					);
 					currentTextChunks.push(leftPart);
 					offset += relOffset;
@@ -454,14 +454,14 @@ class TextBlock {
 			});
 			textChunkPromises.push(Promise.all(tagPromises));
 			let adaptPromise;
-			if (chunk.inlineContent) {
-				if (chunk.inlineContent.adapt) {
+			if (chunk.inline_content) {
+				if (chunk.inline_content.adapt) {
 					// Inline content is a sub document.
-					adaptPromise = chunk.inlineContent.adapt(getAdapter);
+					adaptPromise = chunk.inline_content.adapt(getAdapter);
 				} else {
 					// Inline content is inline empty tag. Examples are link, meta etc.
-					const adapter = getAdapter(chunk.inlineContent);
-					if (adapter && !isTransclusionFragment(chunk.inlineContent)) {
+					const adapter = getAdapter(chunk.inline_content);
+					if (adapter && !isTransclusionFragment(chunk.inline_content)) {
 						adaptPromise = adapter.adapt();
 					}
 				}
@@ -469,7 +469,7 @@ class TextBlock {
 				if (adaptPromise) {
 					textChunkPromises.push(((chk) => adaptPromise
 						.then((adaptedInlineContent) => {
-							chk.inlineContent = adaptedInlineContent;
+							chk.inline_content = adaptedInlineContent;
 						}))(chunk));
 				}
 			}
@@ -496,13 +496,13 @@ class TextBlock {
 					esc(chunk.text).replace(/\n/g, '&#10;') +
 					'</cxtextchunk>');
 			}
-			if (chunk.inlineContent) {
+			if (chunk.inline_content) {
 				dump.push(pad + '<cxinlineelement' + tagsAttr + '>');
-				if (chunk.inlineContent.dumpXmlArray) {
+				if (chunk.inline_content.dumpXmlArray) {
 					// sub-doc: concatenate
-					dump.push.apply(dump, chunk.inlineContent.dumpXmlArray(pad + '  '));
+					dump.push.apply(dump, chunk.inline_content.dumpXmlArray(pad + '  '));
 				} else {
-					dump.push(pad + '  <' + chunk.inlineContent.name + '/>');
+					dump.push(pad + '  <' + chunk.inline_content.name + '/>');
 				}
 				dump.push(pad + '</cxinlineelement>');
 			}

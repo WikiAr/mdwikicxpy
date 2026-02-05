@@ -108,7 +108,7 @@ class Builder {
 			if (!chunkTag) {
 				break;
 			}
-			if (textChunk.text.match(/\S/) || textChunk.inlineContent || chunkTag !== tag) {
+			if (textChunk.text.match(/\S/) || textChunk.inline_content || chunkTag !== tag) {
 				// textChunk has non whitespace content, Or it has child tags.
 				replace = false;
 				break;
@@ -170,7 +170,7 @@ class Builder {
 		}
 		for (let i = 0, len = this.textChunks.length; i < len; i++) {
 			const textChunk = this.textChunks[i];
-			if (textChunk.inlineContent || textChunk.text.match(/\S/)) {
+			if (textChunk.inline_content || textChunk.text.match(/\S/)) {
 				whitespaceOnly = false;
 				whitespace = undefined;
 				break;

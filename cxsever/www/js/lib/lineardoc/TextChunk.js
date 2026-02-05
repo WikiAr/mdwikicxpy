@@ -16,12 +16,12 @@ class TextChunk {
 	/**
 	 * @param {string} text Plaintext in the chunk (can be '')
 	 * @param {Object[]} tags array of SAX open tag objects, for the applicable tags
-	 * @param {Doc|Object} [inlineContent] tag or sub-doc
+	 * @param {Doc|Object} [inline_content] tag or sub-doc
 	 */
-	constructor(text, tags, inlineContent) {
+	constructor(text, tags, inline_content) {
 		this.text = text;
 		this.tags = tags;
-		this.inlineContent = inlineContent;
+		this.inline_content = inline_content;
 	}
 }
 

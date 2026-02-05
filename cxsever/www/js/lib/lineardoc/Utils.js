@@ -344,7 +344,7 @@ function add_common_tag(textChunks, tag) {
 		newTextChunks.push(new TextChunk(
 			textChunk.text,
 			newTags,
-			textChunk.inlineContent
+			textChunk.inline_content
 		));
 	}
 	return newTextChunks;

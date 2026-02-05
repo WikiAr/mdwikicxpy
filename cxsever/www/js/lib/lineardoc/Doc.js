@@ -584,22 +584,22 @@ class Doc {
 					}
 				}
 
-				if (chunk.inlineContent) {
-					if (chunk.inlineContent.reduce) {
+				if (chunk.inline_content) {
+					if (chunk.inline_content.reduce) {
 						// Using object wrapping to pass counter by reference in order to avoid
 						// re-using already used IDs when this function continues processing.
-						const inlineReduceResult = chunk.inlineContent.reduce(idCounter);
-						chunk.inlineContent = inlineReduceResult.reducedDoc;
+						const inlineReduceResult = chunk.inline_content.reduce(idCounter);
+						chunk.inline_content = inlineReduceResult.reducedDoc;
 						extractedData = Object.assign(extractedData, inlineReduceResult.extractedData);
 					} else {
-						if (!hasAttributesToSave(chunk.inlineContent)) {
+						if (!hasAttributesToSave(chunk.inline_content)) {
 							continue;
 						}
 						idCounter.value++;
 						extractedData[idCounter.value] = {
-							attributes: Object.assign({}, chunk.inlineContent.attributes)
+							attributes: Object.assign({}, chunk.inline_content.attributes)
 						};
-						chunk.inlineContent.attributes = { id: idCounter.value };
+						chunk.inline_content.attributes = { id: idCounter.value };
 					}
 				}
 			}
@@ -700,15 +700,15 @@ class Doc {
 						}
 					}
 				}
-				if (chunk.inlineContent) {
-					if (chunk.inlineContent.expand) {
-						chunk.inlineContent = chunk.inlineContent.expand(extractedData);
+				if (chunk.inline_content) {
+					if (chunk.inline_content.expand) {
+						chunk.inline_content = chunk.inline_content.expand(extractedData);
 					} else {
-						id = chunk.inlineContent.attributes.id;
+						id = chunk.inline_content.attributes.id;
 						if (extractedData[id]) {
-							chunk.inlineContent.attributes = extractedData[id].attributes;
+							chunk.inline_content.attributes = extractedData[id].attributes;
 						} else {
-							chunk.inlineContent.attributes = id ? { id } : {};
+							chunk.inline_content.attributes = id ? { id } : {};
 						}
 					}
 				}

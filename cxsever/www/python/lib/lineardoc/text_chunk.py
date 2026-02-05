@@ -1,5 +1,8 @@
+# converted from the LinearDoc javascript library of the Wikimedia Content translation project
+# https://github.com/wikimedia/mediawiki-services-cxserver/tree/master/lineardoc
+
 """
-TextChunk - A chunk of uniformly-annotated inline text.
+TextChunk - A chunk of uniformly-annotated inline text
 
 The annotations consist of a list of inline tags (<a>, <i> etc), and an
 optional "inline element" (br/img tag, or a sub-document e.g. for a
@@ -23,3 +26,9 @@ class TextChunk:
         self.text = text
         self.tags = tags
         self.inline_content = inline_content
+
+    def __str__(self):
+        return self.text
+
+    def __repr__(self):
+        return self.text
