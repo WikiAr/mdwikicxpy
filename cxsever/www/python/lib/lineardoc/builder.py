@@ -2,7 +2,7 @@
 Builder - A document builder for creating linear documents.
 """
 
-from . import utils as Utils
+from . import utils as utils
 from .doc import Doc
 from .text_block import TextBlock
 from .text_chunk import TextChunk
@@ -134,7 +134,7 @@ class Builder:
             i -= 1
 
         # Allow empty external links and references
-        if replace and (Utils.is_reference(tag) or Utils.is_external_link(tag) or Utils.is_transclusion(tag)):
+        if replace and (utils.is_reference(tag) or utils.is_external_link(tag) or utils.is_transclusion(tag)):
             # truncate list and add data span as new sub-Doc
             self.text_chunks = self.text_chunks[: i + 1]
             whitespace.reverse()

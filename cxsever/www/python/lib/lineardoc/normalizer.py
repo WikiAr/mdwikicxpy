@@ -4,7 +4,7 @@ Normalizer - Parser to normalize XML.
 
 from lxml import etree
 
-from . import utils as Utils
+from . import utils as utils
 
 
 def esc(s):
@@ -69,14 +69,14 @@ class Normalizer:
     def on_open_tag(self, tag):
         """Handle open tag event."""
         self.tags.append(tag)
-        self.doc.append(Utils.get_open_tag_html(tag))
+        self.doc.append(utils.get_open_tag_html(tag))
 
     def on_close_tag(self, tag_name):
         """Handle close tag event."""
         tag = self.tags.pop()
         if tag["name"] != tag_name:
             raise Exception(f'Unmatched tags: {tag["name"]} !== {tag_name}')
-        self.doc.append(Utils.get_close_tag_html(tag))
+        self.doc.append(utils.get_close_tag_html(tag))
 
     def on_text(self, text):
         """Handle text event."""

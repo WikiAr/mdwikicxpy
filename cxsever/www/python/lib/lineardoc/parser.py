@@ -4,7 +4,7 @@ Parser to read an HTML stream into a Doc.
 
 from lxml import etree
 
-from . import utils as Utils
+from . import utils as utils
 from .builder import Builder
 
 BLOCK_TAGS = [
@@ -172,15 +172,15 @@ class Parser:
             self.contextualizer.on_open_tag(tag)
             return
 
-        if self.options.get("isolateSegments") and Utils.is_segment(tag):
+        if self.options.get("isolateSegments") and utils.is_segment(tag):
             self.builder.push_block_tag({"name": "div", "attributes": {"class": "cx-segment-block"}})
 
-        if Utils.is_reference(tag) or Utils.is_math(tag):
+        if utils.is_reference(tag) or utils.is_math(tag):
             # Start a reference: create a child builder, and move into it
             self.builder = self.builder.create_child_builder(tag)
-        elif Utils.is_inline_empty_tag(tag["name"]):
+        elif utils.is_inline_empty_tag(tag["name"]):
             self.builder.add_inline_content(tag, self.contextualizer.can_segment())
-        elif self.is_inline_annotation_tag(tag["name"], Utils.is_transclusion(tag)):
+        elif self.is_inline_annotation_tag(tag["name"], utils.is_transclusion(tag)):
             self.builder.push_inline_annotation_tag(tag)
         else:
             self.builder.push_block_tag(tag)
@@ -199,7 +199,7 @@ class Parser:
             return
 
         tag = self.all_tags.pop()
-        is_ann = self.is_inline_annotation_tag(tag_name, Utils.is_transclusion(tag))
+        is_ann = self.is_inline_annotation_tag(tag_name, utils.is_transclusion(tag))
 
         if self.contextualizer.is_removable(tag) or self.contextualizer.get_context() == "removable":
             self.contextualizer.on_close_tag(tag)
@@ -207,11 +207,11 @@ class Parser:
 
         self.contextualizer.on_close_tag(tag)
 
-        if Utils.is_inline_empty_tag(tag_name):
+        if utils.is_inline_empty_tag(tag_name):
             return
         elif is_ann and len(self.builder.inline_annotation_tags) > 0:
             self.builder.pop_inline_annotation_tag(tag_name)
-            if self.options.get("isolateSegments") and Utils.is_segment(tag):
+            if self.options.get("isolateSegments") and utils.is_segment(tag):
                 self.builder.pop_block_tag("div")
         elif is_ann and self.builder.parent is not None:
             # In a sub document: should be a span or sup that closes a reference
