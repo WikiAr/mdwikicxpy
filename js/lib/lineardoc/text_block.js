@@ -221,7 +221,7 @@ class text_block {
 			});
 			pos += tail.length;
 		}
-		return new text_block(text_chunks.map((x) => x.text_chunk));
+		return new TextBlock(text_chunks.map((x) => x.text_chunk));
 	}
 
 	/**
@@ -403,7 +403,7 @@ class text_block {
 			offset += text_chunk.text.length;
 		}
 		flushChunks();
-		return new text_block(allTextChunks);
+		return new TextBlock(allTextChunks);
 	}
 
 	/**
