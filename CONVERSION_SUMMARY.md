@@ -9,11 +9,11 @@ Successfully converted the entire JavaScript CXServer HTML processing pipeline t
 ### ✅ Completed Modules (15 files)
 
 #### Core Data Classes
-1. **text_chunk.py** - Converted from TextChunk.js
+1. **text_chunk.py** - Converted from text_chunk.js
    - Represents a chunk of uniformly-annotated inline text
    - Stores text, tags, and optional inline content
 
-2. **text_block.py** - Converted from TextBlock.js
+2. **text_block.py** - Converted from text_block.js
    - Block of annotated inline text
    - Implements segmentation, tag translation, HTML generation
    - 400+ lines of complex logic preserved
@@ -44,7 +44,7 @@ Successfully converted the entire JavaScript CXServer HTML processing pipeline t
    - Tracks segmentation context
    - Handles figure/figcaption special cases
 
-8. **mw_contextualizer.py** - Converted from MwContextualizer.js
+8. **mw_contextualizer.py** - Converted from mw_contextualizer.js
    - MediaWiki-specific contextualization
    - Removable section detection
    - Template and RDFa handling
@@ -103,7 +103,7 @@ Successfully converted the entire JavaScript CXServer HTML processing pipeline t
 - JavaScript objects → Python dictionaries
 - JavaScript arrays → Python lists
 - Tag objects maintain same structure: `{'name': str, 'attributes': dict}`
-- Class instances used for TextChunk, TextBlock, Doc
+- Class instances used for text_chunk, text_block, Doc
 
 ## Testing & Validation
 

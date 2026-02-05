@@ -1,7 +1,7 @@
 import Doc from './Doc.js';
 import { isExternalLink, is_reference, isTransclusion } from './utils.js';
-import TextBlock from './TextBlock.js';
-import TextChunk from './TextChunk.js';
+import text_block from './text_block.js';
+import text_chunk from './text_chunk.js';
 
 /**
  * A document builder
@@ -125,8 +125,8 @@ class Builder {
 			this.addInlineContent(
 				new Doc()
 					.addItem('open', tag)
-					.addItem('textblock', new TextBlock(
-						[new TextChunk(whitespace.join(''), [])]
+					.addItem('textblock', new text_block(
+						[new text_chunk(whitespace.join(''), [])]
 					))
 					.addItem('close', tag)
 			);
@@ -135,7 +135,7 @@ class Builder {
 	}
 
 	addTextChunk(text, canSegment) {
-		this.textChunks.push(new TextChunk(text, this.inlineAnnotationTags.slice()));
+		this.textChunks.push(new text_chunk(text, this.inlineAnnotationTags.slice()));
 		this.inlineAnnotationTagsUsed = this.inlineAnnotationTags.length;
 		// Inside a textblock, if a textchunk becomes segmentable, unlike inline tags,
 		// the textblock becomes segmentable. See T195768
@@ -155,7 +155,7 @@ class Builder {
 			this.doc.categories.push(content);
 			return;
 		}
-		this.textChunks.push(new TextChunk('', this.inlineAnnotationTags.slice(), content));
+		this.textChunks.push(new text_chunk('', this.inlineAnnotationTags.slice(), content));
 		if (!canSegment) {
 			this.isBlockSegmentable = false;
 		}
@@ -181,7 +181,7 @@ class Builder {
 		if (whitespaceOnly) {
 			this.doc.addItem('blockspace', whitespace.join(''));
 		} else {
-			this.doc.addItem('textblock', new TextBlock(this.textChunks, this.isBlockSegmentable));
+			this.doc.addItem('textblock', new text_block(this.textChunks, this.isBlockSegmentable));
 		}
 		this.textChunks = [];
 		this.isBlockSegmentable = true;

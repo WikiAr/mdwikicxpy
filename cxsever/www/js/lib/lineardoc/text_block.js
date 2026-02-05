@@ -1,4 +1,4 @@
-import TextChunk from './TextChunk.js';
+import text_chunk from './text_chunk.js';
 import { add_common_tag, dump_tags, esc, get_chunk_boundary_groups, get_close_tag_html, get_open_tag_html, isTransclusion, isTransclusionFragment, set_link_ids_in_place } from './utils.js';
 import { getProp } from './../util.js';
 
@@ -49,8 +49,8 @@ class TextBlock {
 	 * Get the (last) text chunk at a given char offset
 	 *
 	 * @method
-	 * @param {number} charOffset The char offset of the TextChunk
-	 * @return {TextChunk} The text chunk
+	 * @param {number} charOffset The char offset of the text_chunk
+	 * @return {text_chunk} The text chunk
 	 */
 	getTextChunkAt(charOffset) {
 		let i, len;
@@ -141,7 +141,7 @@ class TextBlock {
 			textChunks.push({
 				start: rangeMapping.target.start,
 				length: rangeMapping.target.length,
-				textChunk: new TextChunk(
+				textChunk: new text_chunk(
 					text, sourceTextChunk.tags, sourceTextChunk.inline_content
 				)
 			});
@@ -180,7 +180,7 @@ class TextBlock {
 				textChunks.splice(i, 0, {
 					start: pos,
 					length: textChunk.start - pos,
-					textChunk: new TextChunk(
+					textChunk: new text_chunk(
 						targetText.slice(pos, textChunk.start), commonTags
 					)
 				});
@@ -202,7 +202,7 @@ class TextBlock {
 			textChunks.push({
 				start: pos,
 				length: tail.length,
-				textChunk: new TextChunk(tail, commonTags)
+				textChunk: new text_chunk(tail, commonTags)
 			});
 			pos += tail.length;
 		}
@@ -217,7 +217,7 @@ class TextBlock {
 			textChunks.push({
 				start: pos,
 				length: tailSpace.length,
-				textChunk: new TextChunk(tailSpace, commonTags)
+				textChunk: new text_chunk(tailSpace, commonTags)
 			});
 			pos += tail.length;
 		}
@@ -384,10 +384,10 @@ class TextBlock {
 				if (relOffset === 0) {
 					flushChunks();
 				} else {
-					const leftPart = new TextChunk(
+					const leftPart = new text_chunk(
 						textChunk.text.slice(0, relOffset), textChunk.tags.slice()
 					);
-					const rightPart = new TextChunk(
+					const rightPart = new text_chunk(
 						textChunk.text.slice(relOffset),
 						textChunk.tags.slice(),
 						textChunk.inline_content

@@ -31,7 +31,7 @@ u.tet() function
     ↓
 LinearDoc Pipeline:
     1. Parser (SAX-based)
-    2. MwContextualizer
+    2. mw_contextualizer
     3. Builder
     4. Doc (linear representation)
     5. Section Wrapper
@@ -54,12 +54,12 @@ HTML Output
 
 3. **LinearDoc Library** (`lib/lineardoc/`)
    - **Parser**: SAX-based HTML parser
-   - **MwContextualizer**: MediaWiki-specific context handling
+   - **mw_contextualizer**: MediaWiki-specific context handling
    - **Contextualizer**: Base context manager
    - **Builder**: Constructs linear document from parsed HTML
    - **Doc**: Linear document representation
-   - **TextBlock**: Block of annotated text
-   - **TextChunk**: Individual text segment with tags
+   - **text_block**: Block of annotated text
+   - **text_chunk**: Individual text segment with tags
    - **Normalizer**: HTML normalization
    - **utils**: Utility functions
 
@@ -148,17 +148,17 @@ beautifulsoup4==4.12.0
 **Python Equivalents**:
 
 ```python
-# TextChunk class
+# text_chunk class
 @dataclass
-class TextChunk:
+class text_chunk:
     text: str
     tags: List[Dict]
     inline_content: Optional[Any] = None
 
-# TextBlock class
+# text_block class
 @dataclass
-class TextBlock:
-    text_chunks: List[TextChunk]
+class text_block:
+    text_chunks: List[text_chunk]
     can_segment: bool
     offsets: List[Dict] = field(default_factory=list)
 
@@ -227,7 +227,7 @@ class Contextualizer:
         return 'removable' not in self.context_stack
 ```
 
-#### 2.4 MwContextualizer
+#### 2.4 mw_contextualizer
 
 **MediaWiki-specific logic**:
 - Load YAML configuration
@@ -238,7 +238,7 @@ class Contextualizer:
 import yaml
 import re
 
-class MwContextualizer(Contextualizer):
+class mw_contextualizer(Contextualizer):
     def __init__(self, config):
         super().__init__()
         self.removable_sections = config.get('removableSections', {})
@@ -434,14 +434,14 @@ def test_regression_against_js():
 ### Sprint 1 (Week 1): Foundation
 - [ ] Set up Python project structure
 - [ ] Install and configure dependencies
-- [ ] Implement basic data classes (TextChunk, TextBlock, Doc)
+- [ ] Implement basic data classes (text_chunk, text_block, Doc)
 - [ ] Port utility functions
 - [ ] Load YAML configuration
 
 ### Sprint 2 (Week 2): Core Parsing
 - [ ] Implement Parser class with lxml
 - [ ] Port Contextualizer base class
-- [ ] Port MwContextualizer
+- [ ] Port mw_contextualizer
 - [ ] Implement Builder class
 - [ ] Test basic HTML parsing
 
@@ -618,11 +618,11 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 
 #### Phase 2: Data Classes
 ```
-1. Convert TextChunk (TextChunk.js → text_chunk.py)
+1. Convert text_chunk (text_chunk.js → text_chunk.py)
    - Use @dataclass decorator
    - Maintain same properties: text, tags, inline_content
 
-2. Convert TextBlock (TextBlock.js → text_block.py)
+2. Convert text_block (text_block.js → text_block.py)
    - Port all methods
    - Pay attention to offset calculations
 
@@ -642,7 +642,7 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
    - Maintain context stack
    - Port tag tracking logic
 
-3. Port MwContextualizer (MwContextualizer.js → mw_contextualizer.py)
+3. Port mw_contextualizer (mw_contextualizer.js → mw_contextualizer.py)
    - Load YAML config
    - Compile regex patterns
    - Port removable section detection
@@ -777,10 +777,10 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 | `lib/lineardoc/Parser.js` | `lineardoc/parser.py` | HIGH |
 | `lib/lineardoc/Builder.js` | `lineardoc/builder.py` | HIGH |
 | `lib/lineardoc/Doc.js` | `lineardoc/doc.py` | HIGH |
-| `lib/lineardoc/TextBlock.js` | `lineardoc/text_block.py` | HIGH |
-| `lib/lineardoc/TextChunk.js` | `lineardoc/text_chunk.py` | HIGH |
+| `lib/lineardoc/text_block.js` | `lineardoc/text_block.py` | HIGH |
+| `lib/lineardoc/text_chunk.js` | `lineardoc/text_chunk.py` | HIGH |
 | `lib/lineardoc/Contextualizer.js` | `lineardoc/contextualizer.py` | HIGH |
-| `lib/lineardoc/MwContextualizer.js` | `lineardoc/mw_contextualizer.py` | HIGH |
+| `lib/lineardoc/mw_contextualizer.js` | `lineardoc/mw_contextualizer.py` | HIGH |
 | `lib/lineardoc/utils.js` | `lineardoc/utils.py` | HIGH |
 | `lib/lineardoc/Normalizer.js` | `lineardoc/normalizer.py` | MEDIUM |
 | `lib/segmentation/CXSegmenter.js` | `segmentation/cx_segmenter.py` | HIGH |
@@ -794,10 +794,10 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 | utils & Config | Low | 4 |
 | Parser | High | 16 |
 | Contextualizer | Medium | 8 |
-| MwContextualizer | Medium | 8 |
+| mw_contextualizer | Medium | 8 |
 | Builder | Medium | 12 |
 | Doc | High | 16 |
-| TextBlock | Medium | 8 |
+| text_block | Medium | 8 |
 | Segmenter | Low | 4 |
 | API Layer | Low | 8 |
 | Testing | High | 24 |

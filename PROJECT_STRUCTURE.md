@@ -18,12 +18,12 @@ cxsever/
             │   ├── Parser.js            # HTML SAX parser
             │   ├── Builder.js           # Document builder
             │   ├── Doc.js               # Document model
-            │   ├── TextBlock.js         # Text block representation
-            │   ├── TextChunk.js         # Text chunk representation
+            │   ├── text_block.js         # Text block representation
+            │   ├── text_chunk.js         # Text chunk representation
             │   ├── utils.js             # Utility functions
             │   ├── Normalizer.js        # HTML normalizer
             │   ├── Contextualizer.js    # Base contextualizer
-            │   ├── MwContextualizer.js  # MediaWiki contextualizer
+            │   ├── mw_contextualizer.js  # MediaWiki contextualizer
             │   └── util.js              # Helper utilities
             └── segmentation/            # Segmentation for translation
                 └── CXSegmenter.js       # Content segmentation
@@ -84,7 +84,7 @@ const removableSections = pageloaderConfig.removableSections;
 
 function tet(source_HTML) {
     // 1. Parse HTML with MediaWiki contextualization
-    const parser = new LinearDoc.Parser(new LinearDoc.MwContextualizer(
+    const parser = new LinearDoc.Parser(new LinearDoc.mw_contextualizer(
         { removableSections: removableSections }
     ), {
         wrapSections: true
@@ -245,7 +245,7 @@ import yaml
 from pathlib import Path
 from typing import Dict, Any
 
-from lib.lineardoc import Parser, MwContextualizer
+from lib.lineardoc import Parser, mw_contextualizer
 from lib.segmentation import CXSegmenter
 
 
@@ -295,7 +295,7 @@ def process_html(source_html: str) -> str:
 
     # 1. Parse HTML with MediaWiki contextualization
     parser = Parser(
-        contextualizer=MwContextualizer(removable_sections=_removable_sections),
+        contextualizer=mw_contextualizer(removable_sections=_removable_sections),
         wrap_sections=True
     )
 
@@ -375,22 +375,22 @@ __all__ = ['process_html']
 from lib.lineardoc.parser import Parser
 from lib.lineardoc.builder import Builder
 from lib.lineardoc.doc import Doc
-from lib.lineardoc.text_block import TextBlock
-from lib.lineardoc.text_chunk import TextChunk
+from lib.lineardoc.text_block import text_block
+from lib.lineardoc.text_chunk import text_chunk
 from lib.lineardoc.normalizer import Normalizer
 from lib.lineardoc.contextualizer import Contextualizer
-from lib.lineardoc.mw_contextualizer import MwContextualizer
+from lib.lineardoc.mw_contextualizer import mw_contextualizer
 from lib.lineardoc.utils import utils
 
 __all__ = [
     'Parser',
     'Builder',
     'Doc',
-    'TextBlock',
-    'TextChunk',
+    'text_block',
+    'text_chunk',
     'Normalizer',
     'Contextualizer',
-    'MwContextualizer',
+    'mw_contextualizer',
     'utils'
 ]
 ```
@@ -479,12 +479,12 @@ def test_process_whitespace_only():
 | `lib/lineardoc/Parser.js` | `lib/lineardoc/parser.py` | HTML parser |
 | `lib/lineardoc/Builder.js` | `lib/lineardoc/builder.py` | Document builder |
 | `lib/lineardoc/Doc.js` | `lib/lineardoc/doc.py` | Document model |
-| `lib/lineardoc/TextBlock.js` | `lib/lineardoc/text_block.py` | Text blocks |
-| `lib/lineardoc/TextChunk.js` | `lib/lineardoc/text_chunk.py` | Text chunks |
+| `lib/lineardoc/text_block.js` | `lib/lineardoc/text_block.py` | Text blocks |
+| `lib/lineardoc/text_chunk.js` | `lib/lineardoc/text_chunk.py` | Text chunks |
 | `lib/lineardoc/utils.js` | `lib/lineardoc/utils.py` | Utilities |
 | `lib/lineardoc/Normalizer.js` | `lib/lineardoc/normalizer.py` | HTML normalizer |
 | `lib/lineardoc/Contextualizer.js` | `lib/lineardoc/contextualizer.py` | Base contextualizer |
-| `lib/lineardoc/MwContextualizer.js` | `lib/lineardoc/mw_contextualizer.py` | MW contextualizer |
+| `lib/lineardoc/mw_contextualizer.js` | `lib/lineardoc/mw_contextualizer.py` | MW contextualizer |
 | `lib/lineardoc/util.js` | `lib/lineardoc/util.py` | Helper utilities |
 | `lib/segmentation/CXSegmenter.js` | `lib/segmentation/cx_segmenter.py` | Content segmenter |
 

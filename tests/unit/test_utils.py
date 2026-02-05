@@ -7,7 +7,7 @@ import sys
 
 import pytest
 from lib.lineardoc import utils
-from lib.lineardoc.text_chunk import TextChunk
+from lib.lineardoc.text_chunk import text_chunk
 
 
 class TestEscapeFunctions:

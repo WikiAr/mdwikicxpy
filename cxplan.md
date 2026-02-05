@@ -23,7 +23,7 @@ Output: Processed HTML ready for Content Translation
 
 ### Core Pipeline (from `u.tet()`):
 ```javascript
-Parser + MwContextualizer → Doc → wrapSections() → CXSegmenter → HTML
+Parser + mw_contextualizer → Doc → wrapSections() → CXSegmenter → HTML
 ```
 
 ---
@@ -44,18 +44,18 @@ Parser + MwContextualizer → Doc → wrapSections() → CXSegmenter → HTML
 - Stores HTML as linear array of items:
   - `{type: 'open', item: tag}`
   - `{type: 'close', item: tag}`
-  - `{type: 'textblock', item: TextBlock}`
+  - `{type: 'textblock', item: text_block}`
   - `{type: 'blockspace', item: whitespace}`
 - Key methods: `segment()`, `wrapSections()`, `getHtml()`
 
-**C. TextBlock.js** - Annotated inline text container
+**C. text_block.js** - Annotated inline text container
 - Manages text chunks with tag annotations
 - Handles sentence segmentation
 - Key method: `segment(getBoundaries, getNextId)`
   - Wraps sentences in `<span class="cx-segment" data-segmentid="X">`
   - Adds link IDs: `<a data-linkid="Y">`
 
-**D. MwContextualizer.js** - MediaWiki-specific logic
+**D. mw_contextualizer.js** - MediaWiki-specific logic
 - Removes sections based on config (MWPageLoader.yaml)
 - Tracks context (removable, media, transclusion)
 - Key method: `isRemovable(tag)`
@@ -96,7 +96,7 @@ Create Python equivalents:
 ```python
 # lib/lineardoc/text_chunk.py
 @dataclass
-class TextChunk:
+class text_chunk:
     text: str
     tags: List[Tag]
     inline_content: Optional[Union[Doc, Tag]] = None
@@ -104,16 +104,16 @@ class TextChunk:
 
 ```python
 # lib/lineardoc/text_block.py
-class TextBlock:
-    def __init__(self, text_chunks: List[TextChunk], can_segment: bool):
+class text_block:
+    def __init__(self, text_chunks: List[text_chunk], can_segment: bool):
         self.text_chunks = text_chunks
         self.can_segment = can_segment
         self.offsets = self._calculate_offsets()
 
-    def segment(self, get_boundaries: Callable, get_next_id: Callable) -> 'TextBlock':
+    def segment(self, get_boundaries: Callable, get_next_id: Callable) -> 'text_block':
         """
         Critical method - segments text into translation units
-        Lines 347-409 in TextBlock.js
+        Lines 347-409 in text_block.js
         """
         # TODO: Implement sentence boundary splitting
         # TODO: Wrap in <span class="cx-segment" data-segmentid="X">
@@ -129,7 +129,7 @@ class Doc:
 
     def segment(self, get_boundaries: Callable) -> 'Doc':
         """Lines 113-182 in Doc.js"""
-        # TODO: Segment each TextBlock item
+        # TODO: Segment each text_block item
 
     def wrap_sections(self) -> 'Doc':
         """Lines 319-444 in Doc.js - CRITICAL"""
@@ -152,7 +152,7 @@ class Parser:
         # ... (lines 11-36 in Parser.js)
     ]
 
-    def __init__(self, contextualizer: MwContextualizer, options: dict):
+    def __init__(self, contextualizer: mw_contextualizer, options: dict):
         self.contextualizer = contextualizer
         self.options = options
         self.builder = None
@@ -204,7 +204,7 @@ class Parser:
 import re
 from typing import List, Dict
 
-class MwContextualizer:
+class mw_contextualizer:
     def __init__(self, config: dict):
         self.removable_sections = config['removableSections']
         self.context_stack = []
@@ -290,7 +290,7 @@ def process_html(source_html: str) -> str:
     See u.js lines 20-37
     """
     # 1. Create parser with MediaWiki contextualizer
-    contextualizer = MwContextualizer(
+    contextualizer = mw_contextualizer(
         {'removableSections': CONFIG['removableSections']}
     )
     parser = Parser(contextualizer, {'wrapSections': True})
@@ -386,7 +386,7 @@ def wrap_sections(self):
 
 ### **2. Link ID Assignment** (utils.js `set_link_ids_in_place()`)
 ```python
-def set_link_ids_in_place(text_chunks: List[TextChunk], get_next_id: Callable):
+def set_link_ids_in_place(text_chunks: List[text_chunk], get_next_id: Callable):
     """
     Add data-linkid to ALL links
     Add class="cx-link"
@@ -425,7 +425,7 @@ def escape_attr(value: str) -> str:
 ## 🧪 **TESTING STRATEGY**
 
 ### **Test Cases:**
-1. **Unit Tests** - Each class (Doc, TextBlock, Parser)
+1. **Unit Tests** - Each class (Doc, text_block, Parser)
 2. **Integration Tests** - Full pipeline with real MediaWiki HTML
 3. **Comparison Tests** - Run JS and Python on same input, diff outputs
 
@@ -463,14 +463,14 @@ pydantic==2.5.0
 ## 🎯 **IMPLEMENTATION PRIORITIES**
 
 ### **MVP (Minimum Viable Product):**
-1. ✅ Doc, TextBlock, TextChunk classes
+1. ✅ Doc, text_block, text_chunk classes
 2. ✅ Basic Parser (without all edge cases)
 3. ✅ Simple segmentation (regex-based)
 4. ✅ Basic wrapSections()
 5. ✅ FastAPI endpoint
 
 ### **Full Feature Parity:**
-1. Complete MwContextualizer with all rules
+1. Complete mw_contextualizer with all rules
 2. Handle references, math, transclusions
 3. Advanced sentence boundary detection
 4. Full HTML escaping/encoding
