@@ -7,7 +7,7 @@ import re
 
 import yaml
 
-from .lineardoc import mw_contextualizer, Normalizer, Parser
+from .lineardoc import Normalizer, Parser, mw_contextualizer
 from .segmentation import CXSegmenter
 
 # Load configuration
