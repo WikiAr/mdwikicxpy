@@ -4,7 +4,7 @@ Builder - A document builder for creating linear documents.
 
 from . import utils
 from .doc import Doc
-from .text_block import text_block
+from .text_block import TextBlock
 from .text_chunk import TextChunk
 
 
@@ -141,7 +141,7 @@ class Builder:
             self.add_inline_content(
                 Doc()
                 .add_item("open", tag)
-                .add_item("textblock", text_block([TextChunk("".join(whitespace), [])]))
+                .add_item("textblock", TextBlock([TextChunk("".join(whitespace), [])]))
                 .add_item("close", tag)
             )
 
@@ -194,7 +194,7 @@ class Builder:
         if whitespace_only:
             self.doc.add_item("blockspace", "".join(whitespace))
         else:
-            self.doc.add_item("textblock", text_block(self.text_chunks, self.is_block_segmentable))
+            self.doc.add_item("textblock", TextBlock(self.text_chunks, self.is_block_segmentable))
 
         self.text_chunks = []
         self.is_block_segmentable = True

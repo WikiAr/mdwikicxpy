@@ -1,5 +1,5 @@
 """
-text_block - A block of annotated inline text.
+TextBlock - A block of annotated inline text.
 """
 
 import re
@@ -8,12 +8,12 @@ from . import utils
 from .text_chunk import TextChunk
 
 
-class text_block:
+class TextBlock:
     """A block of annotated inline text."""
 
     def __init__(self, text_chunks, can_segment=True):
         """
-        Initialize a text_block.
+        Initialize a TextBlock.
 
         Args:
             text_chunks: Annotated inline text
@@ -191,7 +191,7 @@ class text_block:
                 {"start": pos, "length": len(tail_space), "text_chunk": TextChunk(tail_space, common_tags)}
             )
 
-        return text_block([x["text_chunk"] for x in text_chunks])
+        return TextBlock([x["text_chunk"] for x in text_chunks])
 
     def get_plain_text(self):
         """
@@ -344,7 +344,7 @@ class text_block:
             offset += len(text_chunk.text)
 
         flush_chunks()
-        return text_block(all_text_chunks)
+        return TextBlock(all_text_chunks)
 
     def set_link_ids(self, get_next_id):
         """

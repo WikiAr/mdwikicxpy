@@ -6,7 +6,7 @@ import os
 import sys
 
 import pytest
-from python.lib.lineardoc import Doc, text_block, TextChunk
+from python.lib.lineardoc import Doc, TextBlock, TextChunk
 
 
 class TestDocCreation:
@@ -50,7 +50,7 @@ class TestDocAddItem:
         """Test adding a text block."""
         doc = Doc()
         chunks = [TextChunk("text", [])]
-        block = text_block(chunks)
+        block = TextBlock(chunks)
         doc.add_item("textblock", block)
         assert len(doc.items) == 1
         assert doc.items[0]["type"] == "textblock"
@@ -139,7 +139,7 @@ class TestDocGetHtml:
         doc = Doc()
         doc.add_item("open", {"name": "p", "attributes": {}})
         chunks = [TextChunk("Hello", [])]
-        doc.add_item("textblock", text_block(chunks))
+        doc.add_item("textblock", TextBlock(chunks))
         doc.add_item("close", {"name": "p"})
         html = doc.get_html()
         assert "<p>" in html
@@ -151,7 +151,7 @@ class TestDocGetHtml:
         wrapper = {"name": "div", "attributes": {"class": "wrapper"}}
         doc = Doc(wrapper)
         chunks = [TextChunk("content", [])]
-        doc.add_item("textblock", text_block(chunks))
+        doc.add_item("textblock", TextBlock(chunks))
         html = doc.get_html()
         assert "<div" in html
         assert 'class="wrapper"' in html
@@ -169,7 +169,7 @@ class TestDocGetHtml:
         doc = Doc()
         doc.add_item("open", {"name": "div", "attributes": {"class": "cx-segment-block"}})
         chunks = [TextChunk("text", [])]
-        doc.add_item("textblock", text_block(chunks))
+        doc.add_item("textblock", TextBlock(chunks))
         doc.add_item("close", {"name": "div"})
         html = doc.get_html()
         # cx-segment-block should not be in output
@@ -222,7 +222,7 @@ class TestDocWrapSections:
         doc.add_item("open", {"name": "body", "attributes": {}})
         doc.add_item("open", {"name": "h2", "attributes": {}})
         chunks = [TextChunk("Heading", [])]
-        doc.add_item("textblock", text_block(chunks))
+        doc.add_item("textblock", TextBlock(chunks))
         doc.add_item("close", {"name": "h2"})
         doc.add_item("close", {"name": "body"})
 
@@ -248,8 +248,8 @@ class TestDocGetSegments:
         doc = Doc()
         chunks1 = [TextChunk("First", [])]
         chunks2 = [TextChunk("Second", [])]
-        doc.add_item("textblock", text_block(chunks1))
-        doc.add_item("textblock", text_block(chunks2))
+        doc.add_item("textblock", TextBlock(chunks1))
+        doc.add_item("textblock", TextBlock(chunks2))
 
         segments = doc.get_segments()
         assert len(segments) == 2
@@ -261,7 +261,7 @@ class TestDocGetSegments:
         doc = Doc()
         doc.add_item("open", {"name": "p", "attributes": {}})
         chunks = [TextChunk("Text", [])]
-        doc.add_item("textblock", text_block(chunks))
+        doc.add_item("textblock", TextBlock(chunks))
         doc.add_item("close", {"name": "p"})
 
         segments = doc.get_segments()

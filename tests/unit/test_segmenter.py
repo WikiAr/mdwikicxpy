@@ -6,7 +6,7 @@ import os
 import sys
 
 import pytest
-from python.lib.lineardoc import Doc, text_block, TextChunk
+from python.lib.lineardoc import Doc, TextBlock, TextChunk
 from python.lib.segmentation.cx_segmenter import CXSegmenter
 
 
