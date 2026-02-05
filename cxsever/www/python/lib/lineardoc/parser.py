@@ -89,7 +89,8 @@ BLOCK_TAGS = [
     "pre",
     "progress",
     "video",
-    # non-annotation inline tags    "img",
+    # non-annotation inline tags
+    "img",
     "br",
 ]
 

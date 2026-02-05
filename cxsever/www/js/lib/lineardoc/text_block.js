@@ -1,5 +1,5 @@
 import text_chunk from './text_chunk.js';
-import { add_common_tag, dump_tags, esc, get_chunk_boundary_groups, get_close_tag_html, get_open_tag_html, isTransclusion, isTransclusionFragment, set_link_ids_in_place } from './utils.js';
+import { add_common_tag, dump_tags, esc, get_chunk_boundary_groups, get_close_tag_html, get_open_tag_html, is_transclusion, is_transclusion_fragment, set_link_ids_in_place } from './utils.js';
 import { getProp } from './../util.js';
 
 /**
@@ -36,9 +36,9 @@ class text_block {
 	 * @return {number} [i].start {number} Position of each text chunk
 	 * @return {number} [i].length {number} Length of each text chunk
 	 */
-	getTagOffsets() {
+	get_tag_offsets() {
 		const textBlock = this,
-			commonTags = this.getCommonTags();
+			commonTags = this.get_common_tags();
 		return this.offsets.filter((offset, i) => {
 			const text_chunk = textBlock.text_chunks[i];
 			return text_chunk.tags.length > commonTags.length && text_chunk.text.length > 0;
@@ -52,7 +52,7 @@ class text_block {
 	 * @param {number} charOffset The char offset of the text_chunk
 	 * @return {text_chunk} The text chunk
 	 */
-	getTextChunkAt(charOffset) {
+	get_text_chunk_at(charOffset) {
 		let i, len;
 		// TODO: bisecting instead of linear search
 		for (i = 0, len = this.text_chunks.length - 1; i < len; i++) {
@@ -68,7 +68,7 @@ class text_block {
 	 *
 	 * @return {Object[]} List of common SAX tags
 	 */
-	getCommonTags() {
+	get_common_tags() {
 		if (this.text_chunks.length === 0) {
 			return [];
 		}
@@ -97,7 +97,7 @@ class text_block {
 	 * @param {Object[]} rangeMappings Array of source-target range index mappings
 	 * @return {text_block} Translated textblock with tags applied
 	 */
-	translateTags(targetText, rangeMappings) {
+	translate_tags(targetText, rangeMappings) {
 		// map of { offset: x, text_chunks: [...] }
 		const emptyTextChunks = {};
 		const emptyTextChunkOffsets = [];
@@ -136,7 +136,7 @@ class text_block {
 			const rangeMapping = rangeMappings[i];
 			const sourceRangeEnd = rangeMapping.source.start + rangeMapping.source.length;
 			const targetRangeEnd = rangeMapping.target.start + rangeMapping.target.length;
-			const sourceTextChunk = this.getTextChunkAt(rangeMapping.source.start);
+			const sourceTextChunk = this.get_text_chunk_at(rangeMapping.source.start);
 			const text = targetText.slice(rangeMapping.target.start, rangeMapping.target.start + rangeMapping.target.length);
 			text_chunks.push({
 				start: rangeMapping.target.start,
@@ -170,7 +170,7 @@ class text_block {
 		text_chunks.sort((textChunk1, textChunk2) => textChunk1.start - textChunk2.start);
 		// Fill in any text_chunk gaps using text with commonTags
 		let pos = 0;
-		const commonTags = this.getCommonTags();
+		const commonTags = this.get_common_tags();
 		for (let i = 0, iLen = text_chunks.length; i < iLen; i++) {
 			const text_chunk = text_chunks[i];
 			if (text_chunk.start < pos) {
@@ -229,7 +229,7 @@ class text_block {
 	 *
 	 * @return {string} Plain text representation
 	 */
-	getPlainText() {
+	get_plain_text() {
 		const text = [];
 		for (let i = 0, len = this.text_chunks.length; i < len; i++) {
 			text.push(this.text_chunks[i].text);
@@ -363,14 +363,14 @@ class text_block {
 		}
 
 		const rootItem = this.getRootItem();
-		if (rootItem && isTransclusion(rootItem)) {
+		if (rootItem && is_transclusion(rootItem)) {
 			// Avoid segmenting inside transclusions.
 			return this;
 		}
 
 		// for each chunk, split at any boundaries that occur inside the chunk
 		const groups = get_chunk_boundary_groups(
-			getBoundaries(this.getPlainText()),
+			getBoundaries(this.get_plain_text()),
 			this.text_chunks,
 			(text_chunk) => text_chunk.text.length
 		);
@@ -444,7 +444,7 @@ class text_block {
 					return;
 				}
 				const adapter = getAdapter(tag);
-				if (adapter && !isTransclusionFragment(tag)) {
+				if (adapter && !is_transclusion_fragment(tag)) {
 					// This loop get executed for open and close for the tag.
 					// Use data-cx to mark this tag processed. The actual adaptation
 					// process below will update this value.
@@ -461,7 +461,7 @@ class text_block {
 				} else {
 					// Inline content is inline empty tag. Examples are link, meta etc.
 					const adapter = getAdapter(chunk.inline_content);
-					if (adapter && !isTransclusionFragment(chunk.inline_content)) {
+					if (adapter && !is_transclusion_fragment(chunk.inline_content)) {
 						adaptPromise = adapter.adapt();
 					}
 				}

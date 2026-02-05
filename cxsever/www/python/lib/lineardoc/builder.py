@@ -172,9 +172,9 @@ class Builder:
             return
 
         self.text_chunks.append(text_chunk("", self.inline_annotation_tags[:], content))
+        self.inline_annotation_tags_used = len(self.inline_annotation_tags)
         if not can_segment:
             self.is_block_segmentable = False
-        self.inline_annotation_tags_used = len(self.inline_annotation_tags)
 
     def finish_text_block(self):
         """Finish the current text block."""

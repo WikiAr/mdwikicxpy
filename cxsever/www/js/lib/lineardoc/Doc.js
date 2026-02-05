@@ -3,7 +3,7 @@
  */
 
 import { createHash } from 'crypto';
-import { clone_open_tag, get_close_tag_html, get_open_tag_html, isGallery, isMath, isNonTranslatable } from './utils.js';
+import { clone_open_tag, get_close_tag_html, get_open_tag_html, isGallery, isMath, is_non_translatable } from './utils.js';
 import { getProp } from './../util.js';
 
 /**
@@ -142,7 +142,7 @@ class Doc {
 						this.items[i + 1].type === 'textblock'
 					) {
 						const hash = createHash('sha256');
-						hash.update(this.items[i + 1].item.getPlainText());
+						hash.update(this.items[i + 1].item.get_plain_text());
 						// 30 is the max length of ids we allow. We also prepend the sequence id
 						// just to make sure the ids don't collide if the same text repeats.
 						tag.attributes.id = hash.digest('hex').slice(0, 30);
@@ -516,7 +516,7 @@ class Doc {
 
 			if (type === 'open') {
 				const hasAttributes = hasAttributesToSave(tag);
-				const hasNonTranslatableContent = isNonTranslatable(tag);
+				const hasNonTranslatableContent = is_non_translatable(tag);
 				if (hasAttributes || hasNonTranslatableContent) {
 					idCounter.value++;
 
@@ -547,7 +547,7 @@ class Doc {
 
 			if (type === 'close' || type === 'blockspace') {
 				reducedDoc.add_item(type, tag);
-				if (isNonTranslatable(tag)) {
+				if (is_non_translatable(tag)) {
 					nonTranslatableContext = false;
 				}
 				continue;
@@ -576,7 +576,7 @@ class Doc {
 						};
 						chunkTag.attributes = { id: idCounter.value };
 
-						if (isNonTranslatable(originalTag)) {
+						if (is_non_translatable(originalTag)) {
 							extractedData[idCounter.value] = Object.assign(
 								extractedData[idCounter.value] || {}, { content: chunk.text }
 							);

@@ -4,7 +4,7 @@
 
 import sax from 'sax';
 import Builder from './Builder.js';
-import { isTransclusion as _isTransclusion, is_inline_empty_tag, isMath, is_reference, isSegment } from './utils.js';
+import { is_transclusion as _isTransclusion, is_inline_empty_tag, isMath, is_reference, is_segment } from './utils.js';
 
 const BLOCK_TAGS = [
 	'html', 'head', 'body', 'script',
@@ -71,7 +71,7 @@ class Parser extends sax.SAXParser {
 			return;
 		}
 
-		if (this.options.isolateSegments && isSegment(tag)) {
+		if (this.options.isolateSegments && is_segment(tag)) {
 			this.builder.push_block_tag({
 				name: 'div',
 				attributes: {
@@ -112,7 +112,7 @@ class Parser extends sax.SAXParser {
 			return;
 		} else if (is_ann && this.builder.inline_annotation_tags.length > 0) {
 			this.builder.pop_inline_annotation_tag(tag_name);
-			if (this.options.isolateSegments && isSegment(tag)) {
+			if (this.options.isolateSegments && is_segment(tag)) {
 				this.builder.pop_block_tag('div');
 			}
 		} else if (is_ann && this.builder.parent !== null) {
@@ -154,10 +154,10 @@ class Parser extends sax.SAXParser {
 	 * Determine whether a tag is an inline annotation or not
 	 *
 	 * @param {string} tag_name Tag name in lowercase
-	 * @param {boolean} isTransclusion If the tag is transclusion
+	 * @param {boolean} is_transclusion If the tag is transclusion
 	 * @return {boolean} Whether the tag is an inline annotation
 	 */
-	is_inline_annotation_tag(tag_name, isTransclusion) {
+	is_inline_annotation_tag(tag_name, is_transclusion) {
 		const context = this.contextualizer.get_context();
 		// <span> inside a media context acts like a block tag wrapping another block tag <video>
 		// See https://www.mediawiki.org/wiki/Specs/HTML/1.7.0#Audio/Video
@@ -172,7 +172,7 @@ class Parser extends sax.SAXParser {
 
 		// Styles are usually block tags, but sometimes style tags are used as transclusions
 		// Example: T217585. In such cases treat styles as inline to avoid wrong segmentations.
-		if (tag_name === 'style' && isTransclusion) {
+		if (tag_name === 'style' && is_transclusion) {
 			return true;
 		}
 		// All tags that are not block tags are inline annotation tags.

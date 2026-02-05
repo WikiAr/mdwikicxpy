@@ -13,7 +13,7 @@ const cxutil = require('./util');
  * @param {Function} callback Function to call with each match
  * @return {Array} The return values from the callback
  */
-function findAll(text, regex, callback) {
+function find_all(text, regex, callback) {
 	const boundaries = [];
 	while (true) {
 		const match = regex.exec(text);
@@ -207,20 +207,20 @@ function isExternalLink(tag) {
  * @param {Object} tag SAX open tag object
  * @return {boolean} Whether the tag is a segment or not
  */
-function isSegment(tag) {
+function is_segment(tag) {
 	if (tag.name === 'span' && tag.attributes.class === 'cx-segment') {
 		return true;
 	}
 	return false;
 }
 
-function isTransclusion(tag) {
+function is_transclusion(tag) {
 	return tag.attributes &&
 		tag.attributes.typeof &&
 		tag.attributes.typeof.match(/(^|\s)(mw:Transclusion|mw:Placeholder)\b/);
 }
 
-function isTransclusionFragment(tag) {
+function is_transclusion_fragment(tag) {
 	return cxutil.getProp(['attributes', 'about'], tag) &&
 		!cxutil.getProp(['attributes', 'data-mw'], tag);
 }
@@ -231,7 +231,7 @@ function isTransclusionFragment(tag) {
  * @param {Object} tag SAX open tag object
  * @return {boolean} Whether the tag is a segment or not
  */
-function isNonTranslatable(tag) {
+function is_non_translatable(tag) {
 	const nonTranslatableTags = ['style', 'svg', 'script'];
 	const nonTranslatableRdfa = ['mw:Entity', 'mw:Extension/math', 'mw:Extension/references', 'mw:Transclusion'];
 
@@ -411,7 +411,7 @@ function isIgnorableBlock(sectionDoc) {
 
 		if (type === 'open') {
 			blockStack.push(tag);
-			if (!firstBlockTemplate && (isTransclusion(tag) || isReferenceList(tag))) {
+			if (!firstBlockTemplate && (is_transclusion(tag) || isReferenceList(tag))) {
 				firstBlockTemplate = tag;
 			}
 		}
@@ -419,7 +419,7 @@ function isIgnorableBlock(sectionDoc) {
 			const currentCloseTag = blockStack.pop();
 			if (currentCloseTag &&
 				blockStack.length === 0 &&
-				((isTransclusion(currentCloseTag) &&
+				((is_transclusion(currentCloseTag) &&
 					currentCloseTag.attributes.about === firstBlockTemplate.attributes.about) ||
 					isReferenceList(currentCloseTag))
 			) {
@@ -430,7 +430,7 @@ function isIgnorableBlock(sectionDoc) {
 		// Also check for textblocks
 		if (!firstBlockTemplate && item.type === 'textblock') {
 			const rootItem = item.item.getRootItem();
-			if (rootItem && isNonTranslatable(rootItem)) {
+			if (rootItem && is_non_translatable(rootItem)) {
 				firstBlockTemplate = rootItem;
 				// Textblock is a transclusion. Do not translate.
 				// But do not return yet. Check if there is any other textblocks translatable
@@ -449,7 +449,7 @@ export {
 	clone_open_tag,
 	dump_tags,
 	esc,
-	findAll,
+	find_all,
 	get_chunk_boundary_groups,
 	get_close_tag_html,
 	get_open_tag_html,
@@ -459,9 +459,9 @@ export {
 	is_inline_empty_tag,
 	isMath,
 	is_reference,
-	isSegment,
-	isTransclusion,
-	isTransclusionFragment,
-	isNonTranslatable,
+	is_segment,
+	is_transclusion,
+	is_transclusion_fragment,
+	is_non_translatable,
 	set_link_ids_in_place
 };
