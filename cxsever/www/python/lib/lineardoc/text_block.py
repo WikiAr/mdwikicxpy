@@ -2,6 +2,7 @@
 TextBlock - A block of annotated inline text.
 """
 
+import re
 from .text_chunk import TextChunk
 from . import utils as Utils
 
@@ -412,5 +413,3 @@ class TextBlock:
         
         return dump
 
-
-import re

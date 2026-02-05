@@ -37,11 +37,15 @@ class CXSegmenter:
             sentences = seg.segment(text)
             boundaries = []
             
+            # Track position to avoid finding duplicate sentences
+            current_pos = 0
             for sentence in sentences:
                 if sentence.strip():
-                    idx = text.find(sentence)
+                    # Find from current position onward
+                    idx = text.find(sentence, current_pos)
                     if idx != -1:
                         boundaries.append(idx)
+                        current_pos = idx + len(sentence)
             
             return boundaries
         
