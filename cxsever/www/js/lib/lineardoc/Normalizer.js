@@ -1,5 +1,5 @@
 import sax from 'sax';
-import { getCloseTagHtml, getOpenTagHtml } from './Utils.js';
+import { get_close_tag_html, get_open_tag_html } from './utils.js';
 
 /**
  * Escape text for inclusion in HTML, not inside a tag.
@@ -30,24 +30,24 @@ class Normalizer extends sax.SAXParser {
 		this.tags = [];
 	}
 
-	onopentag(tag) {
+	on_open_tag(tag) {
 		this.tags.push(tag);
-		this.doc.push(getOpenTagHtml(tag));
+		this.doc.push(get_open_tag_html(tag));
 	}
 
-	onclosetag(tagName) {
+	on_close_tag(tag_name) {
 		const tag = this.tags.pop();
-		if (tag.name !== tagName) {
-			throw new Error('Unmatched tags: ' + tag.name + ' !== ' + tagName);
+		if (tag.name !== tag_name) {
+			throw new Error('Unmatched tags: ' + tag.name + ' !== ' + tag_name);
 		}
-		this.doc.push(getCloseTagHtml(tag));
+		this.doc.push(get_close_tag_html(tag));
 	}
 
 	ontext(text) {
 		this.doc.push(esc(text));
 	}
 
-	getHtml() {
+	get_html() {
 		return this.doc.join('');
 	}
 
