@@ -2,11 +2,7 @@
 Unit tests for processor.py module.
 """
 
-import os
-import sys
-
-import pytest
-from lib.processor import normalize, process_html
+from python.lib.processor import normalize, process_html
 
 
 class TestNormalizeFunction:

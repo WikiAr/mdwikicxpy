@@ -6,7 +6,7 @@ import os
 import sys
 
 import pytest
-from lib.lineardoc.util import get_prop
+from python.lib.lineardoc.util import get_prop
 
 
 class TestGetProp:

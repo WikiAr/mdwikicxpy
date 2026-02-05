@@ -6,8 +6,8 @@ import os
 import sys
 
 import pytest
-from lib.lineardoc import Doc, text_block, text_chunk
-from lib.segmentation.cx_segmenter import CXSegmenter
+from python.lib.lineardoc import Doc, text_block, text_chunk
+from python.lib.segmentation.cx_segmenter import CXSegmenter
 
 
 class TestCXSegmenter:

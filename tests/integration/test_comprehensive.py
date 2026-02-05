@@ -7,9 +7,9 @@ import json
 import os
 import sys
 
-from lib.lineardoc import Doc, Parser, mw_contextualizer, text_block
-from lib.processor import process_html
-from lib.segmentation import CXSegmenter
+from python.lib.lineardoc import Doc, Parser, mw_contextualizer, text_block
+from python.lib.processor import process_html
+from python.lib.segmentation import CXSegmenter
 
 
 def test_basic_html_processing():

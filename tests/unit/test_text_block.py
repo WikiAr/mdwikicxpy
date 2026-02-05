@@ -6,8 +6,8 @@ import os
 import sys
 
 import pytest
-from lib.lineardoc.text_block import text_block
-from lib.lineardoc.text_chunk import text_chunk
+from python.lib.lineardoc.text_block import text_block
+from python.lib.lineardoc.text_chunk import text_chunk
 
 
 class TestTextBlockCreation:
