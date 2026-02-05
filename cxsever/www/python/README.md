@@ -27,7 +27,7 @@ The CX server processes MediaWiki HTML through a pipeline that:
 - `CXSegmenter` - Sentence boundary detection using pysbd
 
 ### Utilities
-- `Utils` - HTML processing and tag manipulation utilities
+- `utils` - HTML processing and tag manipulation utilities
 - `Normalizer` - XML/HTML normalizer
 
 ## Installation

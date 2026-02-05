@@ -4,7 +4,7 @@ Parser to read an HTML stream into a Doc.
 
 from lxml import etree
 
-from . import utils as utils
+from . import utils
 from .builder import Builder
 
 BLOCK_TAGS = [

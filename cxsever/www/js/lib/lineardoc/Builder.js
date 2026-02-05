@@ -1,5 +1,5 @@
 import Doc from './Doc.js';
-import { isExternalLink, is_reference, isTransclusion } from './Utils.js';
+import { isExternalLink, is_reference, isTransclusion } from './utils.js';
 import TextBlock from './TextBlock.js';
 import TextChunk from './TextChunk.js';
 

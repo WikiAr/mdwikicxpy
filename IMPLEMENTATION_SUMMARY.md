@@ -43,7 +43,7 @@ Successfully completed a full conversion of the MediaWiki Content Translation (C
 - `MwContextualizer.js` → `mw_contextualizer.py` - MediaWiki contextualizer
 
 #### Utilities
-- `Utils.js` → `utils.py` - HTML processing utilities
+- `utils.js` → `utils.py` - HTML processing utilities
 - `util.js` → `util.py` - Helper utilities
 - `Normalizer.js` → `normalizer.py` - HTML normalizer
 

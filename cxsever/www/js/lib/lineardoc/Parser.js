@@ -4,7 +4,7 @@
 
 import sax from 'sax';
 import Builder from './Builder.js';
-import { isTransclusion as _isTransclusion, is_inline_empty_tag, isMath, is_reference, isSegment } from './Utils.js';
+import { isTransclusion as _isTransclusion, is_inline_empty_tag, isMath, is_reference, isSegment } from './utils.js';
 
 const blockTags = [
 	'html', 'head', 'body', 'script',

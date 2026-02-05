@@ -3,7 +3,7 @@
  */
 
 import { createHash } from 'crypto';
-import { clone_open_tag, get_close_tag_html, get_open_tag_html, isGallery, isMath, isNonTranslatable } from './Utils.js';
+import { clone_open_tag, get_close_tag_html, get_open_tag_html, isGallery, isMath, isNonTranslatable } from './utils.js';
 import { getProp } from './../util.js';
 
 /**

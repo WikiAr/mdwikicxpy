@@ -2,7 +2,7 @@
 Builder - A document builder for creating linear documents.
 """
 
-from . import utils as utils
+from . import utils
 from .doc import Doc
 from .text_block import TextBlock
 from .text_chunk import TextChunk

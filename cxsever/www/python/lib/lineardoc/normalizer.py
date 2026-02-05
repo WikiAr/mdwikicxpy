@@ -4,7 +4,7 @@ Normalizer - Parser to normalize XML.
 
 from lxml import etree
 
-from . import utils as utils
+from . import utils
 from .parser import VOID_ELEMENTS
 
 

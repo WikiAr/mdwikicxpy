@@ -187,7 +187,7 @@ class Parser:
             return
 
         # Handle references, math
-        if Utils.is_reference(tag) or Utils.is_math(tag):
+        if utils.is_reference(tag) or utils.is_math(tag):
             self.builder = self.builder.create_child_builder(tag)
         elif self._is_inline_annotation_tag(tag.name):
             self.builder.push_inline_annotation_tag(tag)
@@ -384,7 +384,7 @@ def wrap_sections(self):
                 section_counter += 1
 ```
 
-### **2. Link ID Assignment** (Utils.js `set_link_ids_in_place()`)
+### **2. Link ID Assignment** (utils.js `set_link_ids_in_place()`)
 ```python
 def set_link_ids_in_place(text_chunks: List[TextChunk], get_next_id: Callable):
     """
@@ -404,7 +404,7 @@ def set_link_ids_in_place(text_chunks: List[TextChunk], get_next_id: Callable):
                 tag.attributes['data-linkid'] = str(get_next_id('link'))
 ```
 
-### **3. HTML Attribute Encoding** (Utils.js `esc_attr()`)
+### **3. HTML Attribute Encoding** (utils.js `esc_attr()`)
 ```python
 def escape_attr(value: str) -> str:
     """

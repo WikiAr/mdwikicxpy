@@ -4,7 +4,7 @@ TextBlock - A block of annotated inline text.
 
 import re
 
-from . import utils as utils
+from . import utils
 from .text_chunk import TextChunk
 
 

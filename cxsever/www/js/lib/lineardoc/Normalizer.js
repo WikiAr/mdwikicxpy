@@ -1,5 +1,5 @@
 import sax from 'sax';
-import { get_close_tag_html, get_open_tag_html } from './Utils.js';
+import { get_close_tag_html, get_open_tag_html } from './utils.js';
 
 /**
  * Escape text for inclusion in HTML, not inside a tag.

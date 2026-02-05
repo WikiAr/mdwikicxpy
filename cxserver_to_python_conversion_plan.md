@@ -61,7 +61,7 @@ HTML Output
    - **TextBlock**: Block of annotated text
    - **TextChunk**: Individual text segment with tags
    - **Normalizer**: HTML normalization
-   - **Utils**: Utility functions
+   - **utils**: Utility functions
 
 4. **Segmentation** (`lib/segmentation/CXSegmenter.js`)
    - Uses `sentencex` library for sentence boundary detection
@@ -634,7 +634,7 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 
 #### Phase 3: Parser
 ```
-1. Port Utils first (Utils.js → utils.py)
+1. Port utils first (utils.js → utils.py)
    - Port all tag checking functions (is_reference, isMath, etc.)
    - Port tag cloning functions
 
@@ -781,7 +781,7 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 | `lib/lineardoc/TextChunk.js` | `lineardoc/text_chunk.py` | HIGH |
 | `lib/lineardoc/Contextualizer.js` | `lineardoc/contextualizer.py` | HIGH |
 | `lib/lineardoc/MwContextualizer.js` | `lineardoc/mw_contextualizer.py` | HIGH |
-| `lib/lineardoc/Utils.js` | `lineardoc/utils.py` | HIGH |
+| `lib/lineardoc/utils.js` | `lineardoc/utils.py` | HIGH |
 | `lib/lineardoc/Normalizer.js` | `lineardoc/normalizer.py` | MEDIUM |
 | `lib/segmentation/CXSegmenter.js` | `segmentation/cx_segmenter.py` | HIGH |
 
@@ -791,7 +791,7 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 |-----------|-----------|----------------|
 | Project Setup | Low | 4 |
 | Data Classes | Low | 8 |
-| Utils & Config | Low | 4 |
+| utils & Config | Low | 4 |
 | Parser | High | 16 |
 | Contextualizer | Medium | 8 |
 | MwContextualizer | Medium | 8 |
