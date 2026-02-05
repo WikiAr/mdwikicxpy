@@ -6,8 +6,8 @@ import os
 import sys
 
 import pytest
-from lib.lineardoc.contextualizer import Contextualizer
-from lib.lineardoc.mw_contextualizer import mw_contextualizer
+from python.lib.lineardoc.contextualizer import Contextualizer
+from python.lib.lineardoc.mw_contextualizer import mw_contextualizer
 
 
 class TestContextualizer:

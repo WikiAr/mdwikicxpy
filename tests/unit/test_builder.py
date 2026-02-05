@@ -6,8 +6,8 @@ import os
 import sys
 
 import pytest
-from lib.lineardoc import Doc
-from lib.lineardoc.builder import Builder
+from python.lib.lineardoc import Doc
+from python.lib.lineardoc.builder import Builder
 
 
 class TestBuilderCreation:

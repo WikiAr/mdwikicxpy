@@ -6,7 +6,7 @@ import os
 import sys
 from pathlib import Path
 
-from lib.processor import process_html
+from python.lib.processor import process_html
 
 
 def run_processing_test(num):

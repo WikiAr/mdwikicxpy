@@ -54,7 +54,7 @@ def esc_attr(s) -> str:
     s = str(s)
     # Replace ", ', &, <, > with their HTML numeric entities
     # return "".join(html_escape_table.get(c, c) for c in s)
-    return re.sub(r'["\'&<>]', lambda m: f'&#{ord(m.group(0))};', s)
+    return re.sub(r'["\'&<>]', lambda m: f"&#{ord(m.group(0))};", s)
 
 
 def get_open_tag_html(tag):

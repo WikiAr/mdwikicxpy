@@ -6,8 +6,8 @@ import os
 import sys
 
 import pytest
-from lib.lineardoc import utils
-from lib.lineardoc.text_chunk import text_chunk
+from python.lib.lineardoc import utils
+from python.lib.lineardoc.text_chunk import text_chunk
 
 
 class TestEscapeFunctions:

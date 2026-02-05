@@ -6,7 +6,7 @@ import os
 import sys
 
 import pytest
-from lib.lineardoc import Contextualizer, Parser
+from python.lib.lineardoc import Contextualizer, Parser
 
 
 class TestParserCreation:
@@ -46,7 +46,7 @@ class TestParserWrite:
 
     def test_write_simple_html(self):
         """Test parsing simple HTML."""
-        from lib.lineardoc import mw_contextualizer
+        from python.lib.lineardoc import mw_contextualizer
 
         ctx = mw_contextualizer()
         parser = Parser(ctx)
@@ -57,7 +57,7 @@ class TestParserWrite:
 
     def test_write_nested_html(self):
         """Test parsing nested HTML."""
-        from lib.lineardoc import mw_contextualizer
+        from python.lib.lineardoc import mw_contextualizer
 
         ctx = mw_contextualizer()
         parser = Parser(ctx)
@@ -67,7 +67,7 @@ class TestParserWrite:
 
     def test_write_with_attributes(self):
         """Test parsing HTML with attributes."""
-        from lib.lineardoc import mw_contextualizer
+        from python.lib.lineardoc import mw_contextualizer
 
         ctx = mw_contextualizer()
         parser = Parser(ctx)
@@ -78,7 +78,7 @@ class TestParserWrite:
 
     def test_write_invalid_html(self):
         """Test parsing invalid HTML - should try wrapping."""
-        from lib.lineardoc import mw_contextualizer
+        from python.lib.lineardoc import mw_contextualizer
 
         ctx = mw_contextualizer()
         parser = Parser(ctx)
@@ -94,7 +94,7 @@ class TestParserWrite:
 
     def test_write_unicode(self):
         """Test parsing Unicode HTML."""
-        from lib.lineardoc import mw_contextualizer
+        from python.lib.lineardoc import mw_contextualizer
 
         ctx = mw_contextualizer()
         parser = Parser(ctx)
@@ -142,7 +142,7 @@ class TestParserBlockTags:
 
     def test_block_tags_list(self):
         """Test that BLOCK_TAGS is defined."""
-        from lib.lineardoc.parser import BLOCK_TAGS
+        from python.lib.lineardoc.parser import BLOCK_TAGS
 
         assert isinstance(BLOCK_TAGS, list)
         assert "div" in BLOCK_TAGS
@@ -152,7 +152,7 @@ class TestParserBlockTags:
 
     def test_inline_tags_not_in_block_tags(self):
         """Test that inline tags are not in BLOCK_TAGS."""
-        from lib.lineardoc.parser import BLOCK_TAGS
+        from python.lib.lineardoc.parser import BLOCK_TAGS
 
         assert "span" not in BLOCK_TAGS
         assert "a" not in BLOCK_TAGS
@@ -165,7 +165,7 @@ class TestParserIntegration:
 
     def test_parse_complete_document(self):
         """Test parsing a complete HTML document."""
-        from lib.lineardoc import mw_contextualizer
+        from python.lib.lineardoc import mw_contextualizer
 
         ctx = mw_contextualizer()
         parser = Parser(ctx)
@@ -191,7 +191,7 @@ class TestParserIntegration:
 
     def test_parse_with_text_content(self):
         """Test parsing with text content."""
-        from lib.lineardoc import mw_contextualizer
+        from python.lib.lineardoc import mw_contextualizer
 
         ctx = mw_contextualizer()
         parser = Parser(ctx)
