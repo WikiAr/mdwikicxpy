@@ -37,17 +37,14 @@ class TestEscapeFunctions:
     def test_esc_attr_quotes(self):
         """Test escaping quotes in attributes."""
         # Note: & in numeric entities gets escaped too (double-escaping)
-        assert utils.esc_attr('say "hello"') == "say &#38;#34;hello&#38;#34;"
-        assert utils.esc_attr("it's fine") == "it&#38;#39;s fine"
+        assert utils.esc_attr('say "hello"') == "say &#34;hello&#34;"
+        assert utils.esc_attr("it's fine") == "it&#39;s fine"
 
     def test_esc_attr_all_special_chars(self):
         """Test escaping all special characters in attributes."""
         # Note: The order matters - & is replaced first, affecting numeric entities
         result = utils.esc_attr("\"'&<>")
-        assert "&#38;#34;" in result  # " becomes &#34; then & becomes &#38;
-        assert "&#38;#39;" in result  # ' becomes &#39; then & becomes &#38;
-        assert "&#60;" in result  # < becomes &#60;
-        assert "&#62;" in result  # > becomes &#62;
+        assert result == "&#34;&#39;&#38;&#60;&#62;"
 
     def test_esc_attr_number(self):
         """Test escaping number values."""
