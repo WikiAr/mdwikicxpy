@@ -4,11 +4,9 @@ Unit tests for lineardoc/parser.py module.
 
 import os
 import sys
+
 import pytest
-
-
-
-from lib.lineardoc import Parser, Contextualizer
+from lib.lineardoc import Contextualizer, Parser
 
 
 class TestParserCreation:
@@ -25,7 +23,7 @@ class TestParserCreation:
     def test_parser_with_options(self):
         """Test creating parser with options."""
         ctx = Contextualizer()
-        options = {'wrapSections': True}
+        options = {"wrapSections": True}
         parser = Parser(ctx, options)
         assert parser.options == options
 
@@ -49,25 +47,28 @@ class TestParserWrite:
     def test_write_simple_html(self):
         """Test parsing simple HTML."""
         from lib.lineardoc import MwContextualizer
+
         ctx = MwContextualizer()
         parser = Parser(ctx)
         parser.init()
-        parser.write('<div>Hello</div>')
+        parser.write("<div>Hello</div>")
         # Should have created doc items
         assert len(parser.builder.doc.items) > 0
 
     def test_write_nested_html(self):
         """Test parsing nested HTML."""
         from lib.lineardoc import MwContextualizer
+
         ctx = MwContextualizer()
         parser = Parser(ctx)
         parser.init()
-        parser.write('<div><p>Text</p></div>')
+        parser.write("<div><p>Text</p></div>")
         assert len(parser.builder.doc.items) > 0
 
     def test_write_with_attributes(self):
         """Test parsing HTML with attributes."""
         from lib.lineardoc import MwContextualizer
+
         ctx = MwContextualizer()
         parser = Parser(ctx)
         parser.init()
@@ -78,12 +79,13 @@ class TestParserWrite:
     def test_write_invalid_html(self):
         """Test parsing invalid HTML - should try wrapping."""
         from lib.lineardoc import MwContextualizer
+
         ctx = MwContextualizer()
         parser = Parser(ctx)
         parser.init()
         # Just text without wrapper
         try:
-            parser.write('Hello world')
+            parser.write("Hello world")
             # Should handle gracefully
             assert True
         except Exception:
@@ -93,10 +95,11 @@ class TestParserWrite:
     def test_write_unicode(self):
         """Test parsing Unicode HTML."""
         from lib.lineardoc import MwContextualizer
+
         ctx = MwContextualizer()
         parser = Parser(ctx)
         parser.init()
-        parser.write('<div>مرحبا العالم</div>')
+        parser.write("<div>مرحبا العالم</div>")
         assert len(parser.builder.doc.items) > 0
 
 
@@ -107,31 +110,31 @@ class TestParserInlineAnnotationTag:
         """Test span is inline annotation."""
         ctx = Contextualizer()
         parser = Parser(ctx)
-        assert parser.is_inline_annotation_tag('span', False) is True
+        assert parser.is_inline_annotation_tag("span", False) is True
 
     def test_is_inline_annotation_tag_div(self):
         """Test div is not inline annotation."""
         ctx = Contextualizer()
         parser = Parser(ctx)
-        assert parser.is_inline_annotation_tag('div', False) is False
+        assert parser.is_inline_annotation_tag("div", False) is False
 
     def test_is_inline_annotation_tag_p(self):
         """Test p is not inline annotation."""
         ctx = Contextualizer()
         parser = Parser(ctx)
-        assert parser.is_inline_annotation_tag('p', False) is False
+        assert parser.is_inline_annotation_tag("p", False) is False
 
     def test_is_inline_annotation_tag_b(self):
         """Test b is inline annotation."""
         ctx = Contextualizer()
         parser = Parser(ctx)
-        assert parser.is_inline_annotation_tag('b', False) is True
+        assert parser.is_inline_annotation_tag("b", False) is True
 
     def test_is_inline_annotation_tag_i(self):
         """Test i is inline annotation."""
         ctx = Contextualizer()
         parser = Parser(ctx)
-        assert parser.is_inline_annotation_tag('i', False) is True
+        assert parser.is_inline_annotation_tag("i", False) is True
 
 
 class TestParserBlockTags:
@@ -140,19 +143,21 @@ class TestParserBlockTags:
     def test_block_tags_list(self):
         """Test that BLOCK_TAGS is defined."""
         from lib.lineardoc.parser import BLOCK_TAGS
+
         assert isinstance(BLOCK_TAGS, list)
-        assert 'div' in BLOCK_TAGS
-        assert 'p' in BLOCK_TAGS
-        assert 'h1' in BLOCK_TAGS
-        assert 'table' in BLOCK_TAGS
+        assert "div" in BLOCK_TAGS
+        assert "p" in BLOCK_TAGS
+        assert "h1" in BLOCK_TAGS
+        assert "table" in BLOCK_TAGS
 
     def test_inline_tags_not_in_block_tags(self):
         """Test that inline tags are not in BLOCK_TAGS."""
         from lib.lineardoc.parser import BLOCK_TAGS
-        assert 'span' not in BLOCK_TAGS
-        assert 'a' not in BLOCK_TAGS
-        assert 'b' not in BLOCK_TAGS
-        assert 'i' not in BLOCK_TAGS
+
+        assert "span" not in BLOCK_TAGS
+        assert "a" not in BLOCK_TAGS
+        assert "b" not in BLOCK_TAGS
+        assert "i" not in BLOCK_TAGS
 
 
 class TestParserIntegration:
@@ -161,18 +166,19 @@ class TestParserIntegration:
     def test_parse_complete_document(self):
         """Test parsing a complete HTML document."""
         from lib.lineardoc import MwContextualizer
+
         ctx = MwContextualizer()
         parser = Parser(ctx)
         parser.init()
 
-        html = '''
+        html = """
         <html>
         <body>
         <h1>Title</h1>
         <p>Paragraph with <b>bold</b> text.</p>
         </body>
         </html>
-        '''
+        """
 
         parser.write(html)
         doc = parser.builder.doc
@@ -186,11 +192,12 @@ class TestParserIntegration:
     def test_parse_with_text_content(self):
         """Test parsing with text content."""
         from lib.lineardoc import MwContextualizer
+
         ctx = MwContextualizer()
         parser = Parser(ctx)
         parser.init()
 
-        parser.write('<p>This is a test.</p>')
+        parser.write("<p>This is a test.</p>")
         doc = parser.builder.doc
         output = doc.get_html()
-        assert 'This is a test.' in output
+        assert "This is a test." in output

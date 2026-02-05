@@ -4,10 +4,8 @@ Unit tests for lineardoc/normalizer.py module.
 
 import os
 import sys
+
 import pytest
-
-
-
 from lib.lineardoc.normalizer import Normalizer
 
 
@@ -30,21 +28,21 @@ class TestNormalizer:
         """Test normalizing simple HTML."""
         norm = Normalizer()
         norm.init()
-        norm.write('<div>Hello</div>')
+        norm.write("<div>Hello</div>")
         result = norm.get_html()
-        assert '<div>' in result
-        assert 'Hello' in result
-        assert '</div>' in result
+        assert "<div>" in result
+        assert "Hello" in result
+        assert "</div>" in result
 
     def test_normalize_escapes_text(self):
         """Test that text is properly escaped."""
         norm = Normalizer()
         norm.init()
-        norm.write('<div>&<></div>')
+        norm.write("<div>&<></div>")
         result = norm.get_html()
-        assert '&#38;' in result  # &
-        assert '&#60;' in result  # <
-        assert '&#62;' in result  # >
+        assert "&#38;" in result  # &
+        assert "&#60;" in result  # <
+        assert "&#62;" in result  # >
 
     def test_normalize_preserves_attributes(self):
         """Test that attributes are preserved."""
@@ -59,22 +57,22 @@ class TestNormalizer:
         """Test normalizing nested tags."""
         norm = Normalizer()
         norm.init()
-        norm.write('<div><p>text</p></div>')
+        norm.write("<div><p>text</p></div>")
         result = norm.get_html()
-        assert '<div>' in result
-        assert '<p>' in result
-        assert 'text' in result
-        assert '</p>' in result
-        assert '</div>' in result
+        assert "<div>" in result
+        assert "<p>" in result
+        assert "text" in result
+        assert "</p>" in result
+        assert "</div>" in result
 
     def test_normalize_with_tail_text(self):
         """Test handling text after child elements."""
         norm = Normalizer()
         norm.init()
-        norm.write('<div><b>bold</b> normal</div>')
+        norm.write("<div><b>bold</b> normal</div>")
         result = norm.get_html()
-        assert '<b>bold</b>' in result
-        assert 'normal' in result
+        assert "<b>bold</b>" in result
+        assert "normal" in result
 
     def test_normalize_empty_input(self):
         """Test normalizing empty input."""
@@ -82,7 +80,7 @@ class TestNormalizer:
         norm.init()
         # Empty input wrapped in div by parser
         try:
-            norm.write('')
+            norm.write("")
             result = norm.get_html()
             # Should handle gracefully
             assert isinstance(result, str)
@@ -94,10 +92,10 @@ class TestNormalizer:
         """Test that tags are lowercased."""
         norm = Normalizer()
         norm.init()
-        norm.write('<DIV>text</DIV>')
+        norm.write("<DIV>text</DIV>")
         result = norm.get_html()
-        assert '<div>' in result.lower()
-        assert '</div>' in result.lower()
+        assert "<div>" in result.lower()
+        assert "</div>" in result.lower()
 
     def test_normalize_special_chars_in_attributes(self):
         """Test special characters in attributes."""
@@ -106,12 +104,12 @@ class TestNormalizer:
         norm.write('<div title="test &amp; value">text</div>')
         result = norm.get_html()
         # Attributes should be escaped
-        assert 'title=' in result
+        assert "title=" in result
 
     def test_normalize_unicode(self):
         """Test normalizing Unicode content."""
         norm = Normalizer()
         norm.init()
-        norm.write('<div>مرحبا</div>')
+        norm.write("<div>مرحبا</div>")
         result = norm.get_html()
-        assert 'مرحبا' in result
+        assert "مرحبا" in result

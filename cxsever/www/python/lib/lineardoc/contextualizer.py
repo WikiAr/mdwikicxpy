@@ -9,7 +9,7 @@ class Contextualizer:
     def __init__(self, config=None):
         """
         Initialize the contextualizer.
-        
+
         Args:
             config: Configuration dict
         """
@@ -19,28 +19,28 @@ class Contextualizer:
     def get_child_context(self, open_tag):
         """
         Get the context for a new tag being opened.
-        
+
         Args:
             open_tag: Tag dict with 'name' and 'attributes'
-            
+
         Returns:
             The new context
         """
         # Change to 'media' context inside figure
-        if open_tag['name'] == 'figure':
-            return 'media'
-        
+        if open_tag["name"] == "figure":
+            return "media"
+
         # Exception: return to undefined context inside figure//figcaption
-        if open_tag['name'] == 'figcaption':
+        if open_tag["name"] == "figcaption":
             return None
-        
+
         # No change: same as parent context
         return self.get_context()
 
     def get_context(self):
         """
         Get the current context.
-        
+
         Returns:
             The current context
         """
@@ -49,7 +49,7 @@ class Contextualizer:
     def on_open_tag(self, open_tag):
         """
         Call when a tag opens.
-        
+
         Args:
             open_tag: Tag dict with 'name' and 'attributes'
         """
@@ -63,7 +63,7 @@ class Contextualizer:
     def can_segment(self):
         """
         Determine whether sentences can be segmented into spans in this context.
-        
+
         Returns:
             Whether sentences can be segmented into spans in this context
         """
