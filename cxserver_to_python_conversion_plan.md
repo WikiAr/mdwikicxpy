@@ -112,6 +112,11 @@ HTML Output
       ├── test_parser.py
       ├── test_segmenter.py
       └── test_integration.py
+      └── fixtures/                       # Test data (before/after HTML)
+        ├── input_1.html
+        ├── expected_1.html
+        ├── input_2.html
+        └── expected_2.html
   ```
 
 #### 1.2 Dependencies Mapping
