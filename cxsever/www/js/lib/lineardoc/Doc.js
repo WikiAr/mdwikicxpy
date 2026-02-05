@@ -3,7 +3,7 @@
  */
 
 import { createHash } from 'crypto';
-import { cloneOpenTag, getCloseTagHtml, getOpenTagHtml, isGallery, isMath, isNonTranslatable } from './Utils.js';
+import { clone_open_tag, get_close_tag_html, get_open_tag_html, isGallery, isMath, isNonTranslatable } from './Utils.js';
 import { getProp } from './../util.js';
 
 /**
@@ -130,7 +130,7 @@ class Doc {
 		for (let i = 0, len = this.items.length; i < len; i++) {
 			const item = this.items[i];
 			if (this.items[i].type === 'open') {
-				const tag = cloneOpenTag(item.item);
+				const tag = clone_open_tag(item.item);
 				if (tag.attributes.id) {
 					// If the item is a header, we make it a fixed length id using hash of
 					// the text content. Header ids are originally the header text to get
@@ -209,7 +209,7 @@ class Doc {
 		const html = [];
 
 		if (this.wrapperTag) {
-			html.push(getOpenTagHtml(this.wrapperTag));
+			html.push(get_open_tag_html(this.wrapperTag));
 		}
 		for (let i = 0, len = this.items.length; i < len; i++) {
 			const type = this.items[i].type;
@@ -221,10 +221,10 @@ class Doc {
 
 			if (type === 'open') {
 				const tag = item;
-				html.push(getOpenTagHtml(tag));
+				html.push(get_open_tag_html(tag));
 			} else if (type === 'close') {
 				const tag = item;
-				html.push(getCloseTagHtml(tag));
+				html.push(get_close_tag_html(tag));
 			} else if (type === 'blockspace') {
 				const space = item;
 				html.push(space);
@@ -237,7 +237,7 @@ class Doc {
 			}
 		}
 		if (this.wrapperTag) {
-			html.push(getCloseTagHtml(this.wrapperTag));
+			html.push(get_close_tag_html(this.wrapperTag));
 		}
 		return html.join('');
 	}
@@ -741,7 +741,7 @@ class Doc {
 		for (let i = 0, len = this.items.length; i < len; i++) {
 			const item = this.items[i];
 			if (this.items[i].type === 'open') {
-				const tag = cloneOpenTag(item.item);
+				const tag = clone_open_tag(item.item);
 				if (i + 1 < len && this.items[i + 1].type === 'textblock') {
 					tag.children = this.items[i + 1].item;
 				}

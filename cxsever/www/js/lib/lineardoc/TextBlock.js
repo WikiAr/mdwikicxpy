@@ -1,5 +1,5 @@
 import TextChunk from './TextChunk.js';
-import { addCommonTag, dumpTags, esc, getChunkBoundaryGroups, getCloseTagHtml, getOpenTagHtml, isTransclusion, isTransclusionFragment, setLinkIdsInPlace } from './Utils.js';
+import { add_common_tag, dump_tags, esc, get_chunk_boundary_groups, get_close_tag_html, get_open_tag_html, isTransclusion, isTransclusionFragment, set_link_ids_in_place } from './Utils.js';
 import { getProp } from './../util.js';
 
 /**
@@ -261,10 +261,10 @@ class TextBlock {
 				}
 			}
 			for (let j = oldTags.length - 1; j > matchTop; j--) {
-				html.push(getCloseTagHtml(oldTags[j]));
+				html.push(get_close_tag_html(oldTags[j]));
 			}
 			for (let j = matchTop + 1, jLen = textChunk.tags.length; j < jLen; j++) {
-				html.push(getOpenTagHtml(textChunk.tags[j]));
+				html.push(get_open_tag_html(textChunk.tags[j]));
 			}
 			oldTags = textChunk.tags;
 
@@ -276,14 +276,14 @@ class TextBlock {
 					html.push(textChunk.inlineContent.getHtml());
 				} else {
 					// an empty inline tag
-					html.push(getOpenTagHtml(textChunk.inlineContent));
-					html.push(getCloseTagHtml(textChunk.inlineContent));
+					html.push(get_open_tag_html(textChunk.inlineContent));
+					html.push(get_close_tag_html(textChunk.inlineContent));
 				}
 			}
 		}
 		// Finally, close any remaining tags
 		for (let j = oldTags.length - 1; j >= 0; j--) {
-			html.push(getCloseTagHtml(oldTags[j]));
+			html.push(get_close_tag_html(oldTags[j]));
 		}
 		return html.join('');
 	}
@@ -350,14 +350,14 @@ class TextBlock {
 			if (currentTextChunks.length === 0) {
 				return;
 			}
-			const modifiedTextChunks = addCommonTag(currentTextChunks, {
+			const modifiedTextChunks = add_common_tag(currentTextChunks, {
 				name: 'span',
 				attributes: {
 					class: 'cx-segment',
 					'data-segmentid': getNextId('segment')
 				}
 			});
-			setLinkIdsInPlace(modifiedTextChunks, getNextId);
+			set_link_ids_in_place(modifiedTextChunks, getNextId);
 			allTextChunks.push.apply(allTextChunks, modifiedTextChunks);
 			currentTextChunks = [];
 		}
@@ -369,7 +369,7 @@ class TextBlock {
 		}
 
 		// for each chunk, split at any boundaries that occur inside the chunk
-		const groups = getChunkBoundaryGroups(
+		const groups = get_chunk_boundary_groups(
 			getBoundaries(this.getPlainText()),
 			this.textChunks,
 			(textChunk) => textChunk.text.length
@@ -413,7 +413,7 @@ class TextBlock {
 	 * @return {TextBlock} Segmented version, with added span tags
 	 */
 	setLinkIds(getNextId) {
-		setLinkIdsInPlace(this.textChunks, getNextId);
+		set_link_ids_in_place(this.textChunks, getNextId);
 		return this;
 	}
 
@@ -489,7 +489,7 @@ class TextBlock {
 		const dump = [];
 		for (let i = 0, len = this.textChunks.length; i < len; i++) {
 			const chunk = this.textChunks[i];
-			const tagsDump = dumpTags(chunk.tags);
+			const tagsDump = dump_tags(chunk.tags);
 			const tagsAttr = tagsDump ? ' tags="' + tagsDump + '"' : '';
 			if (chunk.text) {
 				dump.push(pad + '<cxtextchunk' + tagsAttr + '>' +

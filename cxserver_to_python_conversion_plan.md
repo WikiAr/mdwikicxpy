@@ -2,10 +2,10 @@
 
 ## Project Overview
 
-**Source Project**: CXServer (Content Translation Server)  
-**Purpose**: HTML processing pipeline for MediaWiki content translation  
-**Current Stack**: Node.js/JavaScript with Express  
-**Target Stack**: Python with Flask/FastAPI  
+**Source Project**: CXServer (Content Translation Server)
+**Purpose**: HTML processing pipeline for MediaWiki content translation
+**Current Stack**: Node.js/JavaScript with Express
+**Target Stack**: Python with Flask/FastAPI
 
 ### Core Functionality
 The system takes HTML input, processes it through a pipeline that:
@@ -168,7 +168,7 @@ class Doc:
         self.items = []
         self.wrapper_tag = wrapper_tag
         self.categories = []
-    
+
     def add_item(self, item_type: str, item: Any):
         self.items.append({'type': item_type, 'item': item})
         return self
@@ -195,7 +195,7 @@ class Parser:
         self.builder = None
         self.root_builder = None
         self.all_tags = []
-    
+
     def parse(self, html_string):
         # Implement streaming parse with event callbacks
         # Similar to onopentag, onclosetag, ontext
@@ -213,15 +213,15 @@ class Parser:
 class Contextualizer:
     def __init__(self):
         self.context_stack = []
-    
+
     def on_open_tag(self, tag):
         # Update context based on tag
         pass
-    
+
     def on_close_tag(self, tag):
         # Pop context
         pass
-    
+
     def can_segment(self):
         # Check if current context allows segmentation
         return 'removable' not in self.context_stack
@@ -243,7 +243,7 @@ class MwContextualizer(Contextualizer):
         super().__init__()
         self.removable_sections = config.get('removableSections', {})
         self.compile_patterns()
-    
+
     def is_removable(self, tag):
         # Check classes
         # Check RDFa typeof
@@ -276,10 +276,10 @@ from pysbd import Segmenter
 class CXSegmenter:
     def segment(self, parsed_doc, language):
         return parsed_doc.segment(self.get_segmenter(language))
-    
+
     def get_segmenter(self, language):
         segmenter = Segmenter(language=language, clean=False)
-        
+
         def boundary_function(text):
             sentences = segmenter.segment(text)
             boundaries = []
@@ -287,7 +287,7 @@ class CXSegmenter:
                 if sentence.strip():
                     boundaries.append(text.index(sentence))
             return boundaries
-        
+
         return boundary_function
 ```
 
@@ -324,7 +324,7 @@ async def process_text(request: TextProcessRequest):
             status_code=500,
             detail="Content for translate is not given or is empty"
         )
-    
+
     try:
         from cxserver.core.pipeline import process_html
         result = process_html(request.html)
@@ -345,10 +345,10 @@ CORS(app)
 def process_text():
     data = request.get_json()
     source_html = data.get('html', '')
-    
+
     if not source_html or not source_html.strip():
         return jsonify({'result': 'Content for translate is not given or is empty'}), 500
-    
+
     try:
         from cxserver.core.pipeline import process_html
         result = process_html(source_html)
@@ -403,10 +403,10 @@ def test_full_pipeline():
     </body>
     </html>
     """
-    
+
     from cxserver.core.pipeline import process_html
     output = process_html(input_html)
-    
+
     # Verify segmentation IDs are present
     assert 'data-segmentid' in output or 'id=' in output
 ```
@@ -418,11 +418,11 @@ def test_full_pipeline():
 def test_regression_against_js():
     # Load test cases from JSON/YAML
     test_cases = load_test_cases('test_data.json')
-    
+
     for case in test_cases:
         py_output = process_html(case['input'])
         js_output = case['expected_output']
-        
+
         # Compare (may need normalization)
         assert normalize(py_output) == normalize(js_output)
 ```
@@ -621,11 +621,11 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 1. Convert TextChunk (TextChunk.js → text_chunk.py)
    - Use @dataclass decorator
    - Maintain same properties: text, tags, inline_content
-   
+
 2. Convert TextBlock (TextBlock.js → text_block.py)
    - Port all methods
    - Pay attention to offset calculations
-   
+
 3. Convert Doc (Doc.js → doc.py)
    - Port linear representation logic
    - Maintain items array structure
@@ -635,18 +635,18 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 #### Phase 3: Parser
 ```
 1. Port Utils first (Utils.js → utils.py)
-   - Port all tag checking functions (isReference, isMath, etc.)
+   - Port all tag checking functions (is_reference, isMath, etc.)
    - Port tag cloning functions
-   
+
 2. Port Contextualizer (Contextualizer.js → contextualizer.py)
    - Maintain context stack
    - Port tag tracking logic
-   
+
 3. Port MwContextualizer (MwContextualizer.js → mw_contextualizer.py)
    - Load YAML config
    - Compile regex patterns
    - Port removable section detection
-   
+
 4. Port Parser (Parser.js → parser.py)
    - Implement using lxml.etree.iterparse()
    - Maintain event-driven architecture
@@ -676,7 +676,7 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
    - Port u.tet() function
    - Wire all components together
    - Add error handling
-   
+
 2. Create API endpoints (routes.py, app.py)
    - Implement /textp POST endpoint
    - Add CORS configuration
@@ -688,7 +688,7 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 1. Generate test cases from JavaScript version
    - Run JS version with various inputs
    - Save outputs as expected results
-   
+
 2. Create unit tests for each component
 3. Create integration tests
 4. Run regression tests

@@ -92,8 +92,20 @@ BLOCK_TAGS = [
 
 # HTML void elements that cannot have content and should be self-closing
 VOID_ELEMENTS = [
-    "area", "base", "br", "col", "embed", "hr", "img", "input",
-    "link", "meta", "param", "source", "track", "wbr",
+    "area",
+    "base",
+    "br",
+    "col",
+    "embed",
+    "hr",
+    "img",
+    "input",
+    "link",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr",
 ]
 
 

@@ -4,7 +4,7 @@
 
 import sax from 'sax';
 import Builder from './Builder.js';
-import { isTransclusion as _isTransclusion, isInlineEmptyTag, isMath, isReference, isSegment } from './Utils.js';
+import { isTransclusion as _isTransclusion, is_inline_empty_tag, isMath, is_reference, isSegment } from './Utils.js';
 
 const blockTags = [
 	'html', 'head', 'body', 'script',
@@ -80,10 +80,10 @@ class Parser extends sax.SAXParser {
 			});
 		}
 
-		if (isReference(tag) || isMath(tag)) {
+		if (is_reference(tag) || isMath(tag)) {
 			// Start a reference: create a child builder, and move into it
 			this.builder = this.builder.createChildBuilder(tag);
-		} else if (isInlineEmptyTag(tag.name)) {
+		} else if (is_inline_empty_tag(tag.name)) {
 			this.builder.addInlineContent(
 				tag, this.contextualizer.canSegment()
 			);
@@ -108,7 +108,7 @@ class Parser extends sax.SAXParser {
 
 		this.contextualizer.onCloseTag(tag);
 
-		if (isInlineEmptyTag(tagName)) {
+		if (is_inline_empty_tag(tagName)) {
 			return;
 		} else if (isAnn && this.builder.inlineAnnotationTags.length > 0) {
 			this.builder.popInlineAnnotationTag(tagName);

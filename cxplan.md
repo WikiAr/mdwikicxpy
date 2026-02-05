@@ -109,7 +109,7 @@ class TextBlock:
         self.text_chunks = text_chunks
         self.can_segment = can_segment
         self.offsets = self._calculate_offsets()
-    
+
     def segment(self, get_boundaries: Callable, get_next_id: Callable) -> 'TextBlock':
         """
         Critical method - segments text into translation units
@@ -126,11 +126,11 @@ class Doc:
     def __init__(self, wrapper_tag=None):
         self.items: List[DocItem] = []
         self.wrapper_tag = wrapper_tag
-    
+
     def segment(self, get_boundaries: Callable) -> 'Doc':
         """Lines 113-182 in Doc.js"""
         # TODO: Segment each TextBlock item
-    
+
     def wrap_sections(self) -> 'Doc':
         """Lines 319-444 in Doc.js - CRITICAL"""
         # TODO: Wrap headings and content in <section> tags
@@ -147,17 +147,17 @@ from lxml import etree
 
 class Parser:
     BLOCK_TAGS = [
-        'html', 'head', 'body', 'div', 'p', 'table', 
+        'html', 'head', 'body', 'div', 'p', 'table',
         'h1', 'h2', 'h3', 'section', 'ul', 'ol', 'li',
         # ... (lines 11-36 in Parser.js)
     ]
-    
+
     def __init__(self, contextualizer: MwContextualizer, options: dict):
         self.contextualizer = contextualizer
         self.options = options
         self.builder = None
         self.all_tags = []
-    
+
     def parse(self, html: str) -> Doc:
         """
         Stream-parse HTML using SAX-like approach
@@ -168,24 +168,24 @@ class Parser:
             events=('start', 'end'),
             html=True
         )
-        
+
         for event, elem in context:
             if event == 'start':
                 self._on_open_tag(elem)
             elif event == 'end':
                 self._on_close_tag(elem)
-        
+
         return self.builder.doc
-    
+
     def _on_open_tag(self, elem):
         """Lines 63-99 in Parser.js"""
         tag = self._elem_to_tag(elem)
-        
+
         # Check removable
         if self.contextualizer.is_removable(tag):
             self.contextualizer.on_open_tag(tag)
             return
-        
+
         # Handle references, math
         if Utils.is_reference(tag) or Utils.is_math(tag):
             self.builder = self.builder.create_child_builder(tag)
@@ -208,7 +208,7 @@ class MwContextualizer:
     def __init__(self, config: dict):
         self.removable_sections = config['removableSections']
         self.context_stack = []
-        
+
     def is_removable(self, tag: Tag) -> bool:
         """
         Check if tag should be removed
@@ -220,19 +220,19 @@ class MwContextualizer:
             for cls in self.removable_sections['classes']:
                 if cls in classes:
                     return True
-        
+
         # Check RDFa typeof
         if 'typeof' in tag.attributes:
             typeof = tag.attributes['typeof']
             if typeof in self.removable_sections['rdfa']:
                 return True
-        
+
         # Check template names (data-mw attribute)
         if 'data-mw' in tag.attributes:
             # TODO: Parse JSON and check template names
             # See MWPageLoader.yaml lines 14-40
             pass
-        
+
         return False
 ```
 
@@ -251,20 +251,20 @@ class CXSegmenter:
         See CXSegmenter.js lines 13-16
         """
         return parsed_doc.segment(self.get_segmenter(language))
-    
+
     def get_segmenter(self, language: str) -> Callable:
         """Lines 24-33 in CXSegmenter.js"""
         def segmenter(text: str) -> List[int]:
             seg = pysbd.Segmenter(language=language, clean=False)
             sentences = seg.segment(text)
-            
+
             boundaries = []
             for sentence in sentences:
                 if sentence.strip():
                     boundaries.append(text.index(sentence))
-            
+
             return boundaries
-        
+
         return segmenter
 ```
 
@@ -294,21 +294,21 @@ def process_html(source_html: str) -> str:
         {'removableSections': CONFIG['removableSections']}
     )
     parser = Parser(contextualizer, {'wrapSections': True})
-    
+
     # 2. Parse HTML → Doc
     parser.init()
     parsed_doc = parser.parse(source_html)
-    
+
     # 3. Wrap sections
     parsed_doc = parsed_doc.wrap_sections()
-    
+
     # 4. Segment for translation
     segmenter = CXSegmenter()
     segmented_doc = segmenter.segment(parsed_doc, "en")
-    
+
     # 5. Convert back to HTML
     result = segmented_doc.get_html()
-    
+
     return result
 ```
 
@@ -337,7 +337,7 @@ async def process_text(request: HtmlRequest):
             status_code=500,
             detail="Content for translate is not given or is empty"
         )
-    
+
     try:
         processed_text = process_html(request.html)
         return {"result": processed_text}
@@ -362,14 +362,14 @@ def wrap_sections(self):
     """
     id_counter = 0
     section_counter = 0
-    
+
     for item in self.items:
         if item.type == 'open':
             # Assign id attribute
             if 'id' not in item.item.attributes:
                 item.item.attributes['id'] = str(id_counter)
                 id_counter += 1
-            
+
             # Detect heading tags (h1-h6)
             if item.item.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
                 # Create section wrapper
@@ -384,7 +384,7 @@ def wrap_sections(self):
                 section_counter += 1
 ```
 
-### **2. Link ID Assignment** (Utils.js `setLinkIdsInPlace()`)
+### **2. Link ID Assignment** (Utils.js `set_link_ids_in_place()`)
 ```python
 def set_link_ids_in_place(text_chunks: List[TextChunk], get_next_id: Callable):
     """
@@ -399,12 +399,12 @@ def set_link_ids_in_place(text_chunks: List[TextChunk], get_next_id: Callable):
                 if 'cx-link' not in classes:
                     classes.append('cx-link')
                     tag.attributes['class'] = ' '.join(classes)
-                
+
                 # Add data-linkid
                 tag.attributes['data-linkid'] = str(get_next_id('link'))
 ```
 
-### **3. HTML Attribute Encoding** (Utils.js `escAttr()`)
+### **3. HTML Attribute Encoding** (Utils.js `esc_attr()`)
 ```python
 def escape_attr(value: str) -> str:
     """
@@ -435,12 +435,12 @@ def test_full_pipeline():
     """Compare JS output vs Python output"""
     with open('fixtures/input.html') as f:
         input_html = f.read()
-    
+
     with open('fixtures/expected_output.html') as f:
         expected = f.read()
-    
+
     result = process_html(input_html)
-    
+
     # Normalize whitespace
     assert normalize_html(result) == normalize_html(expected)
 ```
@@ -466,7 +466,7 @@ pydantic==2.5.0
 1. ✅ Doc, TextBlock, TextChunk classes
 2. ✅ Basic Parser (without all edge cases)
 3. ✅ Simple segmentation (regex-based)
-4. ✅ Basic wrapSections() 
+4. ✅ Basic wrapSections()
 5. ✅ FastAPI endpoint
 
 ### **Full Feature Parity:**
