@@ -11,7 +11,6 @@ from .parser import Parser
 from .text_block import text_block
 from .text_chunk import text_chunk
 from .util import get_prop
-from .utils import *
 
 __all__ = [
     "text_chunk",
