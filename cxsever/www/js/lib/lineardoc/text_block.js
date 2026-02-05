@@ -7,7 +7,7 @@ import { getProp } from './../util.js';
  *
  * @class
  */
-class TextBlock {
+class text_block {
 	/**
 	 * @constructor
 	 *
@@ -90,12 +90,12 @@ class TextBlock {
 	}
 
 	/**
-	 * Create a new TextBlock, applying our annotations to a translation
+	 * Create a new text_block, applying our annotations to a translation
 	 *
 	 * @method
 	 * @param {string} targetText Translated plain text
 	 * @param {Object[]} rangeMappings Array of source-target range index mappings
-	 * @return {TextBlock} Translated textblock with tags applied
+	 * @return {text_block} Translated textblock with tags applied
 	 */
 	translateTags(targetText, rangeMappings) {
 		// map of { offset: x, text_chunks: [...] }
@@ -221,7 +221,7 @@ class TextBlock {
 			});
 			pos += tail.length;
 		}
-		return new TextBlock(text_chunks.map((x) => x.textChunk));
+		return new text_block(text_chunks.map((x) => x.textChunk));
 	}
 
 	/**
@@ -242,7 +242,7 @@ class TextBlock {
 	 *
 	 * @return {string} Plain text representation
 	 */
-	getHtml() {
+	get_html() {
 		const html = [];
 		// Start with no tags open
 		let oldTags = [];
@@ -271,9 +271,9 @@ class TextBlock {
 			// Now add text and inline content
 			html.push(esc(textChunk.text));
 			if (textChunk.inline_content) {
-				if (textChunk.inline_content.getHtml) {
+				if (textChunk.inline_content.get_html) {
 					// a sub-doc
-					html.push(textChunk.inline_content.getHtml());
+					html.push(textChunk.inline_content.get_html());
 				} else {
 					// an empty inline tag
 					html.push(get_open_tag_html(textChunk.inline_content));
@@ -340,7 +340,7 @@ class TextBlock {
 	 * @method
 	 * @param {Function} getBoundaries Function taking plaintext, returning offset array
 	 * @param {Function} getNextId Function taking 'segment'|'link', returning next ID
-	 * @return {TextBlock} Segmented version, with added span tags
+	 * @return {text_block} Segmented version, with added span tags
 	 */
 	segment(getBoundaries, getNextId) {
 		// Setup: currentTextChunks for current segment, and allTextChunks for all segments
@@ -403,14 +403,14 @@ class TextBlock {
 			offset += textChunk.text.length;
 		}
 		flushChunks();
-		return new TextBlock(allTextChunks);
+		return new text_block(allTextChunks);
 	}
 
 	/**
 	 * Set the link Ids for the links in all the textchunks in the textblock instance.
 	 *
 	 * @param {Function} getNextId Function taking 'segment'|'link', returning next ID
-	 * @return {TextBlock} Segmented version, with added span tags
+	 * @return {text_block} Segmented version, with added span tags
 	 */
 	setLinkIds(getNextId) {
 		set_link_ids_in_place(this.text_chunks, getNextId);
@@ -421,7 +421,7 @@ class TextBlock {
 	 * Adapt a text block.
 	 *
 	 * @param {Function} getAdapter A function that returns an adapter for the given node item
-	 * @return {Promise} Promise that resolves the adapted TextBlock instance
+	 * @return {Promise} Promise that resolves the adapted text_block instance
 	 */
 	adapt(getAdapter) {
 		const textChunkPromises = [];
@@ -485,7 +485,7 @@ class TextBlock {
 	 * @param {string} pad Whitespace to indent XML elements
 	 * @return {string[]} Array that will concatenate to an XML string representation
 	 */
-	dumpXmlArray(pad) {
+	dump_xml_array(pad) {
 		const dump = [];
 		for (let i = 0, len = this.text_chunks.length; i < len; i++) {
 			const chunk = this.text_chunks[i];
@@ -498,9 +498,9 @@ class TextBlock {
 			}
 			if (chunk.inline_content) {
 				dump.push(pad + '<cxinlineelement' + tagsAttr + '>');
-				if (chunk.inline_content.dumpXmlArray) {
+				if (chunk.inline_content.dump_xml_array) {
 					// sub-doc: concatenate
-					dump.push.apply(dump, chunk.inline_content.dumpXmlArray(pad + '  '));
+					dump.push.apply(dump, chunk.inline_content.dump_xml_array(pad + '  '));
 				} else {
 					dump.push(pad + '  <' + chunk.inline_content.name + '/>');
 				}
@@ -511,4 +511,4 @@ class TextBlock {
 	}
 }
 
-export default TextBlock;
+export default text_block;

@@ -46,7 +46,7 @@ Parser + mw_contextualizer → Doc → wrapSections() → CXSegmenter → HTML
   - `{type: 'close', item: tag}`
   - `{type: 'textblock', item: text_block}`
   - `{type: 'blockspace', item: whitespace}`
-- Key methods: `segment()`, `wrapSections()`, `getHtml()`
+- Key methods: `segment()`, `wrapSections()`, `get_html()`
 
 **C. text_block.js** - Annotated inline text container
 - Manages text chunks with tag annotations

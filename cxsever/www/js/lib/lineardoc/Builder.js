@@ -11,22 +11,22 @@ import text_chunk from './text_chunk.js';
 class Builder {
 	/**
 	 * @param {Builder} [parent] Parent document builder
-	 * @param {Object} [wrapperTag] tag that wraps document (if there is a parent)
+	 * @param {Object} [wrapper_tag] tag that wraps document (if there is a parent)
 	 */
-	constructor(parent, wrapperTag) {
+	constructor(parent, wrapper_tag) {
 		this.BLOCK_TAGS = [];
 		// Stack of annotation tags
 		this.inlineAnnotationTags = [];
 		// The height of the annotation tags that have been used, minus one
 		this.inlineAnnotationTagsUsed = 0;
-		this.doc = new Doc(wrapperTag || null);
+		this.doc = new Doc(wrapper_tag || null);
 		this.text_chunks = [];
 		this.isBlockSegmentable = true;
 		this.parent = parent || null;
 	}
 
-	createChildBuilder(wrapperTag) {
-		return new Builder(this, wrapperTag);
+	createChildBuilder(wrapper_tag) {
+		return new Builder(this, wrapper_tag);
 	}
 
 	pushBlockTag(tag) {
@@ -38,7 +38,7 @@ class Builder {
 		if (tag.name === 'figure') {
 			tag.attributes.rel = 'cx:Figure';
 		}
-		this.doc.addItem('open', tag);
+		this.doc.add_item('open', tag);
 	}
 
 	isSection(tag) {
@@ -68,7 +68,7 @@ class Builder {
 		this.finishTextBlock();
 
 		if (!this.isIgnoredTag(tag)) {
-			this.doc.addItem('close', tag);
+			this.doc.add_item('close', tag);
 		}
 
 		return tag;
@@ -124,11 +124,11 @@ class Builder {
 			whitespace.reverse();
 			this.addInlineContent(
 				new Doc()
-					.addItem('open', tag)
-					.addItem('textblock', new text_block(
+					.add_item('open', tag)
+					.add_item('textblock', new text_block(
 						[new text_chunk(whitespace.join(''), [])]
 					))
-					.addItem('close', tag)
+					.add_item('close', tag)
 			);
 		}
 		return;
@@ -179,9 +179,9 @@ class Builder {
 			}
 		}
 		if (whitespaceOnly) {
-			this.doc.addItem('blockspace', whitespace.join(''));
+			this.doc.add_item('blockspace', whitespace.join(''));
 		} else {
-			this.doc.addItem('textblock', new text_block(this.text_chunks, this.isBlockSegmentable));
+			this.doc.add_item('textblock', new text_block(this.text_chunks, this.isBlockSegmentable));
 		}
 		this.text_chunks = [];
 		this.isBlockSegmentable = true;

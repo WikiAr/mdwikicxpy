@@ -101,7 +101,7 @@ function tet(source_HTML) {
     const segmentedDoc = new CXSegmenter().segment(parsedDoc, "en");
 
     // 4. Return processed HTML
-    const result = segmentedDoc.getHtml();
+    const result = segmentedDoc.get_html();
     return result;
 }
 

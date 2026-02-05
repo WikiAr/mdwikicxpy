@@ -47,7 +47,7 @@ class Normalizer extends sax.SAXParser {
 		this.doc.push(esc(text));
 	}
 
-	getHtml() {
+	get_html() {
 		return this.doc.join('');
 	}
 

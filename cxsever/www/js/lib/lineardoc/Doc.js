@@ -27,11 +27,11 @@ import { getProp } from './../util.js';
  */
 class Doc {
 	/**
-	 * @param {string} wrapperTag open/close tags
+	 * @param {string} wrapper_tag open/close tags
 	 */
-	constructor(wrapperTag) {
+	constructor(wrapper_tag) {
 		this.items = [];
-		this.wrapperTag = wrapperTag || null;
+		this.wrapper_tag = wrapper_tag || null;
 		this.categories = [];
 	}
 
@@ -43,11 +43,11 @@ class Doc {
 	 * @return {Doc} clone with modifications
 	 */
 	clone(callback) {
-		const newDoc = new Doc(this.wrapperTag);
+		const newDoc = new Doc(this.wrapper_tag);
 		for (let i = 0, len = this.items.length; i < len; i++) {
 			const item = this.items[i];
-			const newItem = callback(item);
-			newDoc.addItem(newItem.type, newItem.item);
+			const new_item = callback(item);
+			newDoc.add_item(new_item.type, new_item.item);
 		}
 		return newDoc;
 	}
@@ -61,7 +61,7 @@ class Doc {
 	 * @return {Object}
 	 * @chainable
 	 */
-	addItem(type, item) {
+	add_item(type, item) {
 		this.items.push({ type, item });
 		return this;
 	}
@@ -90,8 +90,8 @@ class Doc {
 	 * @return {Object}
 	 */
 	getRootItem() {
-		if (this.wrapperTag) {
-			return this.wrapperTag;
+		if (this.wrapper_tag) {
+			return this.wrapper_tag;
 		}
 		for (let i = 0; i < this.items.length; i++) {
 			// Ignore all blockspaces, loop till we see a tag opening
@@ -160,7 +160,7 @@ class Doc {
 				if (tag.name === 'section') {
 					tag.attributes['data-mw-section-number'] = sectionNumber;
 				}
-				newDoc.addItem(item.type, tag);
+				newDoc.add_item(item.type, tag);
 				// Content of tags that are either mw:Transclusion or mw:Extension need not be segmented.
 				const about = getProp(['attributes', 'about'], tag);
 				const typeOf = getProp(['attributes', 'typeof'], tag);
@@ -173,12 +173,12 @@ class Doc {
 				if (about && about === transclusionContext) {
 					transclusionContext = null;
 				}
-				newDoc.addItem(item.type, item.item);
+				newDoc.add_item(item.type, item.item);
 			} else if (this.items[i].type !== 'textblock') {
-				newDoc.addItem(item.type, item.item);
+				newDoc.add_item(item.type, item.item);
 			} else {
 				const textBlock = item.item;
-				newDoc.addItem(
+				newDoc.add_item(
 					'textblock',
 					textBlock.can_segment && !transclusionContext ?
 						textBlock.segment(getBoundaries, getNextId) :
@@ -195,8 +195,8 @@ class Doc {
 	 * @method
 	 * @return {string} XML version of the linear representation
 	 */
-	dumpXml() {
-		return this.dumpXmlArray('').join('\n');
+	dump_xml() {
+		return this.dump_xml_array('').join('\n');
 	}
 
 	/**
@@ -205,11 +205,11 @@ class Doc {
 	 * @method
 	 * @return {string} HTML document
 	 */
-	getHtml() {
+	get_html() {
 		const html = [];
 
-		if (this.wrapperTag) {
-			html.push(get_open_tag_html(this.wrapperTag));
+		if (this.wrapper_tag) {
+			html.push(get_open_tag_html(this.wrapper_tag));
 		}
 		for (let i = 0, len = this.items.length; i < len; i++) {
 			const type = this.items[i].type;
@@ -231,13 +231,13 @@ class Doc {
 			} else if (type === 'textblock') {
 				const textblock = item;
 				// textblock html list may be quite long, so concatenate now
-				html.push(textblock.getHtml());
+				html.push(textblock.get_html());
 			} else {
 				throw new Error(`Unknown item type: ${type}`);
 			}
 		}
-		if (this.wrapperTag) {
-			html.push(get_close_tag_html(this.wrapperTag));
+		if (this.wrapper_tag) {
+			html.push(get_close_tag_html(this.wrapper_tag));
 		}
 		return html.join('');
 	}
@@ -277,11 +277,11 @@ class Doc {
 		}
 
 		function openSection(doc) {
-			doc.addItem('open', { name: 'section', attributes: { rel: 'cx:Section' } });
+			doc.add_item('open', { name: 'section', attributes: { rel: 'cx:Section' } });
 		}
 
 		function closeSection(doc) {
-			doc.addItem('close', { name: 'section' });
+			doc.add_item('close', { name: 'section' });
 			prevSection = currSection;
 			currSection = null;
 		}
@@ -293,7 +293,7 @@ class Doc {
 			// Undo last section close
 			doc.undoAddItem();
 			currSection = prevSection;
-			doc.addItem(item.type, item.item);
+			doc.add_item(item.type, item.item);
 			closeSection(newDoc);
 		}
 
@@ -305,7 +305,7 @@ class Doc {
 
 			if (!inBody) {
 				// Till we reach body, keep on adding items to newDoc.
-				newDoc.addItem(type, tag);
+				newDoc.add_item(type, tag);
 				if (tag.name === 'body') {
 					inBody = true;
 				}
@@ -325,14 +325,14 @@ class Doc {
 					}
 				}
 
-				newDoc.addItem(item.type, tag);
+				newDoc.add_item(item.type, tag);
 			} else if (type === 'close') {
 				if (currSection && tag.name === 'body') {
 					closeSection(newDoc);
 					inBody = false;
 				}
 
-				newDoc.addItem(item.type, tag);
+				newDoc.add_item(item.type, tag);
 				if (getTagId(tag) === currSection) {
 					closeSection(newDoc);
 				}
@@ -341,7 +341,7 @@ class Doc {
 				if (prevSection && newDoc.getCurrentItem().item.name === 'section') {
 					insertToPrevSection(item, newDoc);
 				} else {
-					newDoc.addItem(type, tag);
+					newDoc.add_item(type, tag);
 				}
 			} else if (type === 'textblock') {
 				const textBlock = item.item;
@@ -367,14 +367,14 @@ class Doc {
 					if (!currSection) {
 						throw new Error(`No id for the opened section for tag ${tagForId.name}`);
 					}
-					newDoc.addItem(item.type, textBlock);
+					newDoc.add_item(item.type, textBlock);
 					// There was no open sections. Close the section now itself. If this tag is a template
 					// fragment, `isConnected` check above will insert the fragments to closed section.
 					closeSection(newDoc);
 					continue;
 				}
 
-				newDoc.addItem(item.type, textBlock);
+				newDoc.add_item(item.type, textBlock);
 			} else {
 				throw new Error(`Unknown item type: ${type}`);
 			}
@@ -390,10 +390,10 @@ class Doc {
 	 * @param {string} pad
 	 * @return {string[]} Array that will concatenate to an XML string representation
 	 */
-	dumpXmlArray(pad) {
+	dump_xml_array(pad) {
 		const dump = [];
 
-		if (this.wrapperTag) {
+		if (this.wrapper_tag) {
 			dump.push(`${pad}<cxwrapper>`);
 		}
 		for (let i = 0, len = this.items.length; i < len; i++) {
@@ -420,13 +420,13 @@ class Doc {
 				// Block of inline text
 				const textBlock = item;
 				dump.push(`${pad}<cxtextblock>`);
-				dump.push.apply(dump, textBlock.dumpXmlArray(pad + '  '));
+				dump.push.apply(dump, textBlock.dump_xml_array(pad + '  '));
 				dump.push(`${pad}</cxtextblock>`);
 			} else {
 				throw new Error(`Unknown item type: ${type}`);
 			}
 		}
-		if (this.wrapperTag) {
+		if (this.wrapper_tag) {
 			dump.push(`${pad}</cxwrapper>`);
 		}
 		return dump;
@@ -438,7 +438,7 @@ class Doc {
 	 * @method
 	 * @return {string[]} balanced html fragments, one per segment
 	 */
-	getSegments() {
+	get_segments() {
 		const segments = [];
 
 		for (let i = 0, len = this.items.length; i < len; i++) {
@@ -446,7 +446,7 @@ class Doc {
 				continue;
 			}
 			const textblock = this.items[i].item;
-			segments.push(textblock.getHtml());
+			segments.push(textblock.get_html());
 		}
 
 		return segments;
@@ -469,7 +469,7 @@ class Doc {
 	 *   attributes and content from original doc. This is required for #expand
 	 */
 	reduce(idCounter) {
-		const reducedDoc = new Doc(this.wrapperTag);
+		const reducedDoc = new Doc(this.wrapper_tag);
 		let extractedData = {};
 		idCounter = idCounter || { value: 0 };
 
@@ -492,22 +492,22 @@ class Doc {
 			return true;
 		};
 
-		if (this.wrapperTag && hasAttributesToSave(this.wrapperTag)) {
+		if (this.wrapper_tag && hasAttributesToSave(this.wrapper_tag)) {
 			idCounter.value++;
 			extractedData[idCounter.value] = {
-				attributes: Object.assign({}, this.wrapperTag.attributes)
+				attributes: Object.assign({}, this.wrapper_tag.attributes)
 			};
 
-			if (isMath(this.wrapperTag)) {
+			if (isMath(this.wrapper_tag)) {
 				// Do not send inline mw:Extention/math content to MT engines
 				// since they are known to mangle the content.
 				// Save the (inline) document in extractedData, return the document
 				// wrapper tag alone.
 				extractedData[idCounter.value].document = this;
-				this.wrapperTag.attributes.id = idCounter.value;
+				this.wrapper_tag.attributes.id = idCounter.value;
 				return { reducedDoc, extractedData };
 			}
-			this.wrapperTag.attributes = { id: idCounter.value };
+			this.wrapper_tag.attributes = { id: idCounter.value };
 		}
 		for (let i = 0, iLen = this.items.length; i < iLen; i++) {
 			const item = this.items[i];
@@ -541,12 +541,12 @@ class Doc {
 						nonTranslatableContext = true;
 					}
 				}
-				reducedDoc.addItem(type, tag);
+				reducedDoc.add_item(type, tag);
 				continue;
 			}
 
 			if (type === 'close' || type === 'blockspace') {
-				reducedDoc.addItem(type, tag);
+				reducedDoc.add_item(type, tag);
 				if (isNonTranslatable(tag)) {
 					nonTranslatableContext = false;
 				}
@@ -603,7 +603,7 @@ class Doc {
 					}
 				}
 			}
-			reducedDoc.addItem(type, tag);
+			reducedDoc.add_item(type, tag);
 		}
 
 		return { reducedDoc, extractedData };
@@ -617,19 +617,19 @@ class Doc {
 	 * @return {Doc} The expanded document.
 	 */
 	expand(extractedData) {
-		const expandedDoc = new Doc(this.wrapperTag);
+		const expandedDoc = new Doc(this.wrapper_tag);
 		let id = 0;
 
 		const hasAttributes = (obj) => obj.attributes && Object.keys(obj.attributes).length;
-		if (this.wrapperTag && hasAttributes(this.wrapperTag)) {
-			id = this.wrapperTag.attributes.id;
+		if (this.wrapper_tag && hasAttributes(this.wrapper_tag)) {
+			id = this.wrapper_tag.attributes.id;
 			if (extractedData[id]) {
 				if (extractedData[id].document) {
 					// The inline document is extracted as a whole. Return it.
 					// This happens for mw:Extension/math.
 					return extractedData[id].document;
 				}
-				this.wrapperTag.attributes = extractedData[id].attributes;
+				this.wrapper_tag.attributes = extractedData[id].attributes;
 			}
 		}
 		for (let i = 0, iLen = this.items.length; i < iLen; i++) {
@@ -647,12 +647,12 @@ class Doc {
 						tag.attributes = id ? { id } : {};
 					}
 				}
-				expandedDoc.addItem(type, tag);
+				expandedDoc.add_item(type, tag);
 				if (extractedData[id] && extractedData[id].content) {
 					// Make sure the content is a textblock object
 					// before adding to the doc as a textblock
 					if (typeof extractedData[id].content === 'object') {
-						expandedDoc.addItem('textblock', extractedData[id].content);
+						expandedDoc.add_item('textblock', extractedData[id].content);
 						// Skip the next item in the loop since we replaced it with the content
 						// from extracted data
 						i++;
@@ -662,7 +662,7 @@ class Doc {
 			}
 
 			if (type === 'close' || type === 'blockspace') {
-				expandedDoc.addItem(type, tag);
+				expandedDoc.add_item(type, tag);
 				continue;
 			}
 
@@ -713,7 +713,7 @@ class Doc {
 					}
 				}
 			}
-			expandedDoc.addItem(type, tag);
+			expandedDoc.add_item(type, tag);
 		}
 
 		return expandedDoc;
@@ -729,12 +729,12 @@ class Doc {
 	async adapt(getAdapter) {
 		let adapter, newDoc = new Doc();
 
-		if (this.wrapperTag) {
-			adapter = getAdapter(this.wrapperTag);
+		if (this.wrapper_tag) {
+			adapter = getAdapter(this.wrapper_tag);
 			if (adapter) {
 				newDoc = new Doc(await adapter.adapt());
 			} else {
-				newDoc = new Doc(this.wrapperTag);
+				newDoc = new Doc(this.wrapper_tag);
 			}
 		}
 		let transclusionContext = null;
@@ -748,9 +748,9 @@ class Doc {
 				adapter = getAdapter(tag);
 				if (adapter && !transclusionContext) {
 					// Do not adapt translation units under a transclusionContext
-					newDoc.addItem(item.type, await adapter.adapt());
+					newDoc.add_item(item.type, await adapter.adapt());
 				} else {
-					newDoc.addItem(item.type, tag);
+					newDoc.add_item(item.type, tag);
 				}
 				const about = getProp(['attributes', 'about'], tag);
 				if (about && !isGallery(tag)) {
@@ -766,19 +766,19 @@ class Doc {
 				if (about && about === transclusionContext) {
 					transclusionContext = null;
 				}
-				newDoc.addItem(item.type, item.item);
+				newDoc.add_item(item.type, item.item);
 			} else if (this.items[i].type !== 'textblock') {
-				newDoc.addItem(item.type, item.item);
+				newDoc.add_item(item.type, item.item);
 			} else {
 				const textBlock = item.item;
 				if (!transclusionContext) {
 					// Do not adapt translation units under a transclusionContext
-					newDoc.addItem(
+					newDoc.add_item(
 						'textblock',
 						await textBlock.adapt(getAdapter)
 					);
 				} else {
-					newDoc.addItem(item.type, item.item);
+					newDoc.add_item(item.type, item.item);
 				}
 			}
 		}
