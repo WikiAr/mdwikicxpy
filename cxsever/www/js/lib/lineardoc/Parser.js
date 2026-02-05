@@ -4,7 +4,7 @@
 
 import sax from 'sax';
 import Builder from './Builder.js';
-import { isTransclusion as _isTransclusion, isInlineEmptyTag, isMath, isReference, isSegment } from './Utils.js';
+import { isTransclusion as _isTransclusion, isInlineEmptyTag, is_math, isReference, isSegment } from './Utils.js';
 
 const blockTags = [
 	'html', 'head', 'body', 'script',
@@ -80,7 +80,7 @@ class Parser extends sax.SAXParser {
 			});
 		}
 
-		if (isReference(tag) || isMath(tag)) {
+		if (isReference(tag) || is_math(tag)) {
 			// Start a reference: create a child builder, and move into it
 			this.builder = this.builder.createChildBuilder(tag);
 		} else if (isInlineEmptyTag(tag.name)) {

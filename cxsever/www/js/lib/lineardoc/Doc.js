@@ -3,7 +3,7 @@
  */
 
 import { createHash } from 'crypto';
-import { cloneOpenTag, getCloseTagHtml, getOpenTagHtml, isGallery, isMath, isNonTranslatable } from './Utils.js';
+import { cloneOpenTag, getCloseTagHtml, getOpenTagHtml, is_gallery, is_math, isNonTranslatable } from './Utils.js';
 import { getProp } from './../util.js';
 
 /**
@@ -498,7 +498,7 @@ class Doc {
 				attributes: Object.assign({}, this.wrapperTag.attributes)
 			};
 
-			if (isMath(this.wrapperTag)) {
+			if (is_math(this.wrapperTag)) {
 				// Do not send inline mw:Extention/math content to MT engines
 				// since they are known to mangle the content.
 				// Save the (inline) document in extractedData, return the document
@@ -753,7 +753,7 @@ class Doc {
 					newDoc.addItem(item.type, tag);
 				}
 				const about = getProp(['attributes', 'about'], tag);
-				if (about && !isGallery(tag)) {
+				if (about && !is_gallery(tag)) {
 					// Presence of about attribute tells us that it is a transclusion or
 					// transclusion fragment. The innerbody of the transclusion can be
 					// skipped from adaption. Except in the case of Gallery with

@@ -2,7 +2,7 @@
  * @external Doc
  */
 
-const TextChunk = require('./TextChunk');
+const TextChunk = require('./text_chunk');
 const cxutil = require('./util');
 
 /**
@@ -46,7 +46,7 @@ function esc(str) {
  * @param {string} str String to escape
  * @return {string} Escaped version of the string
  */
-function escAttr(str) {
+function esc_attr(str) {
 	return str.replace(/["'&<>]/g, (ch) => '&#' + ch.charCodeAt(0) + ';');
 }
 
@@ -57,7 +57,7 @@ function escAttr(str) {
  * @param {Object} tag Tag to render
  * @return {string} Html representation of open tag
  */
-function getOpenTagHtml(tag) {
+function get_open_tag_html(tag) {
 	const html = ['<' + esc(tag.name)];
 	const attributes = [];
 	for (const attr in tag.attributes) {
@@ -66,7 +66,7 @@ function getOpenTagHtml(tag) {
 	attributes.sort();
 	for (let i = 0, len = attributes.length; i < len; i++) {
 		const attr = attributes[i];
-		html.push(' ' + esc(attr) + '="' + escAttr(String(tag.attributes[attr])) + '"');
+		html.push(' ' + esc(attr) + '="' + esc_attr(String(tag.attributes[attr])) + '"');
 	}
 	if (tag.isSelfClosing) {
 		html.push(' /');
@@ -82,7 +82,7 @@ function getOpenTagHtml(tag) {
  * @param {Object} tag Tag to clone
  * @return {Object} Cloned tag
  */
-function cloneOpenTag(tag) {
+function clone_open_tag(tag) {
 	const newTag = {
 		name: tag.name,
 		attributes: {}
@@ -100,7 +100,7 @@ function cloneOpenTag(tag) {
  * @param {Object} tag Name of tag to close
  * @return {string} Html representation of close tag
  */
-function getCloseTagHtml(tag) {
+function get_close_tag_html(tag) {
 	if (tag.isSelfClosing) {
 		return '';
 	}
@@ -114,7 +114,7 @@ function getCloseTagHtml(tag) {
  * @param {Object[]} tagArray SAX open tags
  * @return {string[]} Tag names
  */
-function dumpTags(tagArray) {
+function dump_tags(tagArray) {
 	const tagDumps = [];
 
 	if (!tagArray) {
@@ -124,7 +124,7 @@ function dumpTags(tagArray) {
 		const tag = tagArray[i];
 		const attrDumps = [];
 		for (const attr in tag.attributes) {
-			attrDumps.push(attr + '=' + escAttr(tag.attributes[attr]));
+			attrDumps.push(attr + '=' + esc_attr(tag.attributes[attr]));
 		}
 		tagDumps.push(
 			tag.name + (attrDumps.length ? ':' : '') + attrDumps.join(',')
@@ -142,7 +142,7 @@ function dumpTags(tagArray) {
  * @param {Object} tag SAX open tag object
  * @return {boolean} Whether the tag is a mediawiki reference span
  */
-function isReference(tag) {
+function is_reference(tag) {
 	if ((tag.name === 'span' || tag.name === 'sup') && tag.attributes.typeof === 'mw:Extension/ref') {
 		// See https://www.mediawiki.org/wiki/Specs/HTML/2.1.0/Extensions/Cite#Auto-generated_references_blocks
 		// Also see T45094
@@ -161,7 +161,7 @@ function isReference(tag) {
  * @param {Object} tag SAX open tag object
  * @return {boolean} Whether the tag is a mediawiki math span
  */
-function isMath(tag) {
+function is_math(tag) {
 	if ((tag.name === 'span' || tag.name === 'sup') && tag.attributes.typeof === 'mw:Extension/math') {
 		return true;
 	}
@@ -174,7 +174,7 @@ function isMath(tag) {
  * @param {Object} tag SAX open tag object
  * @return {boolean} Whether the tag is a mediawiki Gallery
  */
-function isGallery(tag) {
+function is_gallery(tag) {
 	return (tag.name === 'ul') && tag.attributes.typeof === 'mw:Extension/gallery';
 }
 
@@ -189,7 +189,7 @@ function isReferenceList(tag) {
  * @param {Object} tag SAX open tag object
  * @return {boolean} Whether the tag is a external link or not.
  */
-function isExternalLink(tag) {
+function is_external_link(tag) {
 	return tag.name === 'a' && tag.attributes &&
 		tag.attributes.rel &&
 		// We add the spaces before and after to ensure matching on the "word" mw:ExtLink
@@ -207,20 +207,20 @@ function isExternalLink(tag) {
  * @param {Object} tag SAX open tag object
  * @return {boolean} Whether the tag is a segment or not
  */
-function isSegment(tag) {
+function is_segment(tag) {
 	if (tag.name === 'span' && tag.attributes.class === 'cx-segment') {
 		return true;
 	}
 	return false;
 }
 
-function isTransclusion(tag) {
+function is_transclusion(tag) {
 	return tag.attributes &&
 		tag.attributes.typeof &&
 		tag.attributes.typeof.match(/(^|\s)(mw:Transclusion|mw:Placeholder)\b/);
 }
 
-function isTransclusionFragment(tag) {
+function is_transclusion_fragment(tag) {
 	return cxutil.getProp(['attributes', 'about'], tag) &&
 		!cxutil.getProp(['attributes', 'data-mw'], tag);
 }
@@ -231,7 +231,7 @@ function isTransclusionFragment(tag) {
  * @param {Object} tag SAX open tag object
  * @return {boolean} Whether the tag is a segment or not
  */
-function isNonTranslatable(tag) {
+function is_non_translatable(tag) {
 	const nonTranslatableTags = ['style', 'svg', 'script'];
 	const nonTranslatableRdfa = ['mw:Entity', 'mw:Extension/math', 'mw:Extension/references', 'mw:Transclusion'];
 
@@ -250,14 +250,14 @@ function isNonTranslatable(tag) {
  * Determine whether a tag is an inline empty tag
  *
  * @private
- * @param {string} tagName The name of the tag (lowercase)
+ * @param {string} tag_name The name of the tag (lowercase)
  * @return {boolean} Whether the tag is an inline empty tag
  */
-function isInlineEmptyTag(tagName) {
+function is_inline_empty_tag(tag_name) {
 	// link/meta as they're allowed anywhere in HTML5+RDFa, and must be treated as void
 	// flow content. See http://www.w3.org/TR/rdfa-in-html/#extensions-to-the-html5-syntax
 	const inlineEmptyTags = ['br', 'img', 'source', 'track', 'link', 'meta'];
-	return inlineEmptyTags.includes(tagName);
+	return inlineEmptyTags.includes(tag_name);
 }
 
 /**
@@ -272,7 +272,7 @@ function isInlineEmptyTag(tagName) {
  * @param {Function} getLength Function returning the length of a chunk
  * @return {Object[]} Array of {chunk: ch, boundaries: [...]}
  */
-function getChunkBoundaryGroups(boundaries, chunks, getLength) {
+function get_chunk_boundary_groups(boundaries, chunks, getLength) {
 	const groups = [];
 	let offset = 0,
 		boundaryPtr = 0;
@@ -311,18 +311,18 @@ function getChunkBoundaryGroups(boundaries, chunks, getLength) {
  * Add a tag to consecutive text chunks, above common tags but below others
  *
  * @private
- * @param {TextChunk[]} textChunks Consecutive text chunks
+ * @param {text_chunk[]} text_chunks Consecutive text chunks
  * @param {Object} tag Tag to add
- * @return {TextChunk[]} Copy of the text chunks with the tag inserted
+ * @return {text_chunk[]} Copy of the text chunks with the tag inserted
  */
-function addCommonTag(textChunks, tag) {
-	if (textChunks.length === 0) {
+function add_common_tag(text_chunks, tag) {
+	if (text_chunks.length === 0) {
 		return [];
 	}
 	// Find length of common tags
-	const commonTags = textChunks[0].tags.slice();
-	for (let i = 1, iLen = textChunks.length; i < iLen; i++) {
-		const tags = textChunks[i].tags;
+	const commonTags = text_chunks[0].tags.slice();
+	for (let i = 1, iLen = text_chunks.length; i < iLen; i++) {
+		const tags = text_chunks[i].tags;
 		let j, jLen;
 		for (j = 0, jLen = Math.min(commonTags.length, tags.length); j < jLen; j++) {
 			if (commonTags[j] !== tags[j]) {
@@ -337,14 +337,14 @@ function addCommonTag(textChunks, tag) {
 	const commonTagLength = commonTags.length;
 	// Build new chunks with segment span inserted
 	const newTextChunks = [];
-	for (let i = 0, iLen = textChunks.length; i < iLen; i++) {
-		const textChunk = textChunks[i];
-		const newTags = textChunk.tags.slice();
+	for (let i = 0, iLen = text_chunks.length; i < iLen; i++) {
+		const text_chunk = text_chunks[i];
+		const newTags = text_chunk.tags.slice();
 		newTags.splice(commonTagLength, 0, tag);
 		newTextChunks.push(new TextChunk(
-			textChunk.text,
+			text_chunk.text,
 			newTags,
-			textChunk.inlineContent
+			text_chunk.inline_content
 		));
 	}
 	return newTextChunks;
@@ -354,12 +354,12 @@ function addCommonTag(textChunks, tag) {
  * Set link IDs in-place on text chunks
  *
  * @private
- * @param {TextChunk[]} textChunks Consecutive text chunks
+ * @param {text_chunk[]} text_chunks Consecutive text chunks
  * @param {Function} getNextId function accepting 'link' and returning next ID
  */
-function setLinkIdsInPlace(textChunks, getNextId) {
-	for (let i = 0, iLen = textChunks.length; i < iLen; i++) {
-		const tags = textChunks[i].tags;
+function set_link_ids_in_place(text_chunks, getNextId) {
+	for (let i = 0, iLen = text_chunks.length; i < iLen; i++) {
+		const tags = text_chunks[i].tags;
 		for (let j = 0, jLen = tags.length; j < jLen; j++) {
 			const tag = tags[j];
 			if (
@@ -399,7 +399,7 @@ function setLinkIdsInPlace(textChunks, getNextId) {
  * @param {Doc} sectionDoc
  * @return {boolean}
  */
-function isIgnorableBlock(sectionDoc) {
+function is_ignorable_block(sectionDoc) {
 	let ignorable = false;
 	const blockStack = [];
 	let firstBlockTemplate = null;
@@ -411,7 +411,7 @@ function isIgnorableBlock(sectionDoc) {
 
 		if (type === 'open') {
 			blockStack.push(tag);
-			if (!firstBlockTemplate && (isTransclusion(tag) || isReferenceList(tag))) {
+			if (!firstBlockTemplate && (is_transclusion(tag) || isReferenceList(tag))) {
 				firstBlockTemplate = tag;
 			}
 		}
@@ -419,7 +419,7 @@ function isIgnorableBlock(sectionDoc) {
 			const currentCloseTag = blockStack.pop();
 			if (currentCloseTag &&
 				blockStack.length === 0 &&
-				((isTransclusion(currentCloseTag) &&
+				((is_transclusion(currentCloseTag) &&
 					currentCloseTag.attributes.about === firstBlockTemplate.attributes.about) ||
 					isReferenceList(currentCloseTag))
 			) {
@@ -430,7 +430,7 @@ function isIgnorableBlock(sectionDoc) {
 		// Also check for textblocks
 		if (!firstBlockTemplate && item.type === 'textblock') {
 			const rootItem = item.item.getRootItem();
-			if (rootItem && isNonTranslatable(rootItem)) {
+			if (rootItem && is_non_translatable(rootItem)) {
 				firstBlockTemplate = rootItem;
 				// Textblock is a transclusion. Do not translate.
 				// But do not return yet. Check if there is any other textblocks translatable
@@ -445,23 +445,23 @@ function isIgnorableBlock(sectionDoc) {
 }
 
 export {
-	addCommonTag,
-	cloneOpenTag,
-	dumpTags,
+	add_common_tag,
+	clone_open_tag,
+	dump_tags,
 	esc,
 	find_all,
-	getChunkBoundaryGroups,
-	getCloseTagHtml,
-	getOpenTagHtml,
-	isIgnorableBlock,
-	isExternalLink,
-	isGallery,
-	isInlineEmptyTag,
-	isMath,
-	isReference,
-	isSegment,
-	isTransclusion,
-	isTransclusionFragment,
-	isNonTranslatable,
-	setLinkIdsInPlace
+	get_chunk_boundary_groups,
+	get_close_tag_html,
+	get_open_tag_html,
+	is_ignorable_block,
+	is_external_link,
+	is_gallery,
+	is_inline_empty_tag,
+	is_math,
+	is_reference,
+	is_segment,
+	is_transclusion,
+	is_transclusion_fragment,
+	is_non_translatable,
+	set_link_ids_in_place
 };

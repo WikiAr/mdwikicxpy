@@ -1,5 +1,5 @@
 import Doc from './Doc.js';
-import { isExternalLink, isReference, isTransclusion } from './Utils.js';
+import { is_external_link, isReference, isTransclusion } from './Utils.js';
 import TextBlock from './TextBlock.js';
 import TextChunk from './TextChunk.js';
 
@@ -118,7 +118,7 @@ class Builder {
 
 		// Allow empty external links because REST API v1 can output links with
 		// no link text (which then get a CSS generated content numbered reference).
-		if (replace && (isReference(tag) || isExternalLink(tag) || isTransclusion(tag))) {
+		if (replace && (isReference(tag) || is_external_link(tag) || isTransclusion(tag))) {
 			// truncate list and add data span as new sub-Doc.
 			this.textChunks.length = i + 1;
 			whitespace.reverse();
