@@ -1,9 +1,9 @@
 /**
- * @external text_block
+ * @external TextBlock
  */
 
 import { createHash } from 'crypto';
-import { clone_open_tag, get_close_tag_html, get_open_tag_html, isGallery, isMath, is_non_translatable } from './utils.js';
+import { cloneOpenTag, getCloseTagHtml, getOpenTagHtml, is_gallery, is_math, isNonTranslatable } from './Utils.js';
 import { getProp } from './../util.js';
 
 /**
@@ -12,7 +12,7 @@ import { getProp } from './../util.js';
  * The document is a list of items, where each items is
  * - a block open tag (e.g. <p>); or
  * - a block close tag (e.g. </p>); or
- * - a text_block of annotated inline text; or
+ * - a TextBlock of annotated inline text; or
  * - "block whitespace" (a run of whitespace separating two block boundaries)
  *
  * Some types of HTML structure get normalized away. In particular:
@@ -27,11 +27,11 @@ import { getProp } from './../util.js';
  */
 class Doc {
 	/**
-	 * @param {string} wrapper_tag open/close tags
+	 * @param {string} wrapperTag open/close tags
 	 */
-	constructor(wrapper_tag) {
+	constructor(wrapperTag) {
 		this.items = [];
-		this.wrapper_tag = wrapper_tag || null;
+		this.wrapperTag = wrapperTag || null;
 		this.categories = [];
 	}
 
@@ -43,11 +43,11 @@ class Doc {
 	 * @return {Doc} clone with modifications
 	 */
 	clone(callback) {
-		const newDoc = new Doc(this.wrapper_tag);
+		const newDoc = new Doc(this.wrapperTag);
 		for (let i = 0, len = this.items.length; i < len; i++) {
 			const item = this.items[i];
-			const new_item = callback(item);
-			newDoc.add_item(new_item.type, new_item.item);
+			const newItem = callback(item);
+			newDoc.addItem(newItem.type, newItem.item);
 		}
 		return newDoc;
 	}
@@ -57,11 +57,11 @@ class Doc {
 	 *
 	 * @method
 	 * @param {string} type Type of item: open|close|blockspace|textblock
-	 * @param {Object|string|text_block} item Open/close tag, space or text block
+	 * @param {Object|string|TextBlock} item Open/close tag, space or text block
 	 * @return {Object}
 	 * @chainable
 	 */
-	add_item(type, item) {
+	addItem(type, item) {
 		this.items.push({ type, item });
 		return this;
 	}
@@ -90,8 +90,8 @@ class Doc {
 	 * @return {Object}
 	 */
 	getRootItem() {
-		if (this.wrapper_tag) {
-			return this.wrapper_tag;
+		if (this.wrapperTag) {
+			return this.wrapperTag;
 		}
 		for (let i = 0; i < this.items.length; i++) {
 			// Ignore all blockspaces, loop till we see a tag opening
@@ -115,8 +115,8 @@ class Doc {
 			sectionNumber = 0;
 
 		// TODO: return different counters depending on type
-		function getNextId(type, tag_name) {
-			if (tag_name === 'section') {
+		function getNextId(type, tagName) {
+			if (tagName === 'section') {
 				return String(`cxSourceSection${nextSectionId++}`);
 			}
 			if (type === 'segment' || type === 'link' || type === 'block') {
@@ -130,7 +130,7 @@ class Doc {
 		for (let i = 0, len = this.items.length; i < len; i++) {
 			const item = this.items[i];
 			if (this.items[i].type === 'open') {
-				const tag = clone_open_tag(item.item);
+				const tag = cloneOpenTag(item.item);
 				if (tag.attributes.id) {
 					// If the item is a header, we make it a fixed length id using hash of
 					// the text content. Header ids are originally the header text to get
@@ -142,7 +142,7 @@ class Doc {
 						this.items[i + 1].type === 'textblock'
 					) {
 						const hash = createHash('sha256');
-						hash.update(this.items[i + 1].item.get_plain_text());
+						hash.update(this.items[i + 1].item.getPlainText());
 						// 30 is the max length of ids we allow. We also prepend the sequence id
 						// just to make sure the ids don't collide if the same text repeats.
 						tag.attributes.id = hash.digest('hex').slice(0, 30);
@@ -160,7 +160,7 @@ class Doc {
 				if (tag.name === 'section') {
 					tag.attributes['data-mw-section-number'] = sectionNumber;
 				}
-				newDoc.add_item(item.type, tag);
+				newDoc.addItem(item.type, tag);
 				// Content of tags that are either mw:Transclusion or mw:Extension need not be segmented.
 				const about = getProp(['attributes', 'about'], tag);
 				const typeOf = getProp(['attributes', 'typeof'], tag);
@@ -173,14 +173,14 @@ class Doc {
 				if (about && about === transclusionContext) {
 					transclusionContext = null;
 				}
-				newDoc.add_item(item.type, item.item);
+				newDoc.addItem(item.type, item.item);
 			} else if (this.items[i].type !== 'textblock') {
-				newDoc.add_item(item.type, item.item);
+				newDoc.addItem(item.type, item.item);
 			} else {
 				const textBlock = item.item;
-				newDoc.add_item(
+				newDoc.addItem(
 					'textblock',
-					textBlock.can_segment && !transclusionContext ?
+					textBlock.canSegment && !transclusionContext ?
 						textBlock.segment(getBoundaries, getNextId) :
 						textBlock.setLinkIds(getNextId)
 				);
@@ -195,8 +195,8 @@ class Doc {
 	 * @method
 	 * @return {string} XML version of the linear representation
 	 */
-	dump_xml() {
-		return this.dump_xml_array('').join('\n');
+	dumpXml() {
+		return this.dumpXmlArray('').join('\n');
 	}
 
 	/**
@@ -205,11 +205,11 @@ class Doc {
 	 * @method
 	 * @return {string} HTML document
 	 */
-	get_html() {
+	getHtml() {
 		const html = [];
 
-		if (this.wrapper_tag) {
-			html.push(get_open_tag_html(this.wrapper_tag));
+		if (this.wrapperTag) {
+			html.push(getOpenTagHtml(this.wrapperTag));
 		}
 		for (let i = 0, len = this.items.length; i < len; i++) {
 			const type = this.items[i].type;
@@ -221,23 +221,23 @@ class Doc {
 
 			if (type === 'open') {
 				const tag = item;
-				html.push(get_open_tag_html(tag));
+				html.push(getOpenTagHtml(tag));
 			} else if (type === 'close') {
 				const tag = item;
-				html.push(get_close_tag_html(tag));
+				html.push(getCloseTagHtml(tag));
 			} else if (type === 'blockspace') {
 				const space = item;
 				html.push(space);
 			} else if (type === 'textblock') {
 				const textblock = item;
 				// textblock html list may be quite long, so concatenate now
-				html.push(textblock.get_html());
+				html.push(textblock.getHtml());
 			} else {
 				throw new Error(`Unknown item type: ${type}`);
 			}
 		}
-		if (this.wrapper_tag) {
-			html.push(get_close_tag_html(this.wrapper_tag));
+		if (this.wrapperTag) {
+			html.push(getCloseTagHtml(this.wrapperTag));
 		}
 		return html.join('');
 	}
@@ -277,11 +277,11 @@ class Doc {
 		}
 
 		function openSection(doc) {
-			doc.add_item('open', { name: 'section', attributes: { rel: 'cx:Section' } });
+			doc.addItem('open', { name: 'section', attributes: { rel: 'cx:Section' } });
 		}
 
 		function closeSection(doc) {
-			doc.add_item('close', { name: 'section' });
+			doc.addItem('close', { name: 'section' });
 			prevSection = currSection;
 			currSection = null;
 		}
@@ -293,7 +293,7 @@ class Doc {
 			// Undo last section close
 			doc.undoAddItem();
 			currSection = prevSection;
-			doc.add_item(item.type, item.item);
+			doc.addItem(item.type, item.item);
 			closeSection(newDoc);
 		}
 
@@ -305,7 +305,7 @@ class Doc {
 
 			if (!inBody) {
 				// Till we reach body, keep on adding items to newDoc.
-				newDoc.add_item(type, tag);
+				newDoc.addItem(type, tag);
 				if (tag.name === 'body') {
 					inBody = true;
 				}
@@ -325,14 +325,14 @@ class Doc {
 					}
 				}
 
-				newDoc.add_item(item.type, tag);
+				newDoc.addItem(item.type, tag);
 			} else if (type === 'close') {
 				if (currSection && tag.name === 'body') {
 					closeSection(newDoc);
 					inBody = false;
 				}
 
-				newDoc.add_item(item.type, tag);
+				newDoc.addItem(item.type, tag);
 				if (getTagId(tag) === currSection) {
 					closeSection(newDoc);
 				}
@@ -341,7 +341,7 @@ class Doc {
 				if (prevSection && newDoc.getCurrentItem().item.name === 'section') {
 					insertToPrevSection(item, newDoc);
 				} else {
-					newDoc.add_item(type, tag);
+					newDoc.addItem(type, tag);
 				}
 			} else if (type === 'textblock') {
 				const textBlock = item.item;
@@ -367,14 +367,14 @@ class Doc {
 					if (!currSection) {
 						throw new Error(`No id for the opened section for tag ${tagForId.name}`);
 					}
-					newDoc.add_item(item.type, textBlock);
+					newDoc.addItem(item.type, textBlock);
 					// There was no open sections. Close the section now itself. If this tag is a template
 					// fragment, `isConnected` check above will insert the fragments to closed section.
 					closeSection(newDoc);
 					continue;
 				}
 
-				newDoc.add_item(item.type, textBlock);
+				newDoc.addItem(item.type, textBlock);
 			} else {
 				throw new Error(`Unknown item type: ${type}`);
 			}
@@ -390,10 +390,10 @@ class Doc {
 	 * @param {string} pad
 	 * @return {string[]} Array that will concatenate to an XML string representation
 	 */
-	dump_xml_array(pad) {
+	dumpXmlArray(pad) {
 		const dump = [];
 
-		if (this.wrapper_tag) {
+		if (this.wrapperTag) {
 			dump.push(`${pad}<cxwrapper>`);
 		}
 		for (let i = 0, len = this.items.length; i < len; i++) {
@@ -420,13 +420,13 @@ class Doc {
 				// Block of inline text
 				const textBlock = item;
 				dump.push(`${pad}<cxtextblock>`);
-				dump.push.apply(dump, textBlock.dump_xml_array(pad + '  '));
+				dump.push.apply(dump, textBlock.dumpXmlArray(pad + '  '));
 				dump.push(`${pad}</cxtextblock>`);
 			} else {
 				throw new Error(`Unknown item type: ${type}`);
 			}
 		}
-		if (this.wrapper_tag) {
+		if (this.wrapperTag) {
 			dump.push(`${pad}</cxwrapper>`);
 		}
 		return dump;
@@ -438,7 +438,7 @@ class Doc {
 	 * @method
 	 * @return {string[]} balanced html fragments, one per segment
 	 */
-	get_segments() {
+	getSegments() {
 		const segments = [];
 
 		for (let i = 0, len = this.items.length; i < len; i++) {
@@ -446,7 +446,7 @@ class Doc {
 				continue;
 			}
 			const textblock = this.items[i].item;
-			segments.push(textblock.get_html());
+			segments.push(textblock.getHtml());
 		}
 
 		return segments;
@@ -469,7 +469,7 @@ class Doc {
 	 *   attributes and content from original doc. This is required for #expand
 	 */
 	reduce(idCounter) {
-		const reducedDoc = new Doc(this.wrapper_tag);
+		const reducedDoc = new Doc(this.wrapperTag);
 		let extractedData = {};
 		idCounter = idCounter || { value: 0 };
 
@@ -492,22 +492,22 @@ class Doc {
 			return true;
 		};
 
-		if (this.wrapper_tag && hasAttributesToSave(this.wrapper_tag)) {
+		if (this.wrapperTag && hasAttributesToSave(this.wrapperTag)) {
 			idCounter.value++;
 			extractedData[idCounter.value] = {
-				attributes: Object.assign({}, this.wrapper_tag.attributes)
+				attributes: Object.assign({}, this.wrapperTag.attributes)
 			};
 
-			if (isMath(this.wrapper_tag)) {
+			if (is_math(this.wrapperTag)) {
 				// Do not send inline mw:Extention/math content to MT engines
 				// since they are known to mangle the content.
 				// Save the (inline) document in extractedData, return the document
 				// wrapper tag alone.
 				extractedData[idCounter.value].document = this;
-				this.wrapper_tag.attributes.id = idCounter.value;
+				this.wrapperTag.attributes.id = idCounter.value;
 				return { reducedDoc, extractedData };
 			}
-			this.wrapper_tag.attributes = { id: idCounter.value };
+			this.wrapperTag.attributes = { id: idCounter.value };
 		}
 		for (let i = 0, iLen = this.items.length; i < iLen; i++) {
 			const item = this.items[i];
@@ -516,7 +516,7 @@ class Doc {
 
 			if (type === 'open') {
 				const hasAttributes = hasAttributesToSave(tag);
-				const hasNonTranslatableContent = is_non_translatable(tag);
+				const hasNonTranslatableContent = isNonTranslatable(tag);
 				if (hasAttributes || hasNonTranslatableContent) {
 					idCounter.value++;
 
@@ -531,7 +531,7 @@ class Doc {
 
 					// Preserve rdfa attributes in the reduced doc so that when parsing
 					// the output from MT systems, we don't remove spans with empty content
-					// See Builder#pop_inline_annotation_tag
+					// See Builder#popInlineAnnotationTag
 					if (originalAttrs.typeof && originalAttrs.about) {
 						tag.attributes.typeof = originalAttrs.typeof;
 						tag.attributes.about = originalAttrs.about;
@@ -541,13 +541,13 @@ class Doc {
 						nonTranslatableContext = true;
 					}
 				}
-				reducedDoc.add_item(type, tag);
+				reducedDoc.addItem(type, tag);
 				continue;
 			}
 
 			if (type === 'close' || type === 'blockspace') {
-				reducedDoc.add_item(type, tag);
-				if (is_non_translatable(tag)) {
+				reducedDoc.addItem(type, tag);
+				if (isNonTranslatable(tag)) {
 					nonTranslatableContext = false;
 				}
 				continue;
@@ -560,8 +560,8 @@ class Doc {
 				);
 				continue;
 			}
-			for (let j = 0, jLen = textblock.text_chunks.length; j < jLen; j++) {
-				const chunk = textblock.text_chunks[j];
+			for (let j = 0, jLen = textblock.textChunks.length; j < jLen; j++) {
+				const chunk = textblock.textChunks[j];
 
 				if (chunk.tags) {
 					for (let k = 0, kLen = chunk.tags.length; k < kLen; k++) {
@@ -576,7 +576,7 @@ class Doc {
 						};
 						chunkTag.attributes = { id: idCounter.value };
 
-						if (is_non_translatable(originalTag)) {
+						if (isNonTranslatable(originalTag)) {
 							extractedData[idCounter.value] = Object.assign(
 								extractedData[idCounter.value] || {}, { content: chunk.text }
 							);
@@ -584,26 +584,26 @@ class Doc {
 					}
 				}
 
-				if (chunk.inline_content) {
-					if (chunk.inline_content.reduce) {
+				if (chunk.inlineContent) {
+					if (chunk.inlineContent.reduce) {
 						// Using object wrapping to pass counter by reference in order to avoid
 						// re-using already used IDs when this function continues processing.
-						const inlineReduceResult = chunk.inline_content.reduce(idCounter);
-						chunk.inline_content = inlineReduceResult.reducedDoc;
+						const inlineReduceResult = chunk.inlineContent.reduce(idCounter);
+						chunk.inlineContent = inlineReduceResult.reducedDoc;
 						extractedData = Object.assign(extractedData, inlineReduceResult.extractedData);
 					} else {
-						if (!hasAttributesToSave(chunk.inline_content)) {
+						if (!hasAttributesToSave(chunk.inlineContent)) {
 							continue;
 						}
 						idCounter.value++;
 						extractedData[idCounter.value] = {
-							attributes: Object.assign({}, chunk.inline_content.attributes)
+							attributes: Object.assign({}, chunk.inlineContent.attributes)
 						};
-						chunk.inline_content.attributes = { id: idCounter.value };
+						chunk.inlineContent.attributes = { id: idCounter.value };
 					}
 				}
 			}
-			reducedDoc.add_item(type, tag);
+			reducedDoc.addItem(type, tag);
 		}
 
 		return { reducedDoc, extractedData };
@@ -617,19 +617,19 @@ class Doc {
 	 * @return {Doc} The expanded document.
 	 */
 	expand(extractedData) {
-		const expandedDoc = new Doc(this.wrapper_tag);
+		const expandedDoc = new Doc(this.wrapperTag);
 		let id = 0;
 
 		const hasAttributes = (obj) => obj.attributes && Object.keys(obj.attributes).length;
-		if (this.wrapper_tag && hasAttributes(this.wrapper_tag)) {
-			id = this.wrapper_tag.attributes.id;
+		if (this.wrapperTag && hasAttributes(this.wrapperTag)) {
+			id = this.wrapperTag.attributes.id;
 			if (extractedData[id]) {
 				if (extractedData[id].document) {
 					// The inline document is extracted as a whole. Return it.
 					// This happens for mw:Extension/math.
 					return extractedData[id].document;
 				}
-				this.wrapper_tag.attributes = extractedData[id].attributes;
+				this.wrapperTag.attributes = extractedData[id].attributes;
 			}
 		}
 		for (let i = 0, iLen = this.items.length; i < iLen; i++) {
@@ -647,12 +647,12 @@ class Doc {
 						tag.attributes = id ? { id } : {};
 					}
 				}
-				expandedDoc.add_item(type, tag);
+				expandedDoc.addItem(type, tag);
 				if (extractedData[id] && extractedData[id].content) {
 					// Make sure the content is a textblock object
 					// before adding to the doc as a textblock
 					if (typeof extractedData[id].content === 'object') {
-						expandedDoc.add_item('textblock', extractedData[id].content);
+						expandedDoc.addItem('textblock', extractedData[id].content);
 						// Skip the next item in the loop since we replaced it with the content
 						// from extracted data
 						i++;
@@ -662,14 +662,14 @@ class Doc {
 			}
 
 			if (type === 'close' || type === 'blockspace') {
-				expandedDoc.add_item(type, tag);
+				expandedDoc.addItem(type, tag);
 				continue;
 			}
 
 			const textblock = tag;
 			const expandedIds = [];
-			for (let j = 0, len = textblock.text_chunks.length; j < len; j++) {
-				const chunk = textblock.text_chunks[j];
+			for (let j = 0, len = textblock.textChunks.length; j < len; j++) {
+				const chunk = textblock.textChunks[j];
 
 				if (chunk.tags) {
 					for (let k = 0, kLen = chunk.tags.length; k < kLen; k++) {
@@ -700,20 +700,20 @@ class Doc {
 						}
 					}
 				}
-				if (chunk.inline_content) {
-					if (chunk.inline_content.expand) {
-						chunk.inline_content = chunk.inline_content.expand(extractedData);
+				if (chunk.inlineContent) {
+					if (chunk.inlineContent.expand) {
+						chunk.inlineContent = chunk.inlineContent.expand(extractedData);
 					} else {
-						id = chunk.inline_content.attributes.id;
+						id = chunk.inlineContent.attributes.id;
 						if (extractedData[id]) {
-							chunk.inline_content.attributes = extractedData[id].attributes;
+							chunk.inlineContent.attributes = extractedData[id].attributes;
 						} else {
-							chunk.inline_content.attributes = id ? { id } : {};
+							chunk.inlineContent.attributes = id ? { id } : {};
 						}
 					}
 				}
 			}
-			expandedDoc.add_item(type, tag);
+			expandedDoc.addItem(type, tag);
 		}
 
 		return expandedDoc;
@@ -729,31 +729,31 @@ class Doc {
 	async adapt(getAdapter) {
 		let adapter, newDoc = new Doc();
 
-		if (this.wrapper_tag) {
-			adapter = getAdapter(this.wrapper_tag);
+		if (this.wrapperTag) {
+			adapter = getAdapter(this.wrapperTag);
 			if (adapter) {
 				newDoc = new Doc(await adapter.adapt());
 			} else {
-				newDoc = new Doc(this.wrapper_tag);
+				newDoc = new Doc(this.wrapperTag);
 			}
 		}
 		let transclusionContext = null;
 		for (let i = 0, len = this.items.length; i < len; i++) {
 			const item = this.items[i];
 			if (this.items[i].type === 'open') {
-				const tag = clone_open_tag(item.item);
+				const tag = cloneOpenTag(item.item);
 				if (i + 1 < len && this.items[i + 1].type === 'textblock') {
 					tag.children = this.items[i + 1].item;
 				}
 				adapter = getAdapter(tag);
 				if (adapter && !transclusionContext) {
 					// Do not adapt translation units under a transclusionContext
-					newDoc.add_item(item.type, await adapter.adapt());
+					newDoc.addItem(item.type, await adapter.adapt());
 				} else {
-					newDoc.add_item(item.type, tag);
+					newDoc.addItem(item.type, tag);
 				}
 				const about = getProp(['attributes', 'about'], tag);
-				if (about && !isGallery(tag)) {
+				if (about && !is_gallery(tag)) {
 					// Presence of about attribute tells us that it is a transclusion or
 					// transclusion fragment. The innerbody of the transclusion can be
 					// skipped from adaption. Except in the case of Gallery with
@@ -766,19 +766,19 @@ class Doc {
 				if (about && about === transclusionContext) {
 					transclusionContext = null;
 				}
-				newDoc.add_item(item.type, item.item);
+				newDoc.addItem(item.type, item.item);
 			} else if (this.items[i].type !== 'textblock') {
-				newDoc.add_item(item.type, item.item);
+				newDoc.addItem(item.type, item.item);
 			} else {
 				const textBlock = item.item;
 				if (!transclusionContext) {
 					// Do not adapt translation units under a transclusionContext
-					newDoc.add_item(
+					newDoc.addItem(
 						'textblock',
 						await textBlock.adapt(getAdapter)
 					);
 				} else {
-					newDoc.add_item(item.type, item.item);
+					newDoc.addItem(item.type, item.item);
 				}
 			}
 		}

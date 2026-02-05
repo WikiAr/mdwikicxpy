@@ -2,7 +2,7 @@
  * @external Doc
  */
 
-const text_chunk = require('./text_chunk');
+const TextChunk = require('./text_chunk');
 const cxutil = require('./util');
 
 /**
@@ -161,7 +161,7 @@ function is_reference(tag) {
  * @param {Object} tag SAX open tag object
  * @return {boolean} Whether the tag is a mediawiki math span
  */
-function isMath(tag) {
+function is_math(tag) {
 	if ((tag.name === 'span' || tag.name === 'sup') && tag.attributes.typeof === 'mw:Extension/math') {
 		return true;
 	}
@@ -174,7 +174,7 @@ function isMath(tag) {
  * @param {Object} tag SAX open tag object
  * @return {boolean} Whether the tag is a mediawiki Gallery
  */
-function isGallery(tag) {
+function is_gallery(tag) {
 	return (tag.name === 'ul') && tag.attributes.typeof === 'mw:Extension/gallery';
 }
 
@@ -189,7 +189,7 @@ function isReferenceList(tag) {
  * @param {Object} tag SAX open tag object
  * @return {boolean} Whether the tag is a external link or not.
  */
-function isExternalLink(tag) {
+function is_external_link(tag) {
 	return tag.name === 'a' && tag.attributes &&
 		tag.attributes.rel &&
 		// We add the spaces before and after to ensure matching on the "word" mw:ExtLink
@@ -341,7 +341,7 @@ function add_common_tag(text_chunks, tag) {
 		const text_chunk = text_chunks[i];
 		const newTags = text_chunk.tags.slice();
 		newTags.splice(commonTagLength, 0, tag);
-		newTextChunks.push(new text_chunk(
+		newTextChunks.push(new TextChunk(
 			text_chunk.text,
 			newTags,
 			text_chunk.inline_content
@@ -399,7 +399,7 @@ function set_link_ids_in_place(text_chunks, getNextId) {
  * @param {Doc} sectionDoc
  * @return {boolean}
  */
-function isIgnorableBlock(sectionDoc) {
+function is_ignorable_block(sectionDoc) {
 	let ignorable = false;
 	const blockStack = [];
 	let firstBlockTemplate = null;
@@ -453,11 +453,11 @@ export {
 	get_chunk_boundary_groups,
 	get_close_tag_html,
 	get_open_tag_html,
-	isIgnorableBlock,
-	isExternalLink,
-	isGallery,
+	is_ignorable_block,
+	is_external_link,
+	is_gallery,
 	is_inline_empty_tag,
-	isMath,
+	is_math,
 	is_reference,
 	is_segment,
 	is_transclusion,

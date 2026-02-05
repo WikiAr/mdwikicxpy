@@ -8,6 +8,26 @@ from . import util as cxutil
 from .text_chunk import text_chunk
 
 
+def find_all(text, regex, callback):
+    """
+    Find all matches of regex in text, calling callback with each match object.
+
+    Args:
+        text: The text to search
+        regex: The regex to search
+        callback: Function to call with each match
+
+    Returns:
+        The return values from the callback
+    """
+    boundaries = []
+    for match in regex.finditer(text):
+        boundary = callback(text, match)
+        if boundary is not None:
+            boundaries.append(boundary)
+    return boundaries
+
+
 def esc(s):
     """
     Escape text for inclusion in HTML, not inside a tag.
@@ -21,20 +41,20 @@ def esc(s):
     return s.replace("&", "&#38;").replace("<", "&#60;").replace(">", "&#62;")
 
 
-def esc_attr(s):
-    """
-    Escape text for inclusion inside an HTML attribute.
+html_escape_table = {
+    "&": "&amp;",
+    '"': "&quot;",
+    "'": "&apos;",
+    ">": "&gt;",
+    "<": "&lt;",
+}
 
-    Args:
-        s: String to escape
 
-    Returns:
-        Escaped version of the string
-    """
+def esc_attr(s) -> str:
     s = str(s)
-    return (
-        s.replace('"', "&#34;").replace("'", "&#39;").replace("&", "&#38;").replace("<", "&#60;").replace(">", "&#62;")
-    )
+    # Replace ", ', &, <, > with their HTML numeric entities
+    # return "".join(html_escape_table.get(c, c) for c in s)
+    return re.sub(r'["\'&<>]', lambda m: f'&#{ord(m.group(0))};', s)
 
 
 def get_open_tag_html(tag):
@@ -416,23 +436,3 @@ def is_ignorable_block(section_doc):
                 return False
 
     return ignorable
-
-
-def find_all(text, regex, callback):
-    """
-    Find all matches of regex in text, calling callback with each match object.
-
-    Args:
-        text: The text to search
-        regex: The regex to search
-        callback: Function to call with each match
-
-    Returns:
-        The return values from the callback
-    """
-    boundaries = []
-    for match in regex.finditer(text):
-        boundary = callback(text, match)
-        if boundary is not None:
-            boundaries.append(boundary)
-    return boundaries

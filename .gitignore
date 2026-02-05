@@ -1,27 +1,11 @@
-*.html
 cxsever/www/js/package-lock.json
 cxsever/www/js/se2.js
-
-/old
-/مقارنة
 *.lnk
-public_html/web1.config
 **.tar.gz
-public_html/mediawiki/*
-public_html/mediawiki1
-public_html/md1
-
-public_html/w/extensions/ContentTranslation
-!public_html/w/includes/language/LanguageNameUtils.php
-public_html/mdx
 /cxsever/www/js/node_modules
-public_html/web.config
-/public_html/ww
 /cxsever/www/new_js
 /cxsever/www/js2
-/public_html/get_html/test2
 /node_modules
-/public_html/w
 
 # Python
 __pycache__/
