@@ -7,7 +7,7 @@ import os
 import sys
 import json
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'cxsever', 'www', 'python'))
+
 
 from lib.processor import process_html
 from lib.lineardoc import Parser, MwContextualizer, Doc, TextBlock
@@ -17,21 +17,21 @@ from lib.segmentation import CXSegmenter
 def test_basic_html_processing():
     """Test basic HTML processing."""
     print("Testing basic HTML processing...")
-    
+
     html = '<p>This is a test. This is another sentence.</p>'
     result = process_html(html)
-    
+
     assert 'cx-segment' in result, "Should contain segments"
     assert 'data-segmentid' in result, "Should contain segment IDs"
     assert '<section' in result, "Should contain section wrapper"
-    
+
     print("✓ Basic HTML processing works")
 
 
 def test_mediawiki_elements():
     """Test MediaWiki-specific elements."""
     print("\nTesting MediaWiki elements...")
-    
+
     html = '''
     <html>
     <body>
@@ -44,20 +44,20 @@ def test_mediawiki_elements():
     </body>
     </html>
     '''
-    
+
     result = process_html(html)
-    
+
     assert 'cx-link' in result, "Should process WikiLinks"
     assert 'data-linkid' in result, "Should add link IDs"
     assert 'cx:Figure' in result, "Should mark figures"
-    
+
     print("✓ MediaWiki elements processed correctly")
 
 
 def test_section_wrapping():
     """Test section wrapping."""
     print("\nTesting section wrapping...")
-    
+
     html = '''
     <html>
     <body>
@@ -68,20 +68,20 @@ def test_section_wrapping():
     </body>
     </html>
     '''
-    
+
     result = process_html(html)
-    
+
     section_count = result.count('<section')
     assert section_count >= 2, f"Should have at least 2 sections, got {section_count}"
     assert 'cx:Section' in result, "Should mark sections"
-    
+
     print(f"✓ Section wrapping works ({section_count} sections)")
 
 
 def test_segmentation():
     """Test text segmentation."""
     print("\nTesting segmentation...")
-    
+
     html = '''
     <html>
     <body>
@@ -89,19 +89,19 @@ def test_segmentation():
     </body>
     </html>
     '''
-    
+
     result = process_html(html)
-    
+
     segment_count = result.count('cx-segment')
     assert segment_count >= 2, f"Should have at least 2 segments, got {segment_count}"
-    
+
     print(f"✓ Segmentation works ({segment_count} segments)")
 
 
 def test_reference_handling():
     """Test reference handling."""
     print("\nTesting reference handling...")
-    
+
     html = '''
     <html>
     <body>
@@ -109,19 +109,19 @@ def test_reference_handling():
     </body>
     </html>
     '''
-    
+
     result = process_html(html)
-    
+
     # References should be preserved as inline content
     assert 'reference' in result, "Should preserve references"
-    
+
     print("✓ Reference handling works")
 
 
 def test_empty_input():
     """Test empty input handling."""
     print("\nTesting empty input...")
-    
+
     html = ''
     try:
         result = process_html(html)
@@ -135,7 +135,7 @@ def test_empty_input():
 def test_complex_nesting():
     """Test complex nested structures."""
     print("\nTesting complex nesting...")
-    
+
     html = '''
     <html>
     <body>
@@ -152,15 +152,15 @@ def test_complex_nesting():
     </body>
     </html>
     '''
-    
+
     result = process_html(html)
-    
+
     # Tags should be preserved (either as-is or escaped)
     assert '<b>' in result or 'bold' in result, "Should preserve bold content"
     assert '<i>' in result or 'italic' in result, "Should preserve italic content"
     assert '<li' in result, "Should preserve list items"
     assert 'Item 1' in result, "Should preserve list content"
-    
+
     print("✓ Complex nesting handled correctly")
 
 
@@ -169,7 +169,7 @@ def run_all_tests():
     print("="*60)
     print("CX HTML Processing Pipeline - Comprehensive Test Suite")
     print("="*60)
-    
+
     try:
         test_basic_html_processing()
         test_mediawiki_elements()
@@ -178,7 +178,7 @@ def run_all_tests():
         test_reference_handling()
         test_empty_input()
         test_complex_nesting()
-        
+
         print("\n" + "="*60)
         print("ALL TESTS PASSED ✓")
         print("="*60)

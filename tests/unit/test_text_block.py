@@ -6,7 +6,7 @@ import os
 import sys
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'cxsever', 'www', 'python'))
+
 
 from lib.lineardoc.text_chunk import TextChunk
 from lib.lineardoc.text_block import TextBlock
@@ -14,7 +14,7 @@ from lib.lineardoc.text_block import TextBlock
 
 class TestTextBlockCreation:
     """Test TextBlock initialization."""
-    
+
     def test_text_block_creation_simple(self):
         """Test creating a simple TextBlock."""
         chunks = [TextChunk('hello', [])]
@@ -22,13 +22,13 @@ class TestTextBlockCreation:
         assert block.text_chunks == chunks
         assert block.can_segment is True
         assert len(block.offsets) == 1
-    
+
     def test_text_block_creation_non_segmentable(self):
         """Test creating non-segmentable TextBlock."""
         chunks = [TextChunk('hello', [])]
         block = TextBlock(chunks, can_segment=False)
         assert block.can_segment is False
-    
+
     def test_text_block_offsets_calculation(self):
         """Test that offsets are calculated correctly."""
         chunks = [
@@ -41,7 +41,7 @@ class TestTextBlockCreation:
         assert block.offsets[0]['length'] == 5
         assert block.offsets[1]['start'] == 5
         assert block.offsets[1]['length'] == 6
-    
+
     def test_text_block_empty_chunks(self):
         """Test TextBlock with empty chunks."""
         chunks = [TextChunk('', [])]
@@ -53,13 +53,13 @@ class TestTextBlockCreation:
 
 class TestTextBlockCommonTags:
     """Test get_common_tags method."""
-    
+
     def test_get_common_tags_empty(self):
         """Test getting common tags from empty block."""
         chunks = []
         block = TextBlock(chunks)
         assert block.get_common_tags() == []
-    
+
     def test_get_common_tags_single_chunk(self):
         """Test getting common tags from single chunk."""
         tags = [{'name': 'b'}, {'name': 'i'}]
@@ -69,7 +69,7 @@ class TestTextBlockCommonTags:
         assert len(common) == 2
         assert common[0]['name'] == 'b'
         assert common[1]['name'] == 'i'
-    
+
     def test_get_common_tags_all_same(self):
         """Test getting common tags when all chunks have same tags."""
         tags = [{'name': 'b'}]
@@ -81,7 +81,7 @@ class TestTextBlockCommonTags:
         common = block.get_common_tags()
         assert len(common) == 1
         assert common[0]['name'] == 'b'
-    
+
     def test_get_common_tags_partial_common(self):
         """Test getting common tags when only some are common."""
         chunks = [
@@ -92,7 +92,7 @@ class TestTextBlockCommonTags:
         common = block.get_common_tags()
         assert len(common) == 1
         assert common[0]['name'] == 'b'
-    
+
     def test_get_common_tags_no_common(self):
         """Test getting common tags when none are common."""
         chunks = [
@@ -102,7 +102,7 @@ class TestTextBlockCommonTags:
         block = TextBlock(chunks)
         common = block.get_common_tags()
         assert len(common) == 0
-    
+
     def test_get_common_tags_different_lengths(self):
         """Test common tags with different tag counts."""
         chunks = [
@@ -117,7 +117,7 @@ class TestTextBlockCommonTags:
 
 class TestTextBlockTagOffsets:
     """Test get_tag_offsets method."""
-    
+
     def test_get_tag_offsets_simple(self):
         """Test getting tag offsets."""
         chunks = [
@@ -131,7 +131,7 @@ class TestTextBlockTagOffsets:
         assert len(offsets) == 1
         assert offsets[0]['start'] == 5  # After 'plain'
         assert offsets[0]['length'] == 4  # Length of 'bold'
-    
+
     def test_get_tag_offsets_all_common(self):
         """Test tag offsets when all tags are common."""
         tags = [{'name': 'b'}]
@@ -143,7 +143,7 @@ class TestTextBlockTagOffsets:
         offsets = block.get_tag_offsets()
         # No non-common tags
         assert len(offsets) == 0
-    
+
     def test_get_tag_offsets_empty_text(self):
         """Test that empty text chunks are not included in offsets."""
         chunks = [
@@ -159,7 +159,7 @@ class TestTextBlockTagOffsets:
 
 class TestTextBlockGetTextChunkAt:
     """Test get_text_chunk_at method."""
-    
+
     def test_get_text_chunk_at_first(self):
         """Test getting chunk at start."""
         chunks = [
@@ -169,7 +169,7 @@ class TestTextBlockGetTextChunkAt:
         block = TextBlock(chunks)
         chunk = block.get_text_chunk_at(0)
         assert chunk.text == 'hello'
-    
+
     def test_get_text_chunk_at_second(self):
         """Test getting chunk in second position."""
         chunks = [
@@ -180,7 +180,7 @@ class TestTextBlockGetTextChunkAt:
         block = TextBlock(chunks)
         chunk = block.get_text_chunk_at(5)  # Start of ' world'
         assert chunk.text == ' world'
-    
+
     def test_get_text_chunk_at_middle_of_chunk(self):
         """Test getting chunk in middle of text."""
         chunks = [
@@ -190,7 +190,7 @@ class TestTextBlockGetTextChunkAt:
         block = TextBlock(chunks)
         chunk = block.get_text_chunk_at(2)  # Middle of 'hello'
         assert chunk.text == 'hello'
-    
+
     def test_get_text_chunk_at_end(self):
         """Test getting chunk - last iteration returns first chunk if no match."""
         chunks = [
@@ -206,7 +206,7 @@ class TestTextBlockGetTextChunkAt:
 
 class TestTextBlockGetTagForId:
     """Test get_tag_for_id method."""
-    
+
     def test_get_tag_for_id_with_inline_content(self):
         """Test getting tag when inline content exists."""
         inline_content = {'name': 'img', 'attributes': {'src': 'test.jpg'}}
@@ -214,7 +214,7 @@ class TestTextBlockGetTagForId:
         block = TextBlock(chunks)
         tag = block.get_tag_for_id()
         assert tag == inline_content
-    
+
     def test_get_tag_for_id_no_inline_content(self):
         """Test getting tag when no inline content."""
         chunks = [TextChunk('text', [])]
@@ -225,13 +225,13 @@ class TestTextBlockGetTagForId:
 
 class TestTextBlockGetPlainText:
     """Test get_plain_text method."""
-    
+
     def test_get_plain_text_simple(self):
         """Test getting plain text from simple block."""
         chunks = [TextChunk('hello world', [])]
         block = TextBlock(chunks)
         assert block.get_plain_text() == 'hello world'
-    
+
     def test_get_plain_text_multiple_chunks(self):
         """Test getting plain text from multiple chunks."""
         chunks = [
@@ -241,7 +241,7 @@ class TestTextBlockGetPlainText:
         ]
         block = TextBlock(chunks)
         assert block.get_plain_text() == 'hello world'
-    
+
     def test_get_plain_text_with_tags(self):
         """Test that tags don't affect plain text."""
         chunks = [
@@ -251,7 +251,7 @@ class TestTextBlockGetPlainText:
         ]
         block = TextBlock(chunks)
         assert block.get_plain_text() == 'plainbolditalic'
-    
+
     def test_get_plain_text_empty(self):
         """Test getting plain text from empty block."""
         chunks = [TextChunk('', [])]
