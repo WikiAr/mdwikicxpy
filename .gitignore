@@ -33,6 +33,9 @@ venv/
 env/
 ENV/
 .pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
 
 # Test outputs
 tests/fixtures/output_*.html
