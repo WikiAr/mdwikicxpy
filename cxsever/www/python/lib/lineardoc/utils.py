@@ -8,6 +8,26 @@ from . import util as cxutil
 from .text_chunk import TextChunk
 
 
+
+def find_all(text, regex, callback):
+    """
+    Find all matches of regex in text, calling callback with each match object.
+
+    Args:
+        text: The text to search
+        regex: The regex to search
+        callback: Function to call with each match
+
+    Returns:
+        The return values from the callback
+    """
+    boundaries = []
+    for match in regex.finditer(text):
+        boundary = callback(text, match)
+        if boundary is not None:
+            boundaries.append(boundary)
+    return boundaries
+
 def esc(s):
     """
     Escape text for inclusion in HTML, not inside a tag.
@@ -416,23 +436,3 @@ def is_ignorable_block(section_doc):
                 return False
 
     return ignorable
-
-
-def find_all(text, regex, callback):
-    """
-    Find all matches of regex in text, calling callback with each match object.
-
-    Args:
-        text: The text to search
-        regex: The regex to search
-        callback: Function to call with each match
-
-    Returns:
-        The return values from the callback
-    """
-    boundaries = []
-    for match in regex.finditer(text):
-        boundary = callback(text, match)
-        if boundary is not None:
-            boundaries.append(boundary)
-    return boundaries
