@@ -6,7 +6,7 @@ import os
 import sys
 
 # Add the parent directory to the path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cxsever', 'www', 'python'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'cxsever', 'www', 'python'))
 
 from lib.processor import process_html
 
@@ -14,8 +14,8 @@ from lib.processor import process_html
 def test_processing():
     """Test HTML processing with fixture files."""
     # Load input HTML
-    input_path = os.path.join(os.path.dirname(__file__), 'fixtures', 'input_1.html')
-    expected_path = os.path.join(os.path.dirname(__file__), 'fixtures', 'expected_1.html')
+    input_path = os.path.join(os.path.dirname(__file__), '..', 'fixtures', 'input_1.html')
+    expected_path = os.path.join(os.path.dirname(__file__), '..', 'fixtures', 'expected_1.html')
     
     with open(input_path, 'r', encoding='utf-8') as f:
         input_html = f.read()
@@ -27,7 +27,7 @@ def test_processing():
     result = process_html(input_html)
     
     # Save result for inspection
-    output_path = os.path.join(os.path.dirname(__file__), 'fixtures', 'output_1.html')
+    output_path = os.path.join(os.path.dirname(__file__), '..', 'fixtures', 'output_1.html')
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(result)
     
