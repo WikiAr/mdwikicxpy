@@ -22,3 +22,17 @@ public_html/web.config
 /public_html/get_html/test2
 /node_modules
 /public_html/w
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.pytest_cache/
+
+# Test outputs
+tests/fixtures/output_*.html
