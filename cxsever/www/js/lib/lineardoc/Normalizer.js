@@ -1,7 +1,5 @@
-'use strict';
-
-const SAXParser = require( 'sax' ).SAXParser;
-const Utils = require( './Utils' );
+import sax from 'sax';
+import { getCloseTagHtml, getOpenTagHtml } from './Utils.js';
 
 /**
  * Escape text for inclusion in HTML, not inside a tag.
@@ -10,8 +8,8 @@ const Utils = require( './Utils' );
  * @param {string} str String to escape
  * @return {string} Escaped version of the string
  */
-function esc( str ) {
-	return str.replace( /[&<>]/g, ( ch ) => '&#' + ch.charCodeAt( 0 ) + ';' );
+function esc(str) {
+	return str.replace(/[&<>]/g, (ch) => '&#' + ch.charCodeAt(0) + ';');
 }
 
 /**
@@ -20,11 +18,11 @@ function esc( str ) {
  * @class
  * @constructor
  */
-class Normalizer extends SAXParser {
+class Normalizer extends sax.SAXParser {
 	constructor() {
-		super( false, {
+		super(false, {
 			lowercase: true
-		} );
+		});
 	}
 
 	init() {
@@ -32,27 +30,27 @@ class Normalizer extends SAXParser {
 		this.tags = [];
 	}
 
-	onopentag( tag ) {
-		this.tags.push( tag );
-		this.doc.push( Utils.getOpenTagHtml( tag ) );
+	onopentag(tag) {
+		this.tags.push(tag);
+		this.doc.push(getOpenTagHtml(tag));
 	}
 
-	onclosetag( tagName ) {
+	onclosetag(tagName) {
 		const tag = this.tags.pop();
-		if ( tag.name !== tagName ) {
-			throw new Error( 'Unmatched tags: ' + tag.name + ' !== ' + tagName );
+		if (tag.name !== tagName) {
+			throw new Error('Unmatched tags: ' + tag.name + ' !== ' + tagName);
 		}
-		this.doc.push( Utils.getCloseTagHtml( tag ) );
+		this.doc.push(getCloseTagHtml(tag));
 	}
 
-	ontext( text ) {
-		this.doc.push( esc( text ) );
+	ontext(text) {
+		this.doc.push(esc(text));
 	}
 
 	getHtml() {
-		return this.doc.join( '' );
+		return this.doc.join('');
 	}
 
 }
 
-module.exports = Normalizer;
+export default Normalizer;
