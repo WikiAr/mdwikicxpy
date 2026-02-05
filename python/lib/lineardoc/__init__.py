@@ -9,11 +9,11 @@ from .mw_contextualizer import mw_contextualizer
 from .normalizer import Normalizer
 from .parser import Parser
 from .text_block import text_block
-from .text_chunk import text_chunk
+from .text_chunk import TextChunk
 from .util import get_prop
 
 __all__ = [
-    "text_chunk",
+    "TextChunk",
     "text_block",
     "Doc",
     "Normalizer",

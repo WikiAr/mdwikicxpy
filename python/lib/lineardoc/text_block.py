@@ -5,7 +5,7 @@ text_block - A block of annotated inline text.
 import re
 
 from . import utils
-from .text_chunk import text_chunk
+from .text_chunk import TextChunk
 
 
 class text_block:
@@ -124,7 +124,7 @@ class text_block:
                 {
                     "start": range_mapping["target"]["start"],
                     "length": range_mapping["target"]["length"],
-                    "text_chunk": text_chunk(text, source_text_chunk.tags, source_text_chunk.inline_content),
+                    "text_chunk": TextChunk(text, source_text_chunk.tags, source_text_chunk.inline_content),
                 }
             )
 
@@ -160,7 +160,7 @@ class text_block:
                     {
                         "start": pos,
                         "length": text_chunk["start"] - pos,
-                        "text_chunk": text_chunk(target_text[pos : text_chunk["start"]], common_tags),
+                        "text_chunk": TextChunk(target_text[pos : text_chunk["start"]], common_tags),
                     },
                 )
                 i += 1
@@ -178,7 +178,7 @@ class text_block:
 
         if tail:
             # Append tail as text with common_tags
-            text_chunks.append({"start": pos, "length": len(tail), "text_chunk": text_chunk(tail, common_tags)})
+            text_chunks.append({"start": pos, "length": len(tail), "text_chunk": TextChunk(tail, common_tags)})
             pos += len(tail)
 
         # Copy any remaining text_chunks that have no text
@@ -188,7 +188,7 @@ class text_block:
         if tail_space:
             # Append tail_space as text with common_tags
             text_chunks.append(
-                {"start": pos, "length": len(tail_space), "text_chunk": text_chunk(tail_space, common_tags)}
+                {"start": pos, "length": len(tail_space), "text_chunk": TextChunk(tail_space, common_tags)}
             )
 
         return text_block([x["text_chunk"] for x in text_chunks])
@@ -332,8 +332,8 @@ class text_block:
                 if rel_offset == 0:
                     flush_chunks()
                 else:
-                    left_part = text_chunk(text_chunk.text[:rel_offset], text_chunk.tags[:])
-                    right_part = text_chunk(text_chunk.text[rel_offset:], text_chunk.tags[:], text_chunk.inline_content)
+                    left_part = TextChunk(text_chunk.text[:rel_offset], text_chunk.tags[:])
+                    right_part = TextChunk(text_chunk.text[rel_offset:], text_chunk.tags[:], text_chunk.inline_content)
                     current_text_chunks.append(left_part)
                     offset += rel_offset
                     flush_chunks()

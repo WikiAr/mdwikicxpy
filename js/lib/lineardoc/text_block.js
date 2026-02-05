@@ -1,4 +1,4 @@
-import text_chunk from './text_chunk.js';
+import TextChunk from './text_chunk.js';
 import { add_common_tag, dump_tags, esc, get_chunk_boundary_groups, get_close_tag_html, get_open_tag_html, is_transclusion, is_transclusion_fragment, set_link_ids_in_place } from './utils.js';
 import { getProp } from './../util.js';
 
@@ -50,7 +50,7 @@ class text_block {
 	 *
 	 * @method
 	 * @param {number} charOffset The char offset of the text_chunk
-	 * @return {text_chunk} The text chunk
+	 * @return {TextChunk} The text chunk
 	 */
 	get_text_chunk_at(charOffset) {
 		let i, len;
@@ -141,7 +141,7 @@ class text_block {
 			text_chunks.push({
 				start: rangeMapping.target.start,
 				length: rangeMapping.target.length,
-				text_chunk: new text_chunk(
+				text_chunk: new TextChunk(
 					text, sourceTextChunk.tags, sourceTextChunk.inline_content
 				)
 			});
@@ -180,7 +180,7 @@ class text_block {
 				text_chunks.splice(i, 0, {
 					start: pos,
 					length: text_chunk.start - pos,
-					text_chunk: new text_chunk(
+					text_chunk: new TextChunk(
 						targetText.slice(pos, text_chunk.start), commonTags
 					)
 				});
@@ -202,7 +202,7 @@ class text_block {
 			text_chunks.push({
 				start: pos,
 				length: tail.length,
-				text_chunk: new text_chunk(tail, commonTags)
+				text_chunk: new TextChunk(tail, commonTags)
 			});
 			pos += tail.length;
 		}
@@ -217,7 +217,7 @@ class text_block {
 			text_chunks.push({
 				start: pos,
 				length: tailSpace.length,
-				text_chunk: new text_chunk(tailSpace, commonTags)
+				text_chunk: new TextChunk(tailSpace, commonTags)
 			});
 			pos += tail.length;
 		}
@@ -384,10 +384,10 @@ class text_block {
 				if (relOffset === 0) {
 					flushChunks();
 				} else {
-					const leftPart = new text_chunk(
+					const leftPart = new TextChunk(
 						text_chunk.text.slice(0, relOffset), text_chunk.tags.slice()
 					);
-					const rightPart = new text_chunk(
+					const rightPart = new TextChunk(
 						text_chunk.text.slice(relOffset),
 						text_chunk.tags.slice(),
 						text_chunk.inline_content
