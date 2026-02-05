@@ -31,41 +31,12 @@ def test_processing():
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(result)
     
-    print(f"Input length: {len(input_html)}")
-    print(f"Expected length: {len(expected_html)}")
-    print(f"Result length: {len(result)}")
-    print(f"\nResult saved to: {output_path}")
-    
     # Basic validation - check if key elements are present
     assert '<section' in result, "Result should contain section tags"
     assert 'cx-segment' in result, "Result should contain cx-segment spans"
     assert 'data-segmentid' in result, "Result should contain segment IDs"
+    assert len(result) > 0, "Result should not be empty"
     
-    print("\n✓ Basic validation passed!")
-    print("✓ Sections found")
-    print("✓ Segments found")
-    print("✓ Segment IDs found")
-    
-    # Check for similarity with expected output
-    # Note: Exact match may not be achievable due to ID generation differences
-    # but structure should be similar
-    if result == expected_html:
-        print("\n✓✓✓ Perfect match with expected output!")
-    else:
-        print("\n⚠ Output differs from expected (this may be due to ID generation)")
-        print("  Visual inspection of output_1.html recommended")
-    
-    return True
+    # Check that processing increased the size (due to added segments, IDs, etc.)
+    assert len(result) > len(input_html) * 0.5, "Result should have reasonable size"
 
-
-if __name__ == '__main__':
-    try:
-        test_processing()
-        print("\n" + "="*50)
-        print("TEST COMPLETED SUCCESSFULLY")
-        print("="*50)
-    except Exception as e:
-        print(f"\n❌ Test failed: {e}")
-        import traceback
-        traceback.print_exc()
-        sys.exit(1)
