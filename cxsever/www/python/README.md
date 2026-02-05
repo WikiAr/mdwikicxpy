@@ -15,19 +15,19 @@ The CX server processes MediaWiki HTML through a pipeline that:
 ## Architecture
 
 ### Core Data Classes
-- `TextChunk` - A chunk of uniformly-annotated inline text
-- `TextBlock` - A block of annotated inline text
+- `text_chunk` - A chunk of uniformly-annotated inline text
+- `text_block` - A block of annotated inline text
 - `Doc` - An HTML document in linear representation
 
 ### Processing Modules
 - `Parser` - SAX-style HTML parser using lxml
 - `Builder` - Document builder for creating linear documents
 - `Contextualizer` - Base contextualizer for HTML
-- `MwContextualizer` - MediaWiki-specific contextualizer
+- `mw_contextualizer` - MediaWiki-specific contextualizer
 - `CXSegmenter` - Sentence boundary detection using pysbd
 
 ### Utilities
-- `Utils` - HTML processing and tag manipulation utilities
+- `utils` - HTML processing and tag manipulation utilities
 - `Normalizer` - XML/HTML normalizer
 
 ## Installation
@@ -111,8 +111,8 @@ cxsever/www/python/
 │   ├── processor.py                # Main processing pipeline
 │   ├── lineardoc/
 │   │   ├── __init__.py
-│   │   ├── text_chunk.py          # TextChunk class
-│   │   ├── text_block.py          # TextBlock class
+│   │   ├── text_chunk.py          # text_chunk class
+│   │   ├── text_block.py          # text_block class
 │   │   ├── doc.py                 # Doc class
 │   │   ├── utils.py               # Utility functions
 │   │   ├── util.py                # Helper utilities

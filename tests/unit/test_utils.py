@@ -7,7 +7,7 @@ import sys
 
 import pytest
 from lib.lineardoc import utils
-from lib.lineardoc.text_chunk import TextChunk
+from lib.lineardoc.text_chunk import text_chunk
 
 
 class TestEscapeFunctions:
@@ -93,7 +93,7 @@ class TestTagHtmlGeneration:
         assert utils.get_close_tag_html(tag) == ""
 
 
-class TestCloneOpenTag:
+class Testclone_open_tag:
     """Test tag cloning function."""
 
     def test_clone_simple_tag(self):
@@ -175,7 +175,7 @@ class TestTagTypeDetection:
         assert utils.is_transclusion(tag) is False
 
 
-class TestDumpTags:
+class Testdump_tags:
     """Test dump_tags function."""
 
     def test_dump_tags_empty(self):

@@ -14,12 +14,12 @@ function normalize(html) {
 	const normalizer = new LinearDoc.Normalizer();
 	normalizer.init();
 	normalizer.write(html.replace(/[\t\r\n]+/g, ''));
-	return normalizer.getHtml();
+	return normalizer.get_html();
 }
 
 function tet(source_HTML) {
 
-	const parser = new LinearDoc.Parser(new LinearDoc.MwContextualizer(
+	const parser = new LinearDoc.Parser(new LinearDoc.mw_contextualizer(
 		{ removableSections: removableSections }
 	), {
 		wrapSections: true
@@ -32,7 +32,7 @@ function tet(source_HTML) {
 
 	const segmentedDoc = new CXSegmenter().segment(parsedDoc, "en");
 
-	const result = segmentedDoc.getHtml();
+	const result = segmentedDoc.get_html();
 
 	return result;
 }

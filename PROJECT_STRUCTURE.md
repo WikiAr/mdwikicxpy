@@ -18,12 +18,12 @@ cxsever/
             │   ├── Parser.js            # HTML SAX parser
             │   ├── Builder.js           # Document builder
             │   ├── Doc.js               # Document model
-            │   ├── TextBlock.js         # Text block representation
-            │   ├── TextChunk.js         # Text chunk representation
-            │   ├── Utils.js             # Utility functions
+            │   ├── text_block.js         # Text block representation
+            │   ├── text_chunk.js         # Text chunk representation
+            │   ├── utils.js             # Utility functions
             │   ├── Normalizer.js        # HTML normalizer
             │   ├── Contextualizer.js    # Base contextualizer
-            │   ├── MwContextualizer.js  # MediaWiki contextualizer
+            │   ├── mw_contextualizer.js  # MediaWiki contextualizer
             │   └── util.js              # Helper utilities
             └── segmentation/            # Segmentation for translation
                 └── CXSegmenter.js       # Content segmentation
@@ -84,7 +84,7 @@ const removableSections = pageloaderConfig.removableSections;
 
 function tet(source_HTML) {
     // 1. Parse HTML with MediaWiki contextualization
-    const parser = new LinearDoc.Parser(new LinearDoc.MwContextualizer(
+    const parser = new LinearDoc.Parser(new LinearDoc.mw_contextualizer(
         { removableSections: removableSections }
     ), {
         wrapSections: true
@@ -92,7 +92,7 @@ function tet(source_HTML) {
 
     parser.init();
     parser.write(source_HTML);
-    
+
     // 2. Get and wrap sections
     let parsedDoc = parser.builder.doc;
     parsedDoc = parsedDoc.wrapSections();
@@ -101,7 +101,7 @@ function tet(source_HTML) {
     const segmentedDoc = new CXSegmenter().segment(parsedDoc, "en");
 
     // 4. Return processed HTML
-    const result = segmentedDoc.getHtml();
+    const result = segmentedDoc.get_html();
     return result;
 }
 
@@ -181,12 +181,12 @@ app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 def process_text():
     """
     Process HTML for translation
-    
+
     Request:
         POST /textp
         Content-Type: application/json
         Body: {"html": "<p>Your HTML here</p>"}
-    
+
     Response:
         Success: {"result": "<processed HTML>"}
         Error: {"result": "error message"}, 500
@@ -194,27 +194,27 @@ def process_text():
     try:
         # Get JSON data
         data = request.get_json()
-        
+
         if not data:
             return jsonify({
                 'result': 'No JSON data provided'
             }), 400
-        
+
         source_html = data.get('html', '')
-        
+
         # Validate input
         if not source_html or source_html.strip() == '':
             return jsonify({
                 'result': 'Content for translate is not given or is empty'
             }), 500
-        
+
         # Process HTML
         logger.info(f"Processing HTML ({len(source_html)} characters)")
         processed_text = process_html(source_html)
-        
+
         logger.info(f"Processing complete ({len(processed_text)} characters)")
         return jsonify({'result': processed_text})
-        
+
     except Exception as error:
         logger.error(f"Error processing HTML: {error}", exc_info=True)
         return jsonify({
@@ -245,22 +245,22 @@ import yaml
 from pathlib import Path
 from typing import Dict, Any
 
-from lib.lineardoc import Parser, MwContextualizer
+from lib.lineardoc import Parser, mw_contextualizer
 from lib.segmentation import CXSegmenter
 
 
 def load_config() -> Dict[str, Any]:
     """
     Load configuration from MWPageLoader.yaml
-    
+
     Returns:
         Configuration dictionary
     """
     config_path = Path(__file__).parent.parent / 'config' / 'MWPageLoader.yaml'
-    
+
     with open(config_path, 'r', encoding='utf-8') as f:
         config = yaml.safe_load(f)
-    
+
     return config
 
 
@@ -273,46 +273,46 @@ def process_html(source_html: str) -> str:
     """
     Process HTML for translation
     Equivalent to u.tet() function in JavaScript
-    
+
     Pipeline:
     1. Parse HTML with MediaWiki contextualization
     2. Wrap sections
     3. Segment content for translation
     4. Return processed HTML
-    
+
     Args:
         source_html: Raw HTML content from MediaWiki
-        
+
     Returns:
         Processed and segmented HTML ready for translation
-        
+
     Raises:
         ValueError: If source_html is empty
         Exception: If processing fails
     """
     if not source_html or not source_html.strip():
         raise ValueError("Source HTML is empty")
-    
+
     # 1. Parse HTML with MediaWiki contextualization
     parser = Parser(
-        contextualizer=MwContextualizer(removable_sections=_removable_sections),
+        contextualizer=mw_contextualizer(removable_sections=_removable_sections),
         wrap_sections=True
     )
-    
+
     parser.init()
     parser.write(source_html)
-    
+
     # 2. Get parsed document and wrap sections
     parsed_doc = parser.builder.doc
     parsed_doc = parsed_doc.wrap_sections()
-    
+
     # 3. Segment for translation
     segmenter = CXSegmenter()
     segmented_doc = segmenter.segment(parsed_doc, "en")
-    
+
     # 4. Return processed HTML
     result = segmented_doc.get_html()
-    
+
     return result
 ```
 
@@ -327,15 +327,15 @@ class Config:
     """Base configuration"""
     BASE_DIR = Path(__file__).parent
     CONFIG_DIR = BASE_DIR / 'config'
-    
+
     # Server settings
     PORT = int(os.environ.get('PORT', 8000))
     HOST = os.environ.get('HOST', '0.0.0.0')
     DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
-    
+
     # CORS settings
     CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '*')
-    
+
     # Request limits (50MB like Node.js version)
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024
 ```
@@ -375,23 +375,23 @@ __all__ = ['process_html']
 from lib.lineardoc.parser import Parser
 from lib.lineardoc.builder import Builder
 from lib.lineardoc.doc import Doc
-from lib.lineardoc.text_block import TextBlock
-from lib.lineardoc.text_chunk import TextChunk
+from lib.lineardoc.text_block import text_block
+from lib.lineardoc.text_chunk import text_chunk
 from lib.lineardoc.normalizer import Normalizer
 from lib.lineardoc.contextualizer import Contextualizer
-from lib.lineardoc.mw_contextualizer import MwContextualizer
-from lib.lineardoc.utils import Utils
+from lib.lineardoc.mw_contextualizer import mw_contextualizer
+from lib.lineardoc.utils import utils
 
 __all__ = [
     'Parser',
-    'Builder', 
+    'Builder',
     'Doc',
-    'TextBlock',
-    'TextChunk',
+    'text_block',
+    'text_chunk',
     'Normalizer',
     'Contextualizer',
-    'MwContextualizer',
-    'Utils'
+    'mw_contextualizer',
+    'utils'
 ]
 ```
 
@@ -441,16 +441,16 @@ def test_process_html_with_fixture(fixtures_dir):
     # Load input
     input_file = fixtures_dir / 'input_1.html'
     expected_file = fixtures_dir / 'expected_1.html'
-    
+
     with open(input_file, 'r', encoding='utf-8') as f:
         input_html = f.read()
-    
+
     with open(expected_file, 'r', encoding='utf-8') as f:
         expected_html = f.read()
-    
+
     # Process
     result = process_html(input_html)
-    
+
     # Compare
     assert result.strip() == expected_html.strip()
 
@@ -479,12 +479,12 @@ def test_process_whitespace_only():
 | `lib/lineardoc/Parser.js` | `lib/lineardoc/parser.py` | HTML parser |
 | `lib/lineardoc/Builder.js` | `lib/lineardoc/builder.py` | Document builder |
 | `lib/lineardoc/Doc.js` | `lib/lineardoc/doc.py` | Document model |
-| `lib/lineardoc/TextBlock.js` | `lib/lineardoc/text_block.py` | Text blocks |
-| `lib/lineardoc/TextChunk.js` | `lib/lineardoc/text_chunk.py` | Text chunks |
-| `lib/lineardoc/Utils.js` | `lib/lineardoc/utils.py` | Utilities |
+| `lib/lineardoc/text_block.js` | `lib/lineardoc/text_block.py` | Text blocks |
+| `lib/lineardoc/text_chunk.js` | `lib/lineardoc/text_chunk.py` | Text chunks |
+| `lib/lineardoc/utils.js` | `lib/lineardoc/utils.py` | Utilities |
 | `lib/lineardoc/Normalizer.js` | `lib/lineardoc/normalizer.py` | HTML normalizer |
 | `lib/lineardoc/Contextualizer.js` | `lib/lineardoc/contextualizer.py` | Base contextualizer |
-| `lib/lineardoc/MwContextualizer.js` | `lib/lineardoc/mw_contextualizer.py` | MW contextualizer |
+| `lib/lineardoc/mw_contextualizer.js` | `lib/lineardoc/mw_contextualizer.py` | MW contextualizer |
 | `lib/lineardoc/util.js` | `lib/lineardoc/util.py` | Helper utilities |
 | `lib/segmentation/CXSegmenter.js` | `lib/segmentation/cx_segmenter.py` | Content segmenter |
 
@@ -529,7 +529,7 @@ pytest --cov=lib --cov-report=html
 
 ## Next Steps
 
-**Ready to proceed with implementation!** 
+**Ready to proceed with implementation!**
 
 Please provide:
 1. **Input HTML examples** (before processing)

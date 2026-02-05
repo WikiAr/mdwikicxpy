@@ -13,24 +13,24 @@ class Contextualizer {
 	/**
 	 * Get the context for a new tag being opened
 	 *
-	 * @param {Object} openTag
-	 * @param {string} openTag.name HTML tag name
-	 * @param {Object} openTag.attributes HTML attributes as a string map
+	 * @param {Object} open_tag
+	 * @param {string} open_tag.name HTML tag name
+	 * @param {Object} open_tag.attributes HTML attributes as a string map
 	 * @return {string|undefined} The new context
 	 */
-	getChildContext(openTag) {
+	get_child_context(open_tag) {
 		// Change to 'media' context inside figure
-		if (openTag.name === 'figure') {
+		if (open_tag.name === 'figure') {
 			return 'media';
 		}
 
 		// Exception: return to undefined context inside figure//figcaption
-		if (openTag.name === 'figcaption') {
+		if (open_tag.name === 'figcaption') {
 			return undefined;
 		}
 
 		// No change: same as parent context
-		return this.getContext();
+		return this.get_context();
 	}
 
 	/**
@@ -38,25 +38,25 @@ class Contextualizer {
 	 *
 	 * @return {string|undefined} The current context
 	 */
-	getContext() {
+	get_context() {
 		return this.contexts[this.contexts.length - 1];
 	}
 
 	/**
 	 * Call when a tag opens
 	 *
-	 * @param {Object} openTag
-	 * @param {string} openTag.name HTML tag name
-	 * @param {Object} openTag.attributes HTML attributes as a string map
+	 * @param {Object} open_tag
+	 * @param {string} open_tag.name HTML tag name
+	 * @param {Object} open_tag.attributes HTML attributes as a string map
 	 */
-	onOpenTag(openTag) {
-		this.contexts.push(this.getChildContext(openTag));
+	on_open_tag(open_tag) {
+		this.contexts.push(this.get_child_context(open_tag));
 	}
 
 	/**
 	 * Call when a tag closes (or just after an empty tag opens)
 	 */
-	onCloseTag() {
+	on_close_tag() {
 		this.contexts.pop();
 	}
 
@@ -65,8 +65,8 @@ class Contextualizer {
 	 *
 	 * @return {boolean} Whether sentences can be segmented into spans in this context
 	 */
-	canSegment() {
-		return this.getContext() === undefined;
+	can_segment() {
+		return this.get_context() === undefined;
 	}
 
 }

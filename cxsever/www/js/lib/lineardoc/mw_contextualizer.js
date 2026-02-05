@@ -11,7 +11,7 @@ const contentBranchNodeNames = ['blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
  * @extends Contextualizer
  * @constructor
  */
-class MwContextualizer extends Contextualizer {
+class mw_contextualizer extends Contextualizer {
 	/**
 	 * @param {Object} config
 	 * @param {Object} config.removableSections containing array of classes and rdfa values.
@@ -27,8 +27,8 @@ class MwContextualizer extends Contextualizer {
 	/**
 	 * @inheritdoc
 	 */
-	getChildContext(tag) {
-		const context = this.getContext(),
+	get_child_context(tag) {
+		const context = this.get_context(),
 			type = tag.attributes.typeof || tag.attributes.rel || '';
 
 		if (context === 'removable' || this.isRemovable(tag)) {
@@ -71,8 +71,8 @@ class MwContextualizer extends Contextualizer {
 	/**
 	 * @inheritdoc
 	 */
-	canSegment() {
-		return this.getContext() === 'contentBranch';
+	can_segment() {
+		return this.get_context() === 'contentBranch';
 	}
 
 	/**
@@ -159,4 +159,4 @@ class MwContextualizer extends Contextualizer {
 	}
 }
 
-export default MwContextualizer;
+export default mw_contextualizer;

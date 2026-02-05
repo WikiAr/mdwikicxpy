@@ -4,7 +4,7 @@ Doc - An HTML document in linear representation.
 The document is a list of items, where each item is:
 - a block open tag (e.g. <p>); or
 - a block close tag (e.g. </p>); or
-- a TextBlock of annotated inline text; or
+- a text_block of annotated inline text; or
 - "block whitespace" (a run of whitespace separating two block boundaries)
 """
 

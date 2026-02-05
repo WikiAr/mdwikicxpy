@@ -4,7 +4,7 @@ Parser to read an HTML stream into a Doc.
 
 from lxml import etree
 
-from . import utils as utils
+from . import utils
 from .builder import Builder
 
 BLOCK_TAGS = [
@@ -13,6 +13,8 @@ BLOCK_TAGS = [
     "body",
     "script",
     # head tags
+    # In HTML5+RDFa, link/meta are actually allowed anywhere in the body, and are to be
+    # treated as void flow content (like <br> and <img>).
     "title",
     "style",
     "meta",
@@ -73,6 +75,7 @@ BLOCK_TAGS = [
     "fieldset",
     "details",
     "blockquote",
+    "address",  # added by Giovanni Toffoli
     # other
     "hr",
     "button",
@@ -86,14 +89,27 @@ BLOCK_TAGS = [
     "pre",
     "progress",
     "video",
-    # non-annotation inline tags    "img",
+    # non-annotation inline tags
+    "img",
     "br",
 ]
 
 # HTML void elements that cannot have content and should be self-closing
 VOID_ELEMENTS = [
-    "area", "base", "br", "col", "embed", "hr", "img", "input",
-    "link", "meta", "param", "source", "track", "wbr",
+    "area",
+    "base",
+    "br",
+    "col",
+    "embed",
+    "hr",
+    "img",
+    "input",
+    "link",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr",
 ]
 
 

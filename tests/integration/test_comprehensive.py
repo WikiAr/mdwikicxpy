@@ -7,7 +7,7 @@ import json
 import os
 import sys
 
-from lib.lineardoc import Doc, MwContextualizer, Parser, TextBlock
+from lib.lineardoc import Doc, Parser, mw_contextualizer, text_block
 from lib.processor import process_html
 from lib.segmentation import CXSegmenter
 

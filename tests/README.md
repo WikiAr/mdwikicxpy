@@ -19,17 +19,17 @@ Tests for individual modules, classes, and functions in isolation (205 tests):
   - Tag type detection (`is_inline_empty_tag`, `is_segment`, `is_reference`, etc.)
 
 #### Document Model Tests
-- **test_text_chunk.py** (9 tests) - Tests for the `TextChunk` class
+- **test_text_chunk.py** (9 tests) - Tests for the `text_chunk` class
   - Text chunk creation with tags and inline content
   - Unicode text handling
   - Special character preservation
-  
-- **test_text_block.py** (23 tests) - Tests for the `TextBlock` class
+
+- **test_text_block.py** (23 tests) - Tests for the `text_block` class
   - Text block creation and segmentation
   - Common tag detection
   - Tag offset calculation
   - Plain text extraction
-  
+
 - **test_doc.py** (24 tests) - Tests for the `Doc` class
   - Document item management
   - HTML generation
@@ -43,7 +43,7 @@ Tests for individual modules, classes, and functions in isolation (205 tests):
   - Text chunk handling
   - Category and section detection
   - Child builder creation
-  
+
 - **test_parser.py** (17 tests) - Tests for the `Parser` class
   - HTML parsing
   - Tag processing
@@ -53,7 +53,7 @@ Tests for individual modules, classes, and functions in isolation (205 tests):
 #### Contextualizer Tests
 - **test_contextualizer.py** (28 tests) - Tests for contextualizers
   - Base `Contextualizer` class (9 tests)
-  - `MwContextualizer` for MediaWiki HTML (19 tests)
+  - `mw_contextualizer` for MediaWiki HTML (19 tests)
     - Context tracking (removable, verbatim, media, section, contentBranch)
     - Removable section detection (by class, RDFa, template)
     - Transclusion fragment handling
@@ -64,7 +64,7 @@ Tests for individual modules, classes, and functions in isolation (205 tests):
   - Text escaping
   - Attribute preservation
   - Unicode handling
-  
+
 - **test_segmenter.py** (14 tests) - Tests for the `CXSegmenter` class
   - Sentence boundary detection
   - Multi-language support
