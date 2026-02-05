@@ -6,7 +6,7 @@ import os
 import sys
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cxsever', 'www', 'python'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'cxsever', 'www', 'python'))
 
 from lib.processor import process_html, normalize
 

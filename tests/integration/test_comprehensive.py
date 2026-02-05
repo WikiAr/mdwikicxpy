@@ -7,7 +7,7 @@ import os
 import sys
 import json
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cxsever', 'www', 'python'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'cxsever', 'www', 'python'))
 
 from lib.processor import process_html
 from lib.lineardoc import Parser, MwContextualizer, Doc, TextBlock

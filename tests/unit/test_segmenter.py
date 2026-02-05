@@ -6,7 +6,7 @@ import os
 import sys
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cxsever', 'www', 'python'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'cxsever', 'www', 'python'))
 
 from lib.segmentation.cx_segmenter import CXSegmenter
 from lib.lineardoc import Doc, TextBlock, TextChunk

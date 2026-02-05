@@ -1,13 +1,16 @@
 # Test Suite Documentation
 
 ## Overview
-This project now includes a comprehensive pytest test suite with **215 unit tests** achieving **80% code coverage**.
+This project includes a comprehensive pytest test suite with **215 tests** achieving **80% code coverage**.
 
 ## Test Structure
 
-The test suite is organized into the following test files:
+The test suite is organized into two main categories:
 
-### Core Utility Tests
+### Unit Tests (`tests/unit/`)
+Tests for individual modules, classes, and functions in isolation (205 tests):
+
+#### Core Utility Tests
 - **test_util.py** (14 tests) - Tests for the `get_prop` utility function
 - **test_utils.py** (30 tests) - Tests for HTML utility functions including:
   - HTML escape functions (`esc`, `esc_attr`)
@@ -15,7 +18,7 @@ The test suite is organized into the following test files:
   - Tag cloning (`clone_open_tag`)
   - Tag type detection (`is_inline_empty_tag`, `is_segment`, `is_reference`, etc.)
 
-### Document Model Tests
+#### Document Model Tests
 - **test_text_chunk.py** (9 tests) - Tests for the `TextChunk` class
   - Text chunk creation with tags and inline content
   - Unicode text handling
@@ -34,7 +37,7 @@ The test suite is organized into the following test files:
   - Document cloning
   - Segment extraction
 
-### Parser and Builder Tests
+#### Parser and Builder Tests
 - **test_builder.py** (17 tests) - Tests for the `Builder` class
   - Block and inline tag management
   - Text chunk handling
@@ -47,7 +50,7 @@ The test suite is organized into the following test files:
   - Inline annotation detection
   - Integration with contextualizers
 
-### Contextualizer Tests
+#### Contextualizer Tests
 - **test_contextualizer.py** (28 tests) - Tests for contextualizers
   - Base `Contextualizer` class (9 tests)
   - `MwContextualizer` for MediaWiki HTML (19 tests)
@@ -55,7 +58,7 @@ The test suite is organized into the following test files:
     - Removable section detection (by class, RDFa, template)
     - Transclusion fragment handling
 
-### Normalizer and Segmentation Tests
+#### Normalizer and Segmentation Tests
 - **test_normalizer.py** (11 tests) - Tests for the `Normalizer` class
   - HTML normalization
   - Text escaping
@@ -68,23 +71,38 @@ The test suite is organized into the following test files:
   - Document segmentation
   - Special case handling (abbreviations, punctuation)
 
-### Processor Tests
-- **test_processor.py** (21 tests) - Tests for the main processor
+### Integration Tests (`tests/integration/`)
+End-to-end tests for complete processing pipelines (10 tests):
+
+- **test_processor.py** (7 tests) - Tests for the main processor
   - End-to-end HTML processing
   - Section creation
   - Segment generation
   - MediaWiki element handling
   - Complex structure processing
 
-### Integration Tests
-- **test_comprehensive.py** (7 tests) - High-level integration tests
+- **test_comprehensive.py** (2 tests) - High-level integration tests
+  - Complete pipeline testing
+  - MediaWiki element processing
+
 - **test_processing.py** (1 test) - Fixture-based processing test
+  - Real-world HTML processing scenarios
 
 ## Running the Tests
 
 ### Run all tests:
 ```bash
 python3 -m pytest tests/
+```
+
+### Run only unit tests:
+```bash
+python3 -m pytest tests/unit/
+```
+
+### Run only integration tests:
+```bash
+python3 -m pytest tests/integration/
 ```
 
 ### Run with verbose output:
@@ -99,13 +117,14 @@ python3 -m pytest tests/ --cov=cxsever/www/python/lib --cov-report=term-missing
 
 ### Run specific test file:
 ```bash
-python3 -m pytest tests/test_parser.py -v
+python3 -m pytest tests/unit/test_parser.py -v
+python3 -m pytest tests/integration/test_processor.py -v
 ```
 
 ### Run specific test class or function:
 ```bash
-python3 -m pytest tests/test_doc.py::TestDocCreation -v
-python3 -m pytest tests/test_utils.py::TestEscapeFunctions::test_esc_basic -v
+python3 -m pytest tests/unit/test_doc.py::TestDocCreation -v
+python3 -m pytest tests/unit/test_utils.py::TestEscapeFunctions::test_esc_basic -v
 ```
 
 ## Coverage Summary

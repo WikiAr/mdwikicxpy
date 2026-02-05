@@ -6,7 +6,7 @@ import os
 import sys
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cxsever', 'www', 'python'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'cxsever', 'www', 'python'))
 
 from lib.lineardoc.contextualizer import Contextualizer
 from lib.lineardoc.mw_contextualizer import MwContextualizer
