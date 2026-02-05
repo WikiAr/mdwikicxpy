@@ -86,9 +86,14 @@ BLOCK_TAGS = [
     "pre",
     "progress",
     "video",
-    # non-annotation inline tags
-    "img",
+    # non-annotation inline tags    "img",
     "br",
+]
+
+# HTML void elements that cannot have content and should be self-closing
+VOID_ELEMENTS = [
+    "area", "base", "br", "col", "embed", "hr", "img", "input",
+    "link", "meta", "param", "source", "track", "wbr",
 ]
 
 
@@ -144,6 +149,10 @@ class Parser:
 
         # Create tag dict
         tag = {"name": tag_name, "attributes": dict(element.attrib)}
+
+        # Mark HTML void elements as self-closing
+        if tag_name in VOID_ELEMENTS:
+            tag["isSelfClosing"] = True
 
         self.on_open_tag(tag)
 
