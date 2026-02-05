@@ -1,1 +1,42 @@
-{"classes":["ambox","hatnote","metadata","navbar","navbox","sisterproject","sistersitebox","vertical-navbox"],"rdfa":["mw:Extension/indicator","mw:Extension/templatestyles"],"templates":["/^pp(-.*)?$/","/^Articles (for|with|needing|containing).*$/","/^Engvar[AB]$/","/^Use[\\sa-z]+(English|spelling|referencing)$/","/^Use [DMY]+ dates$/","/^Wikipedia articles (for|with|needing|containing).*$/","Anchor","DEFAULTSORT","Esborrany","Featured article","FR","good article","/^(.*-)?Stub$/","Short description","Void","Italic title","About","See also","Redirect","Distinguish","TOC limit","/^#unlinkedwikibase:id=Q\\d+$/","Other uses","redirect"]}
+{
+    "classes": [
+        "ambox",
+        "hatnote",
+        "metadata",
+        "navbar",
+        "navbox",
+        "sisterproject",
+        "sistersitebox",
+        "vertical-navbox"
+    ],
+    "rdfa": [
+        "mw:Extension/indicator",
+        "mw:Extension/templatestyles"
+    ],
+    "templates": [
+        "/^pp(-.*)?$/",
+        "/^Articles (for|with|needing|containing).*$/",
+        "/^Engvar[AB]$/",
+        "/^Use[\\sa-z]+(English|spelling|referencing)$/",
+        "/^Use [DMY]+ dates$/",
+        "/^Wikipedia articles (for|with|needing|containing).*$/",
+        "Anchor",
+        "DEFAULTSORT",
+        "Esborrany",
+        "Featured article",
+        "FR",
+        "good article",
+        "/^(.*-)?Stub$/",
+        "Short description",
+        "Void",
+        "Italic title",
+        "About",
+        "See also",
+        "Redirect",
+        "Distinguish",
+        "TOC limit",
+        "/^#unlinkedwikibase:id=Q\\d+$/",
+        "Other uses",
+        "redirect"
+    ]
+}
