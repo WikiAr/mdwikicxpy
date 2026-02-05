@@ -13,7 +13,7 @@ const cxutil = require('./util');
  * @param {Function} callback Function to call with each match
  * @return {Array} The return values from the callback
  */
-function findAll(text, regex, callback) {
+function find_all(text, regex, callback) {
 	const boundaries = [];
 	while (true) {
 		const match = regex.exec(text);
@@ -449,7 +449,7 @@ export {
 	cloneOpenTag,
 	dumpTags,
 	esc,
-	findAll,
+	find_all,
 	getChunkBoundaryGroups,
 	getCloseTagHtml,
 	getOpenTagHtml,
