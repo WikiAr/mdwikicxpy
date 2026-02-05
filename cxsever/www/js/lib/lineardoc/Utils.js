@@ -250,14 +250,14 @@ function isNonTranslatable(tag) {
  * Determine whether a tag is an inline empty tag
  *
  * @private
- * @param {string} tagName The name of the tag (lowercase)
+ * @param {string} tag_name The name of the tag (lowercase)
  * @return {boolean} Whether the tag is an inline empty tag
  */
-function is_inline_empty_tag(tagName) {
+function is_inline_empty_tag(tag_name) {
 	// link/meta as they're allowed anywhere in HTML5+RDFa, and must be treated as void
 	// flow content. See http://www.w3.org/TR/rdfa-in-html/#extensions-to-the-html5-syntax
 	const inlineEmptyTags = ['br', 'img', 'source', 'track', 'link', 'meta'];
-	return inlineEmptyTags.includes(tagName);
+	return inlineEmptyTags.includes(tag_name);
 }
 
 /**
@@ -338,13 +338,13 @@ function add_common_tag(text_chunks, tag) {
 	// Build new chunks with segment span inserted
 	const newTextChunks = [];
 	for (let i = 0, iLen = text_chunks.length; i < iLen; i++) {
-		const textChunk = text_chunks[i];
-		const newTags = textChunk.tags.slice();
+		const text_chunk = text_chunks[i];
+		const newTags = text_chunk.tags.slice();
 		newTags.splice(commonTagLength, 0, tag);
 		newTextChunks.push(new text_chunk(
-			textChunk.text,
+			text_chunk.text,
 			newTags,
-			textChunk.inline_content
+			text_chunk.inline_content
 		));
 	}
 	return newTextChunks;

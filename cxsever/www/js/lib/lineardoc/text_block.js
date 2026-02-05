@@ -40,8 +40,8 @@ class text_block {
 		const textBlock = this,
 			commonTags = this.getCommonTags();
 		return this.offsets.filter((offset, i) => {
-			const textChunk = textBlock.text_chunks[i];
-			return textChunk.tags.length > commonTags.length && textChunk.text.length > 0;
+			const text_chunk = textBlock.text_chunks[i];
+			return text_chunk.tags.length > commonTags.length && text_chunk.text.length > 0;
 		});
 	}
 
@@ -101,7 +101,7 @@ class text_block {
 		// map of { offset: x, text_chunks: [...] }
 		const emptyTextChunks = {};
 		const emptyTextChunkOffsets = [];
-		// list of { start: x, length: x, textChunk: x }
+		// list of { start: x, length: x, text_chunk: x }
 		const text_chunks = [];
 
 		function pushEmptyTextChunks(offset, chunks) {
@@ -109,22 +109,22 @@ class text_block {
 				text_chunks.push({
 					start: offset,
 					length: 0,
-					textChunk: chunks[c]
+					text_chunk: chunks[c]
 				});
 			}
 		}
 
 		// Create map of empty text chunks, by offset
 		for (let i = 0, iLen = this.text_chunks.length; i < iLen; i++) {
-			const textChunk = this.text_chunks[i];
+			const text_chunk = this.text_chunks[i];
 			const offset = this.offsets[i].start;
-			if (textChunk.text.length > 0) {
+			if (text_chunk.text.length > 0) {
 				continue;
 			}
 			if (!emptyTextChunks[offset]) {
 				emptyTextChunks[offset] = [];
 			}
-			emptyTextChunks[offset].push(textChunk);
+			emptyTextChunks[offset].push(text_chunk);
 		}
 		for (const offset in emptyTextChunks) {
 			emptyTextChunkOffsets.push(offset);
@@ -141,7 +141,7 @@ class text_block {
 			text_chunks.push({
 				start: rangeMapping.target.start,
 				length: rangeMapping.target.length,
-				textChunk: new text_chunk(
+				text_chunk: new text_chunk(
 					text, sourceTextChunk.tags, sourceTextChunk.inline_content
 				)
 			});
@@ -168,26 +168,26 @@ class text_block {
 		}
 		// Sort by start position
 		text_chunks.sort((textChunk1, textChunk2) => textChunk1.start - textChunk2.start);
-		// Fill in any textChunk gaps using text with commonTags
+		// Fill in any text_chunk gaps using text with commonTags
 		let pos = 0;
 		const commonTags = this.getCommonTags();
 		for (let i = 0, iLen = text_chunks.length; i < iLen; i++) {
-			const textChunk = text_chunks[i];
-			if (textChunk.start < pos) {
-				throw new Error('Overlappping chunks at pos=' + pos + ', text_chunks=' + i + ' start=' + textChunk.start);
-			} else if (textChunk.start > pos) {
+			const text_chunk = text_chunks[i];
+			if (text_chunk.start < pos) {
+				throw new Error('Overlappping chunks at pos=' + pos + ', text_chunks=' + i + ' start=' + text_chunk.start);
+			} else if (text_chunk.start > pos) {
 				// Unmapped chunk: insert plaintext and adjust offset
 				text_chunks.splice(i, 0, {
 					start: pos,
-					length: textChunk.start - pos,
-					textChunk: new text_chunk(
-						targetText.slice(pos, textChunk.start), commonTags
+					length: text_chunk.start - pos,
+					text_chunk: new text_chunk(
+						targetText.slice(pos, text_chunk.start), commonTags
 					)
 				});
 				i++;
 				iLen++;
 			}
-			pos = textChunk.start + textChunk.length;
+			pos = text_chunk.start + text_chunk.length;
 		}
 
 		// Get trailing text and trailing whitespace
@@ -202,7 +202,7 @@ class text_block {
 			text_chunks.push({
 				start: pos,
 				length: tail.length,
-				textChunk: new text_chunk(tail, commonTags)
+				text_chunk: new text_chunk(tail, commonTags)
 			});
 			pos += tail.length;
 		}
@@ -217,11 +217,11 @@ class text_block {
 			text_chunks.push({
 				start: pos,
 				length: tailSpace.length,
-				textChunk: new text_chunk(tailSpace, commonTags)
+				text_chunk: new text_chunk(tailSpace, commonTags)
 			});
 			pos += tail.length;
 		}
-		return new text_block(text_chunks.map((x) => x.textChunk));
+		return new text_block(text_chunks.map((x) => x.text_chunk));
 	}
 
 	/**
@@ -247,14 +247,14 @@ class text_block {
 		// Start with no tags open
 		let oldTags = [];
 		for (let i = 0, iLen = this.text_chunks.length; i < iLen; i++) {
-			const textChunk = this.text_chunks[i];
+			const text_chunk = this.text_chunks[i];
 
 			// Compare tag stacks; render close tags and open tags as necessary
 			// Find the highest offset up to which the tags match on
 			let matchTop = -1;
-			const minLength = Math.min(oldTags.length, textChunk.tags.length);
+			const minLength = Math.min(oldTags.length, text_chunk.tags.length);
 			for (let j = 0, jLen = minLength; j < jLen; j++) {
-				if (oldTags[j] === textChunk.tags[j]) {
+				if (oldTags[j] === text_chunk.tags[j]) {
 					matchTop = j;
 				} else {
 					break;
@@ -263,21 +263,21 @@ class text_block {
 			for (let j = oldTags.length - 1; j > matchTop; j--) {
 				html.push(get_close_tag_html(oldTags[j]));
 			}
-			for (let j = matchTop + 1, jLen = textChunk.tags.length; j < jLen; j++) {
-				html.push(get_open_tag_html(textChunk.tags[j]));
+			for (let j = matchTop + 1, jLen = text_chunk.tags.length; j < jLen; j++) {
+				html.push(get_open_tag_html(text_chunk.tags[j]));
 			}
-			oldTags = textChunk.tags;
+			oldTags = text_chunk.tags;
 
 			// Now add text and inline content
-			html.push(esc(textChunk.text));
-			if (textChunk.inline_content) {
-				if (textChunk.inline_content.get_html) {
+			html.push(esc(text_chunk.text));
+			if (text_chunk.inline_content) {
+				if (text_chunk.inline_content.get_html) {
 					// a sub-doc
-					html.push(textChunk.inline_content.get_html());
+					html.push(text_chunk.inline_content.get_html());
 				} else {
 					// an empty inline tag
-					html.push(get_open_tag_html(textChunk.inline_content));
-					html.push(get_close_tag_html(textChunk.inline_content));
+					html.push(get_open_tag_html(text_chunk.inline_content));
+					html.push(get_close_tag_html(text_chunk.inline_content));
 				}
 			}
 		}
@@ -295,20 +295,20 @@ class text_block {
 	 */
 	getRootItem() {
 		for (let i = 0, iLen = this.text_chunks.length; i < iLen; i++) {
-			const textChunk = this.text_chunks[i];
+			const text_chunk = this.text_chunks[i];
 
-			if (textChunk.tags.length === 0 && textChunk.text && textChunk.text.match(/[^\s]/)) {
+			if (text_chunk.tags.length === 0 && text_chunk.text && text_chunk.text.match(/[^\s]/)) {
 				// No tags in this textchunk. See if there is non whitespace text
 				return null;
 			}
 
-			for (let j = 0, jLen = textChunk.tags.length; j < jLen; j++) {
-				if (textChunk.tags[j]) {
-					return textChunk.tags[j];
+			for (let j = 0, jLen = text_chunk.tags.length; j < jLen; j++) {
+				if (text_chunk.tags[j]) {
+					return text_chunk.tags[j];
 				}
 			}
-			if (textChunk.inline_content) {
-				const inlineDoc = textChunk.inline_content;
+			if (text_chunk.inline_content) {
+				const inlineDoc = text_chunk.inline_content;
 				// Presence of inlineDoc.getRootItem confirms that inlineDoc is a Doc instance.
 				if (inlineDoc && inlineDoc.getRootItem) {
 					const rootItem = inlineDoc.getRootItem();
@@ -372,12 +372,12 @@ class text_block {
 		const groups = get_chunk_boundary_groups(
 			getBoundaries(this.getPlainText()),
 			this.text_chunks,
-			(textChunk) => textChunk.text.length
+			(text_chunk) => text_chunk.text.length
 		);
 		let offset = 0;
 		for (let i = 0, iLen = groups.length; i < iLen; i++) {
 			const group = groups[i];
-			let textChunk = group.chunk;
+			let text_chunk = group.chunk;
 			const boundaries = group.boundaries;
 			for (let j = 0, jLen = boundaries.length; j < jLen; j++) {
 				const relOffset = boundaries[j] - offset;
@@ -385,22 +385,22 @@ class text_block {
 					flushChunks();
 				} else {
 					const leftPart = new text_chunk(
-						textChunk.text.slice(0, relOffset), textChunk.tags.slice()
+						text_chunk.text.slice(0, relOffset), text_chunk.tags.slice()
 					);
 					const rightPart = new text_chunk(
-						textChunk.text.slice(relOffset),
-						textChunk.tags.slice(),
-						textChunk.inline_content
+						text_chunk.text.slice(relOffset),
+						text_chunk.tags.slice(),
+						text_chunk.inline_content
 					);
 					currentTextChunks.push(leftPart);
 					offset += relOffset;
 					flushChunks();
-					textChunk = rightPart;
+					text_chunk = rightPart;
 				}
 			}
-			// Even if the textChunk is zero-width, it may have references
-			currentTextChunks.push(textChunk);
-			offset += textChunk.text.length;
+			// Even if the text_chunk is zero-width, it may have references
+			currentTextChunks.push(text_chunk);
+			offset += text_chunk.text.length;
 		}
 		flushChunks();
 		return new text_block(allTextChunks);

@@ -35,10 +35,10 @@ class Normalizer extends sax.SAXParser {
 		this.doc.push(get_open_tag_html(tag));
 	}
 
-	on_close_tag(tagName) {
+	on_close_tag(tag_name) {
 		const tag = this.tags.pop();
-		if (tag.name !== tagName) {
-			throw new Error('Unmatched tags: ' + tag.name + ' !== ' + tagName);
+		if (tag.name !== tag_name) {
+			throw new Error('Unmatched tags: ' + tag.name + ' !== ' + tag_name);
 		}
 		this.doc.push(get_close_tag_html(tag));
 	}

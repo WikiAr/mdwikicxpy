@@ -115,8 +115,8 @@ class Doc {
 			sectionNumber = 0;
 
 		// TODO: return different counters depending on type
-		function getNextId(type, tagName) {
-			if (tagName === 'section') {
+		function getNextId(type, tag_name) {
+			if (tag_name === 'section') {
 				return String(`cxSourceSection${nextSectionId++}`);
 			}
 			if (type === 'segment' || type === 'link' || type === 'block') {
@@ -531,7 +531,7 @@ class Doc {
 
 					// Preserve rdfa attributes in the reduced doc so that when parsing
 					// the output from MT systems, we don't remove spans with empty content
-					// See Builder#popInlineAnnotationTag
+					// See Builder#pop_inline_annotation_tag
 					if (originalAttrs.typeof && originalAttrs.about) {
 						tag.attributes.typeof = originalAttrs.typeof;
 						tag.attributes.about = originalAttrs.about;

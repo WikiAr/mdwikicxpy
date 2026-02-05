@@ -16,21 +16,21 @@ class Builder {
 	constructor(parent, wrapper_tag) {
 		this.BLOCK_TAGS = [];
 		// Stack of annotation tags
-		this.inlineAnnotationTags = [];
+		this.inline_annotation_tags = [];
 		// The height of the annotation tags that have been used, minus one
-		this.inlineAnnotationTagsUsed = 0;
+		this.inline_annotation_tags_used = 0;
 		this.doc = new Doc(wrapper_tag || null);
 		this.text_chunks = [];
-		this.isBlockSegmentable = true;
+		this.is_block_segmentable = true;
 		this.parent = parent || null;
 	}
 
-	createChildBuilder(wrapper_tag) {
+	create_child_builder(wrapper_tag) {
 		return new Builder(this, wrapper_tag);
 	}
 
-	pushBlockTag(tag) {
-		this.finishTextBlock();
+	push_block_tag(tag) {
+		this.finish_text_block();
 		this.BLOCK_TAGS.push(tag);
 		if (this.isIgnoredTag(tag)) {
 			return;
@@ -58,14 +58,14 @@ class Builder {
 			(' ' + tag.attributes.rel + ' ').includes(' mw:PageProp/Category ') && !tag.attributes.about;
 	}
 
-	pop_block_tag(tagName) {
+	pop_block_tag(tag_name) {
 		const tag = this.BLOCK_TAGS.pop();
-		if (!tag || tag.name !== tagName) {
+		if (!tag || tag.name !== tag_name) {
 			throw new Error(
-				'Mismatched block tags: open=' + (tag && tag.name) + ', close=' + tagName
+				'Mismatched block tags: open=' + (tag && tag.name) + ', close=' + tag_name
 			);
 		}
-		this.finishTextBlock();
+		this.finish_text_block();
 
 		if (!this.isIgnoredTag(tag)) {
 			this.doc.add_item('close', tag);
@@ -74,19 +74,19 @@ class Builder {
 		return tag;
 	}
 
-	pushInlineAnnotationTag(tag) {
-		this.inlineAnnotationTags.push(tag);
+	push_inline_annotation_tag(tag) {
+		this.inline_annotation_tags.push(tag);
 	}
 
-	popInlineAnnotationTag(tagName) {
+	pop_inline_annotation_tag(tag_name) {
 		let i;
-		const tag = this.inlineAnnotationTags.pop();
-		if (this.inlineAnnotationTagsUsed === this.inlineAnnotationTags.length) {
-			this.inlineAnnotationTagsUsed--;
+		const tag = this.inline_annotation_tags.pop();
+		if (this.inline_annotation_tags_used === this.inline_annotation_tags.length) {
+			this.inline_annotation_tags_used--;
 		}
-		if (!tag || tag.name !== tagName) {
+		if (!tag || tag.name !== tag_name) {
 			throw new Error(
-				'Mismatched inline tags: open=' + (tag && tag.name) + ', close=' + tagName
+				'Mismatched inline tags: open=' + (tag && tag.name) + ', close=' + tag_name
 			);
 		}
 
@@ -103,17 +103,17 @@ class Builder {
 		let replace = true;
 		const whitespace = [];
 		for (i = this.text_chunks.length - 1; i >= 0; i--) {
-			const textChunk = this.text_chunks[i];
-			const chunkTag = textChunk.tags[textChunk.tags.length - 1];
+			const text_chunk = this.text_chunks[i];
+			const chunkTag = text_chunk.tags[text_chunk.tags.length - 1];
 			if (!chunkTag) {
 				break;
 			}
-			if (textChunk.text.match(/\S/) || textChunk.inline_content || chunkTag !== tag) {
-				// textChunk has non whitespace content, Or it has child tags.
+			if (text_chunk.text.match(/\S/) || text_chunk.inline_content || chunkTag !== tag) {
+				// text_chunk has non whitespace content, Or it has child tags.
 				replace = false;
 				break;
 			}
-			whitespace.push(textChunk.text);
+			whitespace.push(text_chunk.text);
 		}
 
 		// Allow empty external links because REST API v1 can output links with
@@ -122,7 +122,7 @@ class Builder {
 			// truncate list and add data span as new sub-Doc.
 			this.text_chunks.length = i + 1;
 			whitespace.reverse();
-			this.addInlineContent(
+			this.add_inline_content(
 				new Doc()
 					.add_item('open', tag)
 					.add_item('textblock', new text_block(
@@ -134,12 +134,12 @@ class Builder {
 		return;
 	}
 
-	addTextChunk(text, can_segment) {
-		this.text_chunks.push(new text_chunk(text, this.inlineAnnotationTags.slice()));
-		this.inlineAnnotationTagsUsed = this.inlineAnnotationTags.length;
+	add_text_chunk(text, can_segment) {
+		this.text_chunks.push(new text_chunk(text, this.inline_annotation_tags.slice()));
+		this.inline_annotation_tags_used = this.inline_annotation_tags.length;
 		// Inside a textblock, if a textchunk becomes segmentable, unlike inline tags,
 		// the textblock becomes segmentable. See T195768
-		this.isBlockSegmentable = can_segment;
+		this.is_block_segmentable = can_segment;
 	}
 
 	/**
@@ -149,28 +149,28 @@ class Builder {
 	 * @param {Object} content Sub-document or empty SAX tag
 	 * @param {boolean} can_segment
 	 */
-	addInlineContent(content, can_segment) {
+	add_inline_content(content, can_segment) {
 		// If the content is a category tag, capture it separately and don't add to doc.
 		if (this.isCategory(content)) {
 			this.doc.categories.push(content);
 			return;
 		}
-		this.text_chunks.push(new text_chunk('', this.inlineAnnotationTags.slice(), content));
+		this.text_chunks.push(new text_chunk('', this.inline_annotation_tags.slice(), content));
 		if (!can_segment) {
-			this.isBlockSegmentable = false;
+			this.is_block_segmentable = false;
 		}
-		this.inlineAnnotationTagsUsed = this.inlineAnnotationTags.length;
+		this.inline_annotation_tags_used = this.inline_annotation_tags.length;
 	}
 
-	finishTextBlock() {
+	finish_text_block() {
 		let whitespace = [], whitespaceOnly = true;
 
 		if (this.text_chunks.length === 0) {
 			return;
 		}
 		for (let i = 0, len = this.text_chunks.length; i < len; i++) {
-			const textChunk = this.text_chunks[i];
-			if (textChunk.inline_content || textChunk.text.match(/\S/)) {
+			const text_chunk = this.text_chunks[i];
+			if (text_chunk.inline_content || text_chunk.text.match(/\S/)) {
 				whitespaceOnly = false;
 				whitespace = undefined;
 				break;
@@ -181,10 +181,10 @@ class Builder {
 		if (whitespaceOnly) {
 			this.doc.add_item('blockspace', whitespace.join(''));
 		} else {
-			this.doc.add_item('textblock', new text_block(this.text_chunks, this.isBlockSegmentable));
+			this.doc.add_item('textblock', new text_block(this.text_chunks, this.is_block_segmentable));
 		}
 		this.text_chunks = [];
-		this.isBlockSegmentable = true;
+		this.is_block_segmentable = true;
 	}
 
 }

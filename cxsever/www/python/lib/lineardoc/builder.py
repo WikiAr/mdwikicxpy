@@ -127,7 +127,7 @@ class Builder:
             if not chunk_tag:
                 break
             if text_chunk.text.strip() or text_chunk.inline_content or chunk_tag is not tag:
-                # textChunk has non whitespace content
+                # text_chunk has non whitespace content
                 replace = False
                 break
             whitespace.append(text_chunk.text)
@@ -158,7 +158,7 @@ class Builder:
         # Inside a textblock, if a textchunk becomes segmentable
         self.is_block_segmentable = can_segment
 
-    def add_inline_content(self, content, can_segment=True):
+    def add_inline_content(self, content, can_segment=True) -> None:
         """
         Add content that doesn't need linearizing, to appear inline.
 
