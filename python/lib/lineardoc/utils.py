@@ -41,19 +41,9 @@ def esc(s):
     return s.replace("&", "&#38;").replace("<", "&#60;").replace(">", "&#62;")
 
 
-html_escape_table = {
-    "&": "&amp;",
-    '"': "&quot;",
-    "'": "&apos;",
-    ">": "&gt;",
-    "<": "&lt;",
-}
-
-
 def esc_attr(s) -> str:
     s = str(s)
     # Replace ", ', &, <, > with their HTML numeric entities
-    # return "".join(html_escape_table.get(c, c) for c in s)
     return re.sub(r'["\'&<>]', lambda m: f"&#{ord(m.group(0))};", s)
 
 
@@ -128,6 +118,7 @@ def dump_tags(tag_array):
             attr_dumps.append(f"{attr}={esc_attr(value)}")
         tag_name = tag["name"]
         if attr_dumps:
+            attr_dumps.sort()       # NOTE: under testing
             tag_dumps.append(f"{tag_name}:{','.join(attr_dumps)}")
         else:
             tag_dumps.append(tag_name)
