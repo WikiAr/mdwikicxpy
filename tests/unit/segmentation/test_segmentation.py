@@ -43,9 +43,15 @@ def test_cx_segmenter(lang, test_case):
     parsed_doc = get_parsed_doc(test_data)
     segmenter = CXSegmenterNew()
     segmented_linear_doc = segmenter.segment(parsed_doc, lang)
-    result = normalize(segmented_linear_doc.get_html())
+
+    result = segmented_linear_doc.get_html()
+    normalized_result = normalize(result)
 
     with open(date_path / test_case["result"], "r", encoding="utf-8") as f:
         expected_result_data = normalize(f.read())
 
-    assert result == expected_result_data, f"{test_case['source']}: {test_case['desc'] or ''}"
+    if expected_result_data != normalized_result:
+        with open(date_path / f"output_{test_case['result']}", "w", encoding="utf-8") as f:
+            f.write(result)
+
+    assert normalized_result == expected_result_data, f"{test_case['source']}: {test_case['desc'] or ''}"
