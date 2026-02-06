@@ -37,7 +37,7 @@ const removableSections = {
 		"FR",
 		"Mdwiki revid",
 		"mdwiki revid",
-		"/^[Mm]dwiki[ _]revid$",
+		"/^[Mm]dwiki[ _]revid$/",
 		"good article",
 		"/^(.*-)?Stub$/",
 		"Short description",

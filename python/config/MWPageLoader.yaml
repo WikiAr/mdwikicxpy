@@ -23,10 +23,12 @@ removableSections:
     - Esborrany # Stub category in es.wikipedia
     - Featured article
     - FR
+    - Mdwiki revid
+    - mdwiki revid
+    - /^[Mm]dwiki[ _]revid$/
     - good article
     - /^(.*-)?Stub$/
     - Short description
-    - Mdwiki revid
     - Void
     - Italic title # T216044
     - About
