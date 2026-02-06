@@ -11,6 +11,7 @@ class TestNormalizeFunction:
     def test_normalize_simple(self):
         """Test normalizing simple HTML."""
         result = normalize("<div>test</div>")
+        assert result == "<html><body><div>test</div></body></html>"
         assert "<div>" in result
         assert "test" in result
         assert "</div>" in result
@@ -19,6 +20,7 @@ class TestNormalizeFunction:
         """Test that normalize removes tabs, newlines, carriage returns."""
         html = "<div>\n\t\rtest\n\t\r</div>"
         result = normalize(html)
+        assert result == "<html><body><div>test</div></body></html>"
         # Should not contain tabs, newlines, or carriage returns
         assert "\n" not in result
         assert "\t" not in result
@@ -34,6 +36,7 @@ class TestNormalizeFunction:
         """Test normalizing with attributes."""
         html = '<div class="test">content</div>'
         result = normalize(html)
+        assert result == '<html><body><div class="test">content</div></body></html>'
         assert 'class="test"' in result
 
 
