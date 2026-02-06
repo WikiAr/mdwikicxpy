@@ -52,7 +52,6 @@ def run_processing_test(num):
     # Process the input
     result = process_html(input_html)
     result_new = process_html_new(input_html)
-    assert result == result_new
 
     # Save result for inspection
     with open(output_path, "w", encoding="utf-8") as f:
@@ -63,6 +62,8 @@ def run_processing_test(num):
         f.write(result_new)
 
     # Validation
+    assert result == result_new
+
     # assert html_work(result) == html_work(expected_html), f"Processed HTML does not match expected for test {num}"
     assert "<section" in result, f"Result {num} should contain section tags"
     assert "cx-segment" in result, f"Result {num} should contain cx-segment spans"
