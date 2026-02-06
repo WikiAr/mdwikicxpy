@@ -149,15 +149,15 @@ def test_mediawiki_elements_new_meta():
     assert '<meta charset="utf-8" />' in result_new, "process_html_new Should preserve meta charset"
 
 
+def normalize_whitespace(result_z):
+    return "".join(" ".join(x.split()) for x in result_z.split("\n")).strip()
+
+
 def test_mediawiki_elements_new():
     """Test MediaWiki-specific elements."""
 
     html = """
     <html>
-    <head prefix="mwr: https://en.wikipedia.org/wiki/Special:Redirect/">
-        <meta charset="utf-8" />
-        <base href="//en.wikipedia.org/wiki/" />
-    </head>
     <body>
     <h2>Heading</h2>
     <p>Paragraph with <a href="/wiki/Link" rel="mw:WikiLink">a link</a>.</p>
@@ -177,3 +177,23 @@ def test_mediawiki_elements_new():
 
     result_new = process_html_new(html)
     assert result == result_new
+    expected = """
+        <html id="0">
+            <body id="1">
+                <section data-mw-section-number="1" id="cxSourceSection0" rel="cx:Section">
+                    <h2 id="2"><span class="cx-segment" data-segmentid="3">Heading</span></h2>
+                </section>
+                <section data-mw-section-number="1" id="cxSourceSection1" rel="cx:Section">
+                    <p id="4">
+                    <span class="cx-segment" data-segmentid="5">Paragraph with <a class="cx-link" data-linkid="6" href="/wiki/Link" rel="mw:WikiLink">a link</a>.</span></p>
+                </section>
+                <section data-mw-section-number="1" id="cxSourceSection2" rel="cx:Section">
+                    <figure id="7" rel="cx:Figure">
+                        <img src="image.jpg" />
+                        <figcaption id="8"><span class="cx-segment" data-segmentid="9">Caption text.</span></figcaption>
+                    </figure>
+                </section>
+            </body>
+        </html>
+    """
+    assert normalize_whitespace(result) == normalize_whitespace(expected)

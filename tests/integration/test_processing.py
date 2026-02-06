@@ -68,7 +68,7 @@ def run_processing_test(num):
     assert len(result) > len(input_html) * 0.5, f"Result {num} should have reasonable size"
 
     # assert html_work(result_new) == html_work(expected_html), f"Processed HTML does not match expected for test {num}"
-    # assert html_work(result) == html_work(result_new)
+    assert html_work(result) == html_work(expected_html)
 
 
 def test_processing_1():
