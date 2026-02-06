@@ -26,19 +26,26 @@ def normalize(html):
     return "\n".join([line.strip() for line in html.strip().splitlines() if line.strip()])
 
 
-@pytest.mark.parametrize("lang, test_cases", alltests.items())
-def test_cx_segmenter(lang, test_cases):
+test_params = [
+    (lang, test_case)
+    for lang, cases in alltests.items()
+    for test_case in cases
+]
+
+
+@pytest.mark.parametrize("lang, test_case", test_params)
+def test_cx_segmenter(lang, test_case):
     date_path = Path(__file__).parent / "data"
-    for test_case in test_cases:
-        with open(date_path / test_case["source"], "r", encoding="utf-8") as f:
-            test_data = f.read()
 
-        parsed_doc = get_parsed_doc(test_data)
-        segmenter = CXSegmenterNew()
-        segmented_linear_doc = segmenter.segment(parsed_doc, lang)
-        result = normalize(segmented_linear_doc.get_html())
+    with open(date_path / test_case["source"], "r", encoding="utf-8") as f:
+        test_data = f.read()
 
-        with open(date_path / test_case["result"], "r", encoding="utf-8") as f:
-            expected_result_data = normalize(f.read())
+    parsed_doc = get_parsed_doc(test_data)
+    segmenter = CXSegmenterNew()
+    segmented_linear_doc = segmenter.segment(parsed_doc, lang)
+    result = normalize(segmented_linear_doc.get_html())
 
-        assert result == expected_result_data, f"{test_case['source']}: {test_case['desc'] or ''}"
+    with open(date_path / test_case["result"], "r", encoding="utf-8") as f:
+        expected_result_data = normalize(f.read())
+
+    assert result == expected_result_data, f"{test_case['source']}: {test_case['desc'] or ''}"
