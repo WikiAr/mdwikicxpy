@@ -19,7 +19,7 @@ def normalize_html_attributes(html: str) -> str:
         if tag.attrs:
             # Sort attributes alphabetically
             new_attrs = {
-                k: v  # esc_attr(v) if k == "data-parsoid" else v
+                k: esc_attr(v) if k == "data-parsoid" else v
                 for k, v in tag.attrs.items()
             }
             tag.attrs = dict(sorted(new_attrs.items()))
