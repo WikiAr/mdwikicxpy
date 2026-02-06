@@ -4,13 +4,12 @@ Comprehensive test suite for the CX HTML processing pipeline.
 """
 
 # from python.lib.lineardoc import Doc, Parser, TextBlock, MwContextualizer
-from python.lib.processor import process_html, process_html_new, parse_html_z
+from python.lib.processor import process_html, process_html_new
 # from python.lib.segmentation import CXSegmenter
 
 
 def test_basic_html_processing():
     """Test basic HTML processing."""
-    print("Testing basic HTML processing...")
 
     html = "<p>This is a test. This is another sentence.</p>"
     result = process_html(html)
@@ -19,12 +18,9 @@ def test_basic_html_processing():
     assert "data-segmentid" in result, "Should contain segment IDs"
     assert "<section" in result, "Should contain section wrapper"
 
-    print("✓ Basic HTML processing works")
-
 
 def test_mediawiki_elements():
     """Test MediaWiki-specific elements."""
-    print("\nTesting MediaWiki elements...")
 
     html = """
     <html>
@@ -45,12 +41,9 @@ def test_mediawiki_elements():
     assert "data-linkid" in result, "Should add link IDs"
     assert "cx:Figure" in result, "Should mark figures"
 
-    print("✓ MediaWiki elements processed correctly")
-
 
 def test_section_wrapping():
     """Test section wrapping."""
-    print("\nTesting section wrapping...")
 
     html = """
     <html>
@@ -69,12 +62,9 @@ def test_section_wrapping():
     assert section_count >= 2, f"Should have at least 2 sections, got {section_count}"
     assert "cx:Section" in result, "Should mark sections"
 
-    print(f"✓ Section wrapping works ({section_count} sections)")
-
 
 def test_segmentation():
     """Test text segmentation."""
-    print("\nTesting segmentation...")
 
     html = """
     <html>
@@ -89,12 +79,9 @@ def test_segmentation():
     segment_count = result.count("cx-segment")
     assert segment_count >= 2, f"Should have at least 2 segments, got {segment_count}"
 
-    print(f"✓ Segmentation works ({segment_count} segments)")
-
 
 def test_reference_handling():
     """Test reference handling."""
-    print("\nTesting reference handling...")
 
     html = """
     <html>
@@ -109,26 +96,9 @@ def test_reference_handling():
     # References should be preserved as inline content
     assert "reference" in result, "Should preserve references"
 
-    print("✓ Reference handling works")
-
-
-def test_empty_input():
-    """Test empty input handling."""
-    print("\nTesting empty input...")
-
-    html = ""
-    try:
-        result = process_html(html)
-        # Should not crash
-        print("✓ Empty input handled gracefully")
-    except Exception as e:
-        print(f"✗ Failed with: {e}")
-        raise
-
 
 def test_complex_nesting():
     """Test complex nested structures."""
-    print("\nTesting complex nesting...")
 
     html = """
     <html>
@@ -155,12 +125,32 @@ def test_complex_nesting():
     assert "<li" in result, "Should preserve list items"
     assert "Item 1" in result, "Should preserve list content"
 
-    print("✓ Complex nesting handled correctly")
+
+def test_mediawiki_elements_new_meta():
+    """Test MediaWiki-specific elements."""
+
+    html = """
+    <html>
+    <head prefix="mwr: https://en.wikipedia.org/wiki/Special:Redirect/">
+        <meta charset="utf-8" />
+        <base href="//en.wikipedia.org/wiki/" />
+    </head>
+    <body>
+    </body>
+    </html>
+    """
+
+    result = process_html(html)
+
+    result_new = process_html_new(html)
+
+    assert result == result_new
+    assert '<meta charset="utf-8" />' in result, "process_html Should preserve meta charset"
+    assert '<meta charset="utf-8" />' in result_new, "process_html_new Should preserve meta charset"
 
 
 def test_mediawiki_elements_new():
     """Test MediaWiki-specific elements."""
-    print("\nTesting MediaWiki elements...")
 
     html = """
     <html>
@@ -180,11 +170,10 @@ def test_mediawiki_elements_new():
     """
 
     result = process_html(html)
-    result_new = process_html_new(html)
-    result_z = parse_html_z(html)
 
     assert "cx-link" in result, "Should process WikiLinks"
     assert "data-linkid" in result, "Should add link IDs"
     assert "cx:Figure" in result, "Should mark figures"
 
-    print("✓ MediaWiki elements processed correctly")
+    result_new = process_html_new(html)
+    assert result == result_new

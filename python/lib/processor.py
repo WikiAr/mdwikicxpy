@@ -5,10 +5,6 @@ Main processing module for HTML transformation.
 import os
 import re
 import yaml
-import html5lib
-from html5lib.treeadapters import sax
-
-
 from .lineardoc import Normalizer, Parser, MwContextualizer
 from .segmentation import CXSegmenter, CXSegmenterNew
 
@@ -98,17 +94,3 @@ def process_html_new(source_html):
     result = segmented_doc.get_html()
 
     return result
-
-
-def parse_html_z(html):
-    handler = Parser(MwContextualizer({"removableSections": removable_sections}), {"wrapSections": True})
-    handler.init()
-
-    parser = html5lib.HTMLParser(
-        tree=sax.to_sax,
-        namespaceHTMLElements=False
-    )
-
-    parser.parse(html, handler)
-
-    return handler.root_builder.doc
