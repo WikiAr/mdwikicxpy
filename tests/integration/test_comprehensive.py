@@ -4,7 +4,7 @@ Comprehensive test suite for the CX HTML processing pipeline.
 """
 
 # from python.lib.lineardoc import Doc, Parser, TextBlock, MwContextualizer
-from python.lib.processor import process_html
+from python.lib.processor import process_html, process_html_new, parse_html_z
 # from python.lib.segmentation import CXSegmenter
 
 
@@ -158,30 +158,33 @@ def test_complex_nesting():
     print("✓ Complex nesting handled correctly")
 
 
-def run_all_tests():
-    """Run all tests."""
-    print("=" * 60)
-    print("CX HTML Processing Pipeline - Comprehensive Test Suite")
-    print("=" * 60)
+def test_mediawiki_elements_new():
+    """Test MediaWiki-specific elements."""
+    print("\nTesting MediaWiki elements...")
 
-    try:
-        test_basic_html_processing()
-        test_mediawiki_elements()
-        test_section_wrapping()
-        test_segmentation()
-        test_reference_handling()
-        test_empty_input()
-        test_complex_nesting()
+    html = """
+    <html>
+    <head prefix="mwr: https://en.wikipedia.org/wiki/Special:Redirect/">
+        <meta charset="utf-8" />
+        <base href="//en.wikipedia.org/wiki/" />
+    </head>
+    <body>
+    <h2>Heading</h2>
+    <p>Paragraph with <a href="/wiki/Link" rel="mw:WikiLink">a link</a>.</p>
+    <figure>
+        <img src="image.jpg" />
+        <figcaption>Caption text.</figcaption>
+    </figure>
+    </body>
+    </html>
+    """
 
-        print("\n" + "=" * 60)
-        print("ALL TESTS PASSED ✓")
-        print("=" * 60)
-        return True
-    except Exception as e:
-        print("\n" + "=" * 60)
-        print(f"TESTS FAILED ✗: {e}")
-        print("=" * 60)
-        import traceback
+    result = process_html(html)
+    result_new = process_html_new(html)
+    result_z = parse_html_z(html)
 
-        traceback.print_exc()
-        return False
+    assert "cx-link" in result, "Should process WikiLinks"
+    assert "data-linkid" in result, "Should add link IDs"
+    assert "cx:Figure" in result, "Should mark figures"
+
+    print("✓ MediaWiki elements processed correctly")
