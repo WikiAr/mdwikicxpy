@@ -36,6 +36,7 @@ test_params = [
 @pytest.mark.parametrize("lang, test_case", test_params)
 def test_cx_segmenter(lang, test_case):
     date_path = Path(__file__).parent / "data"
+    output_path = Path(__file__).parent / "output"
 
     with open(date_path / test_case["source"], "r", encoding="utf-8") as f:
         test_data = f.read()
@@ -51,7 +52,7 @@ def test_cx_segmenter(lang, test_case):
         expected_result_data = normalize(f.read())
 
     if expected_result_data != normalized_result:
-        with open(date_path / f"output_{test_case['result']}", "w", encoding="utf-8") as f:
+        with open(output_path / test_case['result'], "w", encoding="utf-8") as f:
             f.write(result)
 
     assert normalized_result == expected_result_data, f"{test_case['source']}: {test_case['desc'] or ''}"
