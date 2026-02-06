@@ -1,18 +1,29 @@
 """
 Normalizer - Parser to normalize XML.
 
-[ ] reviewed from js?
+[×] reviewed from js?
 """
 
+import re
 from lxml import etree
 
 from . import utils
 from .parser import VOID_ELEMENTS
 
 
-def esc(s):
-    """Escape text for inclusion in HTML."""
-    return s.replace("&", "&#38;").replace("<", "&#60;").replace(">", "&#62;")
+def esc(s: str) -> str:
+    # Use regex to mirror JavaScript replace behavior
+    return re.sub(r'[&<>]', lambda m: f'&#{ord(m.group(0))};', s)
+
+
+"""
+/**
+ * Parser to normalize XML.
+ *
+ * @class
+ * @constructor
+ */
+ """
 
 
 class Normalizer:
@@ -70,6 +81,14 @@ class Normalizer:
                 self.on_text(child.tail)
 
         self.on_close_tag(tag_name)
+
+    """
+    /*
+
+    on_open_tag
+
+    */
+    """
 
     def on_open_tag(self, tag):
         """Handle open tag event."""

@@ -1,7 +1,7 @@
 """
 Utility functions for the lineardoc module.
 
-[ ] reviewed from js?
+[×] reviewed from js?
 """
 
 

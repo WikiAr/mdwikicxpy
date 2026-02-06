@@ -1,6 +1,24 @@
 import Contextualizer from './Contextualizer.js';
-import { getProp } from './../util.js';
-const contentBranchNodeNames = ['blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre', 'div', 'table', 'ol', 'ul', 'dl', 'figure', 'center', 'section'];
+import { getProp } from './util.js';
+const contentBranchNodeNames = [
+	"blockquote",
+	"h1",
+	"h2",
+	"h3",
+	"h4",
+	"h5",
+	"h6",
+	"p",
+	"pre",
+	"div",
+	"table",
+	"ol",
+	"ul",
+	"dl",
+	"figure",
+	"center",
+	"section"
+];
 
 /**
  * Contextualizer for MediaWiki DOM HTML
@@ -93,6 +111,7 @@ class MwContextualizer extends Contextualizer {
 			return true;
 		}
 
+		// Check classes
 		const classList = tag.attributes.class ? tag.attributes.class.split(' ') : [];
 		for (let i = 0; i < removableSections.classes.length; i++) {
 			if (classList.includes(removableSections.classes[i])) {
@@ -103,6 +122,7 @@ class MwContextualizer extends Contextualizer {
 			}
 		}
 
+		// Check RDFa
 		const types = tag.attributes.typeof ? tag.attributes.typeof.split(' ') : [];
 		const rels = tag.attributes.rel ? tag.attributes.rel.split(' ') : [];
 		const rdfa = types.concat(rels);

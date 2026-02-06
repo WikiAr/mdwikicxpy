@@ -1,6 +1,6 @@
 import TextChunk from './text_chunk.js';
 import { add_common_tag, dump_tags, esc, get_chunk_boundary_groups, get_close_tag_html, get_open_tag_html, is_transclusion, is_transclusion_fragment, set_link_ids_in_place } from './utils.js';
-import { getProp } from './../util.js';
+import { getProp } from './util.js';
 
 /**
  * A block of annotated inline text

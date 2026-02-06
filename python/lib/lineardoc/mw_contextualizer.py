@@ -1,9 +1,9 @@
 """
 Contextualizer for MediaWiki DOM HTML.
 
-See https://www.mediawiki.org/wiki/Specs/HTML
+See https:#www.mediawiki.org/wiki/Specs/HTML
 
-[ ] reviewed from js?
+[×] reviewed from js?
 """
 
 import json
@@ -31,6 +31,18 @@ CONTENT_BRANCH_NODE_NAMES = [
     "center",
     "section",
 ]
+
+"""
+/**
+ * Contextualizer for MediaWiki DOM HTML
+ *
+ * See https:#www.mediawiki.org/wiki/Specs/HTML
+ *
+ * @class
+ * @extends Contextualizer
+ * @constructor
+ */
+ """
 
 
 class MwContextualizer(Contextualizer):
@@ -70,7 +82,7 @@ class MwContextualizer(Contextualizer):
         if context is None and tag["name"] == "body":
             return "section"
 
-        # And figure//figcaption is contentBranch
+        # And figure#figcaption is contentBranch
         if (context in ("media", "media-inline")) and tag["name"] == "figcaption":
             return "contentBranch"
 
@@ -102,6 +114,7 @@ class MwContextualizer(Contextualizer):
         about = tag.get("attributes", {}).get("about")
         if about in self.removable_transclusion_fragments:
             # Once a transclusion is removed, make sure their fragments also removed
+            # even if the fragment does not match with removableSections configuration.
             return True
 
         # Check classes
@@ -117,7 +130,8 @@ class MwContextualizer(Contextualizer):
         rels = tag.get("attributes", {}).get("rel", "").split()
         rdfa = types + rels
         for removable_rdfa in removable_sections.get("rdfa", []):
-            # Make sure that the rdfa value matches
+            # Make sure that the rdfa value matches with removable section rdfa and does not
+            # have other rdfas in same element.
             if removable_rdfa in rdfa and len(rdfa) == 1:
                 if about:
                     self.removable_transclusion_fragments.append(about)
@@ -128,6 +142,8 @@ class MwContextualizer(Contextualizer):
         if not data_mw:
             return False
 
+        mw_data = {}
+        # See https://phabricator.wikimedia.org/T274133 for more info
         try:
             mw_data = json.loads(data_mw)
         except (json.JSONDecodeError, ValueError):

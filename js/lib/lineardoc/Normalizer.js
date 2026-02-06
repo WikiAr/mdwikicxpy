@@ -29,7 +29,11 @@ class Normalizer extends sax.SAXParser {
 		this.doc = [];
 		this.tags = [];
 	}
+	/*
 
+	on_open_tag
+
+	*/
 	on_open_tag(tag) {
 		this.tags.push(tag);
 		this.doc.push(get_open_tag_html(tag));
