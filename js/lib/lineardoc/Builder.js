@@ -156,9 +156,11 @@ class Builder {
 			return;
 		}
 		this.textChunks.push(new TextChunk('', this.inlineAnnotationTags.slice(), content));
+
 		if (!canSegment) {
 			this.isBlockSegmentable = false;
 		}
+
 		this.inlineAnnotationTagsUsed = this.inlineAnnotationTags.length;
 	}
 

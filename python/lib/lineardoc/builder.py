@@ -1,10 +1,10 @@
 """
 Builder - A document builder for creating linear documents.
 
-[ ] reviewed from js?
+[×] reviewed from js?
 
 """
-
+import re
 from . import utils
 from .doc import Doc
 from .text_block import TextBlock
@@ -68,6 +68,10 @@ class Builder:
         if not isinstance(tag, dict):
             return False
         rel = tag.get("attributes", {}).get("rel", "")
+        # We add the spaces before and after to ensure matching on the "word" mw:PageProp/Category
+        # without additional content. This is technically not necessary (we don't generate
+        # mw:PageProp/Category/SomethingElse) nor entirely correct (attributes values could be separated by other
+        # characters than 0x20), but provides a bit of future-proofing.
         return (
             tag["name"] == "link"
             and f" {rel} ".find(" mw:PageProp/Category ") != -1
@@ -117,10 +121,15 @@ class Builder:
             raise Exception(f"Mismatched inline tags: open={tag['name'] if tag else None}, close={tag_name}")
 
         if not tag.get("attributes"):
-            # Skip tags which have no attributes
+            # Skip tags which have attributes, content or both from further check to
+            # see if we want to keep inline content. Else we assume that, if this tag has
+            # whitespace or empty content, it is ok to remove it from resulting document.
+            # But if it has attributes, we make sure that there are inline content blocks to
+            # avoid them missing in resulting document.
+            # See T104539
             return
 
-        # Check for empty/whitespace-only data tags
+        # Check for empty/whitespace-only data tags. Replace as inline content
         replace = True
         whitespace = []
         i = len(self.text_chunks) - 1
@@ -129,8 +138,8 @@ class Builder:
             chunk_tag = text_chunk.tags[-1] if text_chunk.tags else None
             if not chunk_tag:
                 break
-            if text_chunk.text.strip() or text_chunk.inline_content or chunk_tag is not tag:
-                # text_chunk has non whitespace content
+            if re.search(r'\S', text_chunk.text.strip()) or text_chunk.inline_content or chunk_tag != tag:
+                # textChunk has non whitespace content, Or it has child tags.
                 replace = False
                 break
             whitespace.append(text_chunk.text)
@@ -158,7 +167,8 @@ class Builder:
         """
         self.text_chunks.append(TextChunk(text, self.inline_annotation_tags[:]))
         self.inline_annotation_tags_used = len(self.inline_annotation_tags)
-        # Inside a textblock, if a textchunk becomes segmentable
+        # Inside a textblock, if a textchunk becomes segmentable, unlike inline tags,
+        # the textblock becomes segmentable. See T195768
         self.is_block_segmentable = can_segment
 
     def add_inline_content(self, content, can_segment=True) -> None:
@@ -169,15 +179,17 @@ class Builder:
             content: Sub-document or empty SAX tag
             can_segment: Whether this can be segmented
         """
-        # If the content is a category tag, capture it separately
+        #  If the content is a category tag, capture it separately and don't add to doc.
         if self.is_category(content):
             self.doc.categories.append(content)
             return
 
         self.text_chunks.append(TextChunk("", self.inline_annotation_tags[:], content))
-        self.inline_annotation_tags_used = len(self.inline_annotation_tags)
+
         if not can_segment:
             self.is_block_segmentable = False
+
+        self.inline_annotation_tags_used = len(self.inline_annotation_tags)
 
     def finish_text_block(self):
         """Finish the current text block."""
@@ -188,7 +200,7 @@ class Builder:
         whitespace_only = True
 
         for text_chunk in self.text_chunks:
-            if text_chunk.inline_content or text_chunk.text.strip():
+            if text_chunk.inline_content or re.search(r'\S', text_chunk.text.strip()):
                 whitespace_only = False
                 break
             else:
