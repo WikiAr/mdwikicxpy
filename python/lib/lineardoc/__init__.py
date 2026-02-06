@@ -5,7 +5,7 @@ Lineardoc module - Linear document representation for HTML.
 from .builder import Builder
 from .contextualizer import Contextualizer
 from .doc import Doc
-from .mw_contextualizer import mw_contextualizer
+from .mw_contextualizer import MwContextualizer
 from .normalizer import Normalizer
 from .parser import Parser
 from .text_block import TextBlock
@@ -18,7 +18,7 @@ __all__ = [
     "Doc",
     "Normalizer",
     "Contextualizer",
-    "mw_contextualizer",
+    "MwContextualizer",
     "Builder",
     "Parser",
     "get_prop",

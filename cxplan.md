@@ -290,7 +290,7 @@ def process_html(source_html: str) -> str:
     See u.js lines 20-37
     """
     # 1. Create parser with MediaWiki contextualizer
-    contextualizer = mw_contextualizer(
+    contextualizer = MwContextualizer(
         {'removableSections': CONFIG['removableSections']}
     )
     parser = Parser(contextualizer, {'wrapSections': True})

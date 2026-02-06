@@ -84,7 +84,7 @@ const removableSections = pageloaderConfig.removableSections;
 
 function tet(source_HTML) {
     // 1. Parse HTML with MediaWiki contextualization
-    const parser = new LinearDoc.Parser(new LinearDoc.mw_contextualizer(
+    const parser = new LinearDoc.Parser(new LinearDoc.MwContextualizer(
         { removableSections: removableSections }
     ), {
         wrapSections: true
@@ -295,7 +295,7 @@ def process_html(source_html: str) -> str:
 
     # 1. Parse HTML with MediaWiki contextualization
     parser = Parser(
-        contextualizer=mw_contextualizer(removable_sections=_removable_sections),
+        contextualizer=MwContextualizer(removable_sections=_removable_sections),
         wrap_sections=True
     )
 
