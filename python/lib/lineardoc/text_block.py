@@ -1,5 +1,7 @@
 """
 TextBlock - A block of annotated inline text.
+
+[ ] reviewed from js?
 """
 
 import re

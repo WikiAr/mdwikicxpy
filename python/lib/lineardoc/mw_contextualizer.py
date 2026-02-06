@@ -2,6 +2,8 @@
 Contextualizer for MediaWiki DOM HTML.
 
 See https://www.mediawiki.org/wiki/Specs/HTML
+
+[ ] reviewed from js?
 """
 
 import json

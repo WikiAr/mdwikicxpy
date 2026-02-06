@@ -1,5 +1,8 @@
 """
 Contextualizer for HTML - tracks the segmentation context of the currently open node.
+
+[ ] reviewed from js?
+
 """
 
 

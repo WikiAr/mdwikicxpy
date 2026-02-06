@@ -6,6 +6,8 @@ The document is a list of items, where each item is:
 - a block close tag (e.g. </p>); or
 - a text_block of annotated inline text; or
 - "block whitespace" (a run of whitespace separating two block boundaries)
+
+[ ] reviewed from js?
 """
 
 import hashlib

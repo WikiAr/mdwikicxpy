@@ -1,5 +1,7 @@
 """
 Utility functions for the lineardoc module.
+
+[ ] reviewed from js?
 """
 
 
@@ -30,4 +32,7 @@ def get_prop(path, obj):
                 return None
         else:
             return None
+
+    # if not result: return None
+
     return result

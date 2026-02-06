@@ -1,5 +1,8 @@
 """
 Parser to read an HTML stream into a Doc.
+
+[×] reviewed from js?
+
 """
 
 from lxml import etree
@@ -8,90 +11,31 @@ from . import utils
 from .builder import Builder
 
 BLOCK_TAGS = [
-    "html",
-    "head",
-    "body",
-    "script",
+    'html', 'head', 'body', 'script',
     # head tags
     # In HTML5+RDFa, link/meta are actually allowed anywhere in the body, and are to be
     # treated as void flow content (like <br> and <img>).
-    "title",
-    "style",
-    "meta",
-    "link",
-    "noscript",
-    "base",
+    'title', 'style', 'meta', 'link', 'noscript', 'base',
     # non-visual content
-    "audio",
-    "data",
-    "datagrid",
-    "datalist",
-    "dialog",
-    "eventsource",
-    "form",
-    "iframe",
-    "main",
-    "menu",
-    "menuitem",
-    "optgroup",
-    "option",
+    'audio', 'data', 'datagrid', 'datalist', 'dialog', 'eventsource', 'form',
+    'iframe', 'main', 'menu', 'menuitem', 'optgroup', 'option',
     # paragraph
-    "div",
-    "p",
+    'div', 'p',
     # tables
-    "table",
-    "tbody",
-    "thead",
-    "tfoot",
-    "caption",
-    "th",
-    "tr",
-    "td",
+    'table', 'tbody', 'thead', 'tfoot', 'caption', 'th', 'tr', 'td',
     # lists
-    "ul",
-    "ol",
-    "li",
-    "dl",
-    "dt",
-    "dd",
+    'ul', 'ol', 'li', 'dl', 'dt', 'dd',
     # HTML5 heading content
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "hgroup",
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hgroup',
     # HTML5 sectioning content
-    "article",
-    "aside",
-    "body",
-    "nav",
-    "section",
-    "footer",
-    "header",
-    "figure",
-    "figcaption",
-    "fieldset",
-    "details",
-    "blockquote",
-    "address",  # added by Giovanni Toffoli
+    'article', 'aside', 'body', 'nav', 'section', 'footer', 'header', 'figure',
+    'figcaption', 'fieldset', 'details', 'blockquote',
     # other
-    "hr",
-    "button",
-    "canvas",
-    "center",
-    "col",
-    "colgroup",
-    "embed",
-    "map",
-    "object",
-    "pre",
-    "progress",
-    "video",
+    'hr', 'button', 'canvas', 'center', 'col', 'colgroup', 'embed',
+    'map', 'object', 'pre', 'progress', 'video',
     # non-annotation inline tags
-    "img",
-    "br",
+    'img', 'br',
+    'wiki-chart'
 ]
 
 # HTML void elements that cannot have content and should be self-closing
@@ -149,7 +93,7 @@ class Parser:
         except Exception:
             # Try with wrapping
             try:
-                tree = etree.fromstring(f"<div>{html}</div>".encode("utf-8"), parser)
+                tree = etree.fromstring(f"<div>{html}</div>".encode(), parser)
                 for child in tree:
                     self._process_element(child)
             except Exception as e:
@@ -185,6 +129,13 @@ class Parser:
 
         self.on_close_tag(tag_name)
 
+    """
+
+    python: on_open_tag
+    js: onopentag
+
+    """
+
     def on_open_tag(self, tag):
         """
         Handle open tag event.
@@ -192,6 +143,8 @@ class Parser:
         Args:
             tag: Tag dict
         """
+        # Check if this tag is a child tag of a removable tag
+        # Check if the tag is removable. Note that it is not added to contextualizer yet.
         if self.contextualizer.get_context() == "removable" or self.contextualizer.is_removable(tag):
             self.all_tags.append(tag)
             self.contextualizer.on_open_tag(tag)
@@ -213,6 +166,13 @@ class Parser:
         self.all_tags.append(tag)
         self.contextualizer.on_open_tag(tag)
 
+    """
+
+    python: on_close_tag
+    js: onclosetag
+
+    """
+
     def on_close_tag(self, tag_name):
         """
         Handle close tag event.
@@ -230,6 +190,7 @@ class Parser:
             self.contextualizer.on_close_tag(tag)
             return
 
+        # this.contextualizer.onCloseTag(tag);
         self.contextualizer.on_close_tag(tag)
 
         if utils.is_inline_empty_tag(tag_name):
@@ -249,11 +210,18 @@ class Parser:
         elif not is_ann:
             # Block level tag close
             if tag_name == "p" and self.contextualizer.can_segment():
-                # Add an empty textchunk before the closing block tag
+                # Add an empty textchunk before the closing block tag to flush segmentation contexts
+                # For example, transclusion based references at the end of paragraphs
                 self.builder.add_text_chunk("", self.contextualizer.can_segment())
             self.builder.pop_block_tag(tag_name)
         else:
             raise Exception(f"Unexpected close tag: {tag_name}")
+    """
+
+    python: on_text
+    js: ontext
+
+    """
 
     def on_text(self, text):
         """
@@ -266,9 +234,23 @@ class Parser:
             return
         self.builder.add_text_chunk(text, self.contextualizer.can_segment())
 
+    """
+
+	python: on_script
+	js: onscript
+
+    """
+
     def on_script(self, text):
         """Handle script text."""
         self.builder.add_text_chunk(text, self.contextualizer.can_segment())
+
+    """
+
+	python: is_inline_annotation_tag
+	js: isInlineAnnotationTag
+
+    """
 
     def is_inline_annotation_tag(self, tag_name, is_transclusion):
         """
@@ -281,9 +263,11 @@ class Parser:
         Returns:
             Whether the tag is an inline annotation
         """
+        # const context = this.contextualizer.getContext();
         context = self.contextualizer.get_context()
 
-        # <span> inside a media context acts like a block tag
+        # <span> inside a media context acts like a block tag wrapping another block tag <video>
+        # See https://www.mediawiki.org/wiki/Specs/HTML/1.7.0#Audio/Video
         if tag_name == "span" and context == "media":
             return False
 
@@ -292,6 +276,7 @@ class Parser:
             return True
 
         # Styles are usually block tags, but sometimes style tags are used as transclusions
+            # Example: T217585. In such cases treat styles as inline to avoid wrong segmentations.
         if tag_name == "style" and is_transclusion:
             return True
 

@@ -58,12 +58,17 @@ class Parser extends sax.SAXParser {
 		// Stack of tags currently open
 		this.allTags = [];
 	}
+	/*
 
+	python: on_open_tag
+	js: onopentag
+
+	*/
 	onopentag(tag) {
 		if (
 			// Check if this tag is a child tag of a removable tag
-			this.contextualizer.getContext() === 'removable' ||
 			// Check if the tag is removable. Note that it is not added to contextualizer yet.
+			this.contextualizer.getContext() === 'removable' ||
 			this.contextualizer.isRemovable(tag)
 		) {
 			this.allTags.push(tag);
@@ -97,6 +102,12 @@ class Parser extends sax.SAXParser {
 		this.contextualizer.onOpenTag(tag);
 	}
 
+	/*
+
+	python: on_close_tag
+	js: onclosetag
+
+	*/
 	onclosetag(tagName) {
 		const tag = this.allTags.pop(),
 			isAnn = this.isInlineAnnotationTag(tagName, _isTransclusion(tag));
@@ -138,7 +149,11 @@ class Parser extends sax.SAXParser {
 			throw new Error('Unexpected close tag: ' + tagName);
 		}
 	}
+	/*
 
+	python: on_text
+	js: ontext
+	*/
 	ontext(text) {
 		if (this.contextualizer.getContext() === 'removable') {
 			return;
@@ -146,10 +161,22 @@ class Parser extends sax.SAXParser {
 		this.builder.addTextChunk(text, this.contextualizer.canSegment());
 	}
 
+	/*
+
+	python: on_script
+	js: onscript
+
+	*/
 	onscript(text) {
 		this.builder.addTextChunk(text, this.contextualizer.canSegment());
 	}
 
+	/*
+
+	python: is_inline_annotation_tag
+	js: isInlineAnnotationTag
+
+	*/
 	/**
 	 * Determine whether a tag is an inline annotation or not
 	 *

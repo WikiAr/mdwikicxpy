@@ -7,7 +7,7 @@ import { getProp } from './../util.js';
  *
  * @class
  */
-class text_block {
+class TextBlock {
 	/**
 	 * @constructor
 	 *
@@ -511,4 +511,4 @@ class text_block {
 	}
 }
 
-export default text_block;
+export default TextBlock;

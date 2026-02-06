@@ -1,5 +1,7 @@
 """
 Normalizer - Parser to normalize XML.
+
+[ ] reviewed from js?
 """
 
 from lxml import etree
