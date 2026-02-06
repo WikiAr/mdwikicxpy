@@ -13,3 +13,5 @@ pytest-cov==4.1.0
 
 # Production server (optional)
 gunicorn==22.0.0
+
+sentencex==1.0.13
