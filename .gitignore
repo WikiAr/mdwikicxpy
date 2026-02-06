@@ -21,3 +21,4 @@ ENV/
 coverage.xml
 htmlcov/
 /cxsever/www/python/lib/lineardoc1
+/tests/unit/segmentation/output
