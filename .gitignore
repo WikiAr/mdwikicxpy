@@ -24,3 +24,4 @@ htmlcov/
 # Test outputs
 tests/fixtures/output_*.html
 /cxsever/www/python/lib/lineardoc1
+.claude/settings.local.json
