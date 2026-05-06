@@ -343,10 +343,10 @@ def add_common_tag(text_chunks, tag):
 
     # Build new chunks with segment span inserted
     new_text_chunks = []
-    for text_chunk in text_chunks:
-        new_tags = text_chunk.tags[:]
+    for t_chunk in text_chunks:
+        new_tags = t_chunk.tags[:]
         new_tags.insert(common_tag_length, tag)
-        new_text_chunks.append(text_chunk(text_chunk.text, new_tags, text_chunk.inline_content))
+        new_text_chunks.append(text_chunk(t_chunk.text, new_tags, t_chunk.inline_content))
 
     return new_text_chunks
 
@@ -359,8 +359,8 @@ def set_link_ids_in_place(text_chunks, get_next_id):
         text_chunks: Consecutive text chunks
         get_next_id: Function accepting 'link' and returning next ID
     """
-    for text_chunk in text_chunks:
-        for tag in text_chunk.tags:
+    for t_chunk in text_chunks:
+        for tag in t_chunk.tags:
             if (
                 tag["name"] == "a"
                 and tag.get("attributes", {}).get("href") is not None

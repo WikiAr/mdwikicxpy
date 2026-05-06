@@ -42,3 +42,7 @@ def test_processing_2():
 
 def test_processing_3():
     run_processing_test(3)
+
+
+def test_processing_4():
+    run_processing_test(4)

@@ -24,9 +24,9 @@ class text_block:
         self.offsets = []
 
         cursor = 0
-        for text_chunk in self.text_chunks:
-            self.offsets.append({"start": cursor, "length": len(text_chunk.text), "tags": text_chunk.tags})
-            cursor += len(text_chunk.text)
+        for t_chunk in self.text_chunks:
+            self.offsets.append({"start": cursor, "length": len(t_chunk.text), "tags": t_chunk.tags})
+            cursor += len(t_chunk.text)
 
     def get_tag_offsets(self):
         """
@@ -38,8 +38,8 @@ class text_block:
         common_tags = self.get_common_tags()
         result = []
         for i, offset in enumerate(self.offsets):
-            text_chunk = self.text_chunks[i]
-            if len(text_chunk.tags) > len(common_tags) and len(text_chunk.text) > 0:
+            t_chunk = self.text_chunks[i]
+            if len(t_chunk.tags) > len(common_tags) and len(t_chunk.text) > 0:
                 result.append(offset)
         return result
 
@@ -48,7 +48,7 @@ class text_block:
         Get the (last) text chunk at a given char offset.
 
         Args:
-            char_offset: The char offset of the text_chunk
+            char_offset: The char offset of the t_chunk
 
         Returns:
             The text chunk
@@ -70,8 +70,8 @@ class text_block:
             return []
 
         common_tags = self.text_chunks[0].tags[:]
-        for text_chunk in self.text_chunks:
-            tags = text_chunk.tags
+        for t_chunk in self.text_chunks:
+            tags = t_chunk.tags
             if len(tags) < len(common_tags):
                 common_tags = common_tags[: len(tags)]
 
@@ -96,21 +96,21 @@ class text_block:
         # map of { offset: x, text_chunks: [...] }
         empty_text_chunks = {}
         empty_text_chunk_offsets = []
-        # list of { start: x, length: x, text_chunk: x }
+        # list of { start: x, length: x, t_chunk: x }
         text_chunks = []
 
         def push_empty_text_chunks(offset, chunks):
             for chunk in chunks:
-                text_chunks.append({"start": offset, "length": 0, "text_chunk": chunk})
+                text_chunks.append({"start": offset, "length": 0, "t_chunk": chunk})
 
         # Create map of empty text chunks, by offset
-        for i, text_chunk in enumerate(self.text_chunks):
+        for i, t_chunk in enumerate(self.text_chunks):
             offset = self.offsets[i]["start"]
-            if len(text_chunk.text) > 0:
+            if len(t_chunk.text) > 0:
                 continue
             if offset not in empty_text_chunks:
                 empty_text_chunks[offset] = []
-            empty_text_chunks[offset].append(text_chunk)
+            empty_text_chunks[offset].append(t_chunk)
 
         empty_text_chunk_offsets = sorted(empty_text_chunks.keys())
 
@@ -145,26 +145,26 @@ class text_block:
         # Sort by start position
         text_chunks.sort(key=lambda x: x["start"])
 
-        # Fill in any text_chunk gaps using text with common_tags
+        # Fill in any t_chunk gaps using text with common_tags
         pos = 0
         common_tags = self.get_common_tags()
         i = 0
         while i < len(text_chunks):
-            text_chunk = text_chunks[i]
-            if text_chunk["start"] < pos:
-                raise Exception(f"Overlapping chunks at pos={pos}, text_chunks={i} start={text_chunk['start']}")
-            elif text_chunk["start"] > pos:
+            t_chunk = text_chunks[i]
+            if t_chunk["start"] < pos:
+                raise Exception(f"Overlapping chunks at pos={pos}, text_chunks={i} start={t_chunk['start']}")
+            elif t_chunk["start"] > pos:
                 # Unmapped chunk: insert plaintext and adjust offset
                 text_chunks.insert(
                     i,
                     {
                         "start": pos,
-                        "length": text_chunk["start"] - pos,
-                        "text_chunk": text_chunk(target_text[pos : text_chunk["start"]], common_tags),
+                        "length": t_chunk["start"] - pos,
+                        "text_chunk": text_chunk(target_text[pos : t_chunk["start"]], common_tags),
                     },
                 )
                 i += 1
-            pos = text_chunk["start"] + text_chunk["length"]
+            pos = t_chunk["start"] + t_chunk["length"]
             i += 1
 
         # Get trailing text and trailing whitespace
@@ -213,13 +213,13 @@ class text_block:
         # Start with no tags open
         old_tags = []
 
-        for text_chunk in self.text_chunks:
+        for t_chunk in self.text_chunks:
             # Compare tag stacks; render close tags and open tags as necessary
             # Find the highest offset up to which the tags match
             match_top = -1
-            min_length = min(len(old_tags), len(text_chunk.tags))
+            min_length = min(len(old_tags), len(t_chunk.tags))
             for j in range(min_length):
-                if old_tags[j] is text_chunk.tags[j]:
+                if old_tags[j] is t_chunk.tags[j]:
                     match_top = j
                 else:
                     break
@@ -227,21 +227,21 @@ class text_block:
             for j in range(len(old_tags) - 1, match_top, -1):
                 html.append(utils.get_close_tag_html(old_tags[j]))
 
-            for j in range(match_top + 1, len(text_chunk.tags)):
-                html.append(utils.get_open_tag_html(text_chunk.tags[j]))
+            for j in range(match_top + 1, len(t_chunk.tags)):
+                html.append(utils.get_open_tag_html(t_chunk.tags[j]))
 
-            old_tags = text_chunk.tags
+            old_tags = t_chunk.tags
 
             # Now add text and inline content
-            html.append(utils.esc(text_chunk.text))
-            if text_chunk.inline_content:
-                if hasattr(text_chunk.inline_content, "get_html"):
+            html.append(utils.esc(t_chunk.text))
+            if t_chunk.inline_content:
+                if hasattr(t_chunk.inline_content, "get_html"):
                     # a sub-doc
-                    html.append(text_chunk.inline_content.get_html())
+                    html.append(t_chunk.inline_content.get_html())
                 else:
                     # an empty inline tag
-                    html.append(utils.get_open_tag_html(text_chunk.inline_content))
-                    html.append(utils.get_close_tag_html(text_chunk.inline_content))
+                    html.append(utils.get_open_tag_html(t_chunk.inline_content))
+                    html.append(utils.get_close_tag_html(t_chunk.inline_content))
 
         # Finally, close any remaining tags
         for j in range(len(old_tags) - 1, -1, -1):
@@ -256,17 +256,17 @@ class text_block:
         Returns:
             Root item or None
         """
-        for text_chunk in self.text_chunks:
-            if len(text_chunk.tags) == 0 and text_chunk.text and re.search(r"[^\s]", text_chunk.text):
+        for t_chunk in self.text_chunks:
+            if len(t_chunk.tags) == 0 and t_chunk.text and re.search(r"[^\s]", t_chunk.text):
                 # No tags in this textchunk. See if there is non whitespace text
                 return None
 
-            for tag in text_chunk.tags:
+            for tag in t_chunk.tags:
                 if tag:
                     return tag
 
-            if text_chunk.inline_content:
-                inline_doc = text_chunk.inline_content
+            if t_chunk.inline_content:
+                inline_doc = t_chunk.inline_content
                 # Presence of get_root_item confirms that inline_doc is a Doc instance
                 if hasattr(inline_doc, "get_root_item"):
                     root_item = inline_doc.get_root_item()
@@ -319,12 +319,12 @@ class text_block:
 
         # for each chunk, split at any boundaries that occur inside the chunk
         groups = utils.get_chunk_boundary_groups(
-            get_boundaries(self.get_plain_text()), self.text_chunks, lambda text_chunk: len(text_chunk.text)
+            get_boundaries(self.get_plain_text()), self.text_chunks, lambda t_chunk: len(t_chunk.text)
         )
 
         offset = 0
         for group in groups:
-            text_chunk = group["chunk"]
+            t_chunk = group["chunk"]
             boundaries = group["boundaries"]
 
             for boundary in boundaries:
@@ -332,16 +332,16 @@ class text_block:
                 if rel_offset == 0:
                     flush_chunks()
                 else:
-                    left_part = text_chunk(text_chunk.text[:rel_offset], text_chunk.tags[:])
-                    right_part = text_chunk(text_chunk.text[rel_offset:], text_chunk.tags[:], text_chunk.inline_content)
+                    left_part = text_chunk(t_chunk.text[:rel_offset], t_chunk.tags[:])
+                    right_part = text_chunk(t_chunk.text[rel_offset:], t_chunk.tags[:], t_chunk.inline_content)
                     current_text_chunks.append(left_part)
                     offset += rel_offset
                     flush_chunks()
-                    text_chunk = right_part
+                    text_ct_chunkhunk = right_part
 
-            # Even if the text_chunk is zero-width, it may have references
-            current_text_chunks.append(text_chunk)
-            offset += len(text_chunk.text)
+            # Even if the t_chunk is zero-width, it may have references
+            current_text_chunks.append(t_chunk)
+            offset += len(t_chunk.text)
 
         flush_chunks()
         return text_block(all_text_chunks)

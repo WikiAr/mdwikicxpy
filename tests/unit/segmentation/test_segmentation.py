@@ -5,8 +5,8 @@ import pytest
 import re
 import json
 from pathlib import Path
-from python.lib.segmentation import CXSegmenterNew
-from python.lib.lineardoc import MwContextualizer, Normalizer, Parser
+from python.lib.segmentation import CXSegmenter
+from python.lib.lineardoc import mw_contextualizer, Normalizer, Parser
 cx_segmenter_tests_path = Path(__file__).parent / "SegmentationTests.json"
 
 alltests = {}
@@ -15,7 +15,7 @@ with open(cx_segmenter_tests_path, "r", encoding="utf-8") as f:
 
 
 def get_parsed_doc(content):
-    parser = Parser(MwContextualizer())
+    parser = Parser(mw_contextualizer())
 
     parser.init()
     parser.write(content.strip())
@@ -46,7 +46,7 @@ def test_cx_segmenter(lang, test_case):
         test_data = f.read()
 
     parsed_doc = get_parsed_doc(test_data)
-    segmenter = CXSegmenterNew()
+    segmenter = CXSegmenter()
     segmented_linear_doc = segmenter.segment(parsed_doc, lang)
 
     result = segmented_linear_doc.get_html()
